@@ -5,9 +5,6 @@ from telebot import types
 from text import *
 
 
-# Fairy Bang
-
-
 API_TOKEN = '917583816:AAG-Jf82LgKFrEFS_ECgbjF7VYVpGwOOjdo'
 
 bot = telebot.TeleBot(API_TOKEN)
