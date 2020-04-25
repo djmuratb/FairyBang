@@ -7,6 +7,18 @@ from telebot import types
 from text import *
 
 
+# TODO: YAML CONFIG:
+#   - available countries list
+#   - promo codes by every percentage ???
+#   - api token
+#   -
+# TODO: admin panel
+# TODO: notifications
+# TODO: statistic of bought girls and spend money since register moment.
+
+# AFTER SLEEPING STEP - make settings (change: country, town, enter: promo code
+
+
 API_TOKEN = '917583816:AAG-Jf82LgKFrEFS_ECgbjF7VYVpGwOOjdo'
 
 bot = telebot.TeleBot(API_TOKEN)
@@ -42,7 +54,41 @@ def send_welcome(message):
     keyboard = create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, row_width=1)
 
     bot.send_message(message.chat.id, welcome, parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
-    bot.send_message(message.chat.id, 'Выберите Вашу страну из списка доступных стран', reply_markup=keyboard)
+    bot.send_message(message.chat.id, '🌍 Выберите Вашу страну из списка доступных стран', reply_markup=keyboard)
+
+
+def process_city_step(message):
+    if message.text in AVAILABLE_CITIES_LIST:
+        menu_keyboard = create_reply_keyboard(*MENU_ITEMS)
+        bot.send_message(message.chat.id, MENU_WELCOME, reply_markup=menu_keyboard)
+    elif message.text == '/reset':
+        msg = bot.send_message(message.chat.id, '⭕ Хотите начать сначала? Введите что нибудь')
+        bot.register_next_step_handler(msg, send_welcome)
+    else:
+        msg = bot.send_message(message.chat.id, UNAVAILABLE_CITY)
+        bot.register_next_step_handler(msg, process_city_step)
+
+
+@bot.message_handler(regexp='Каталог')
+def catalog(message):
+    print(000, message.text)
+
+
+@bot.message_handler(regexp='Фильтры')
+def filters(message):
+    print(000, message.text)
+
+
+@bot.message_handler(regexp='Гарантии|Скидки|О сервисе')
+def about(message):
+    abouts = {'Гарантии': GUARANTY, 'Скидки': DISCOUNTS, 'О сервисе': ABOUT_SERVICE}
+    about_text = abouts.get(' '.join(message.text.split()[1:]))
+    bot.send_message(message.chat.id, about_text)
+
+
+@bot.message_handler(regexp='Настройки')
+def settings(message):
+    print(333, message.text)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -50,26 +96,8 @@ def callback_query(call):
     cb_text = call.message.json['reply_markup']['inline_keyboard'][0][0]['text']
 
     if cb_text in AVAILABLE_COUNTRIES_LIST:
-        msg = bot.send_message(call.message.chat.id, 'Введите название города, в котором Вам нужна проститутка')
+        msg = bot.send_message(call.message.chat.id, '🏢 Введите название города, в котором Вам требуется жрица любви')
         bot.register_next_step_handler(msg, process_city_step)
-
-
-def process_city_step(message):
-    if message.text in AVAILABLE_CITIES_LIST:
-        menu_keyboard = create_reply_keyboard(*MENU_ITEMS)
-        msg = bot.send_message(message.chat.id, MENU_WELCOME, reply_markup=menu_keyboard)
-        bot.register_next_step_handler(msg, process_menu_step)
-    elif message.text == '/reset':
-        msg = bot.send_message(message.chat.id, 'Хотите начать сначала? Введите что нибудь')
-        bot.register_next_step_handler(msg, send_welcome)
-
-    else:
-        msg = bot.send_message(message.chat.id, UNAVAILABLE_CITY)
-        bot.register_next_step_handler(msg, process_city_step)
-
-
-def process_menu_step(message):
-    pass
 
 
 def main_loop():
