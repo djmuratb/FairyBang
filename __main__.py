@@ -34,17 +34,16 @@ class User:
         self.town = town
 
 
-def create_keyboard(*buttons, keyboard=None, resize_keyboard=True, row_width=2):
-    if keyboard == 'reply':
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=resize_keyboard, row_width=row_width)
-        markup.add(*(telebot.types.KeyboardButton(button) for button in buttons))
-    elif keyboard == 'inline':
-        markup = types.InlineKeyboardMarkup(row_width)
-        markup.add(*(types.InlineKeyboardButton(button, callback_data=f'cb_{button}') for button in buttons))
-    else:
-        raise Exception(f'Error while creating {keyboard} keyboard.')
+def create_reply_keyboard(*buttons, resize_keyboard=True, row_width=2):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=resize_keyboard, row_width=row_width)
+    markup.add(*(telebot.types.KeyboardButton(button) for button in buttons))
+    return markup
 
-    return keyboard
+
+def create_inline_keyboard(*buttons, cb_prefix='cb_', row_width=2):
+    markup = types.InlineKeyboardMarkup(row_width)
+    markup.add(*(types.InlineKeyboardButton(button, callback_data=f'{cb_prefix}{button}') for button in buttons))
+    return markup
 
 
 @bot.message_handler(commands=['start'])
@@ -60,7 +59,6 @@ def process_country_step(message):
 
 def process_menu_step(message):
     menu_keyboard = create_keyboard(*MENU_ITEMS)
-    print(message.text)
     bot.send_message(message.chat.id, 'Menu text', reply_markup=menu_keyboard)
 
 
