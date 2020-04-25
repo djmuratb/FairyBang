@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/slutbot.iml" filepath="$PROJECT_DIR$/.idea/slutbot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/fairybang.iml" filepath="$PROJECT_DIR$/.idea/fairybang.iml" />
     </modules>
   </component>
 </project>

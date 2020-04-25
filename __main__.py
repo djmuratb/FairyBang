@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import re
-
 import telebot
 from telebot import types
 
@@ -17,7 +15,9 @@ from text import *
 # TODO: statistic of bought girls and spend money since register moment.
 # TODO: added logging (require for payments and promo codes payments)
 
-# AFTER SLEEPING STEP - make settings (change: country, town, enter: promo code
+# AFTER SLEEPING STEP
+# - make settings (change: country, town, enter: promo code)
+# - make yaml config and get data from it
 
 
 API_TOKEN = '917583816:AAG-Jf82LgKFrEFS_ECgbjF7VYVpGwOOjdo'
