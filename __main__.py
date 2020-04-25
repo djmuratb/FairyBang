@@ -15,6 +15,7 @@ from text import *
 # TODO: admin panel
 # TODO: notifications
 # TODO: statistic of bought girls and spend money since register moment.
+# TODO: added logging (require for payments and promo codes payments)
 
 # AFTER SLEEPING STEP - make settings (change: country, town, enter: promo code
 
