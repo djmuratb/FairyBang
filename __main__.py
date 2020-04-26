@@ -97,7 +97,7 @@ def callback_query(call):
     cb_text = call.message.json['reply_markup']['inline_keyboard'][0][0]['text']
 
     if cb_text in AVAILABLE_COUNTRIES_LIST:
-        msg = bot.send_message(call.message.chat.id, '🏢 Введите название города, в котором Вам требуется жрица любви')
+        msg = bot.send_message(call.message.chat.id, '🏢 Введите название города, в котором Вам требуется девушка')
         bot.register_next_step_handler(msg, process_city_step)
 
 
