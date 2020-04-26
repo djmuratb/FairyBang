@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-AVAILABLE_COUNTRIES_LIST = (
-    '🇷🇺 Россия',
-)
-
 AVAILABLE_CITIES_LIST = (
     'Дмитров',
 )

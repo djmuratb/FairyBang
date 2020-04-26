@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 import telebot
+
+import utils
+
 from telebot import types
 
 from text import *
 
 
-# TODO: YAML CONFIG:
-#   - available countries list
-#   - promo codes by every percentage ???
-#   - api token
-#   -
 # TODO: admin panel
 # TODO: notifications
 # TODO: statistic of bought girls and spend money since register moment.
@@ -20,7 +18,9 @@ from text import *
 # - make yaml config and get data from it
 
 
-API_TOKEN = '917583816:AAG-Jf82LgKFrEFS_ECgbjF7VYVpGwOOjdo'
+CONFIG = utils.load_config('config.yaml')
+API_TOKEN = CONFIG['api token']
+AVAILABLE_COUNTRIES_LIST = CONFIG['countries']
 
 bot = telebot.TeleBot(API_TOKEN)
 
