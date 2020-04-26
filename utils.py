@@ -2,6 +2,20 @@
 import os
 import yaml
 
+from telebot import types
+
+
+def create_reply_keyboard(*buttons, resize_keyboard=True, row_width=2):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=resize_keyboard, row_width=row_width)
+    markup.add(*(types.KeyboardButton(button) for button in buttons))
+    return markup
+
+
+def create_inline_keyboard(*buttons, cb_prefix='cb_', row_width=2):
+    markup = types.InlineKeyboardMarkup(row_width)
+    markup.add(*(types.InlineKeyboardButton(button, callback_data=f'{cb_prefix}{button}') for button in buttons))
+    return markup
+
 
 def get_abs_path(file):
     return os.path.join(
