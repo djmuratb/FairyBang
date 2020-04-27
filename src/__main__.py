@@ -4,9 +4,9 @@ import telebot
 
 from telebot import types
 
-from src import utils, API_TOKEN, AVAILABLE_COUNTRIES_LIST
-from src.text import *
 from src.models import User, GirlsFilter, ExtendedGirlsFilter, session
+from src.extra import utils, API_TOKEN, AVAILABLE_COUNTRIES_LIST
+from src.extra.text import *
 
 
 # TODO: admin panel
