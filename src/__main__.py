@@ -9,14 +9,6 @@ from src.extra import utils, API_TOKEN, AVAILABLE_COUNTRIES_LIST
 from src.extra.text import *
 
 
-# TODO: admin panel
-# TODO: notifications
-# TODO: statistic of bought girls and spend money since register moment.
-# TODO: added logging (require for payments and promo codes payments)
-
-# AFTER SLEEPING STEP
-# - make settings (change: country, town, enter: promo code)
-
 apihelper.proxy = {'https':'socks5h://127.0.0.1:9050'}
 bot = telebot.TeleBot(API_TOKEN)
 
@@ -61,10 +53,9 @@ def about(message):
     bot.send_message(message.chat.id, about_text)
 
 
-@bot.message_handler(regexp='Настройки')
-def settings(message):
-    keyboard = utils.create_inline_keyboard(SETTINGS_ITEMS, row_width=1)
-    bot.send_message(message.chat.id, SETTINGS, reply_markup=keyboard)
+@bot.message_handler(regexp='Статистика')
+def statistic(message):
+    bot.send_message(message.chat.id, STATISTIC)
 
 
 class CallbackQuery:
