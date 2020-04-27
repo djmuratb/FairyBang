@@ -1,12 +1,12 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import telebot
 
-# import utils
-
 from telebot import types
 
-from text import *
-from models import User, GirlsFilter, ExtendedGirlsFilter, session, CONFIG
+from src import CONFIG, utils
+from src.text import *
+from src.models import User, GirlsFilter, ExtendedGirlsFilter, session
 
 
 # TODO: admin panel
@@ -18,7 +18,6 @@ from models import User, GirlsFilter, ExtendedGirlsFilter, session, CONFIG
 # - make settings (change: country, town, enter: promo code)
 
 
-# CONFIG = utils.load_config('config.yaml')
 API_TOKEN = CONFIG['api token']
 AVAILABLE_COUNTRIES_LIST = CONFIG['countries']
 
