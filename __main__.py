@@ -6,6 +6,7 @@ import utils
 from telebot import types
 
 from text import *
+from models import User, GirlsFilter, ExtendedGirlsFilter, session
 
 
 # TODO: admin panel
@@ -15,7 +16,6 @@ from text import *
 
 # AFTER SLEEPING STEP
 # - make settings (change: country, town, enter: promo code)
-# - make yaml config and get data from it
 
 
 CONFIG = utils.load_config('config.yaml')
@@ -24,21 +24,9 @@ AVAILABLE_COUNTRIES_LIST = CONFIG['countries']
 
 bot = telebot.TeleBot(API_TOKEN)
 
-user_dict = {}
-
-
-class GirlsFilter:
-    pass
-
-
-class User:
-    def __init__(self):
-        self.country = None
-        self.town = None
-
 
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
+def process_welcome_step(message):
     welcome = WELCOME.format(message.from_user.username)
     keyboard = utils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, row_width=1)
 
@@ -52,7 +40,7 @@ def process_city_step(message):
         bot.send_message(message.chat.id, MENU_WELCOME, reply_markup=menu_keyboard)
     elif message.text == '/reset':
         msg = bot.send_message(message.chat.id, '⭕ Хотите начать сначала? Введите что нибудь')
-        bot.register_next_step_handler(msg, send_welcome)
+        bot.register_next_step_handler(msg, process_welcome_step)
     else:
         msg = bot.send_message(message.chat.id, UNAVAILABLE_CITY)
         bot.register_next_step_handler(msg, process_city_step)
@@ -80,13 +68,19 @@ def settings(message):
     print(333, message.text)
 
 
+class CallbackQuery:
+    @staticmethod
+    def cb_countries(chat_id):
+        msg = bot.send_message(chat_id, '🏢 Введите название города, в котором Вам требуется девушка')
+        bot.register_next_step_handler(msg, process_city_step)
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     cb_text = call.message.json['reply_markup']['inline_keyboard'][0][0]['text']
 
     if cb_text in AVAILABLE_COUNTRIES_LIST:
-        msg = bot.send_message(call.message.chat.id, '🏢 Введите название города, в котором Вам требуется девушка')
-        bot.register_next_step_handler(msg, process_city_step)
+        CallbackQuery.cb_countries(call.message.chat.id)
 
 
 def main_loop():
