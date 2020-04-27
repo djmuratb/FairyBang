@@ -4,7 +4,7 @@ import telebot
 
 from telebot import types
 
-from src import CONFIG, utils
+from src import utils, API_TOKEN, AVAILABLE_COUNTRIES_LIST
 from src.text import *
 from src.models import User, GirlsFilter, ExtendedGirlsFilter, session
 
@@ -16,10 +16,6 @@ from src.models import User, GirlsFilter, ExtendedGirlsFilter, session
 
 # AFTER SLEEPING STEP
 # - make settings (change: country, town, enter: promo code)
-
-
-API_TOKEN = CONFIG['api token']
-AVAILABLE_COUNTRIES_LIST = CONFIG['countries']
 
 bot = telebot.TeleBot(API_TOKEN)
 

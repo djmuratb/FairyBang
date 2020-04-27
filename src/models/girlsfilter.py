@@ -2,7 +2,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
-# from .common import Base, engine
 from src.models.common import Base, engine
 
 

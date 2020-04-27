@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="" />
+    <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/cyberpunk.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/FairyBang.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FairyBang.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codestream.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codestream.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/common.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/girlsfilter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/girlsfilter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/user.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,11 +33,11 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="preferences.toDoOptions" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.__main__ (1)">
-    <configuration name="__main__ (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="fairybang" />
+  <component name="RunManager" selected="Python.__main__ ">
+    <configuration name="__main__ " type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="FairyBang" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -33,7 +45,7 @@
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/__main__.py" />
@@ -68,7 +80,7 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.__main__ (1)" />
+        <item itemvalue="Python.__main__ " />
         <item itemvalue="Python.__main__" />
       </list>
     </recent_temporary>
@@ -91,22 +103,34 @@
       <option name="project" value="LOCAL" />
       <updated>1588000148046</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary=".idea updates">
+      <created>1588000249937</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1588000249937</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Changelog:&#10;- changed project structure&#10;- fixed `config reading`" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changelog:&#10;- changed project structure&#10;- fixed `config reading`" />
+    <MESSAGE value=".idea updates" />
+    <option name="LAST_COMMIT_MESSAGE" value=".idea updates" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="550" y="39" key="CommitChangelistDialog2" timestamp="1588000147817">
+    <state x="646" y="149" key="#__main___(1)" timestamp="1588001603131">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="550" y="39" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588000147817" />
-    <state x="747" y="315" key="FileChooserDialogImpl" timestamp="1587999434517">
+    <state x="646" y="149" key="#__main___(1)/0.30.1920.1050@0.30.1920.1050" timestamp="1588001603131" />
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588000249759">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="747" y="315" key="FileChooserDialogImpl/0.30.1920.1050@0.30.1920.1050" timestamp="1587999434517" />
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588000249759" />
+    <state x="747" y="315" key="FileChooserDialogImpl" timestamp="1588001456078">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="747" y="315" key="FileChooserDialogImpl/0.30.1920.1050@0.30.1920.1050" timestamp="1588001456078" />
     <state width="1878" height="271" key="GridCell.Tab.0.bottom" timestamp="1587999878570">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
@@ -123,14 +147,14 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state width="1878" height="271" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1587999878569" />
-    <state x="456" y="189" key="SettingsEditor" timestamp="1587999866996">
+    <state x="456" y="189" key="SettingsEditor" timestamp="1588001459471">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="456" y="189" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1587999866996" />
-    <state x="560" y="289" key="Vcs.Push.Dialog.v2" timestamp="1588000152096">
+    <state x="456" y="189" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1588001459471" />
+    <state x="560" y="289" key="Vcs.Push.Dialog.v2" timestamp="1588000255045">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="560" y="289" key="Vcs.Push.Dialog.v2/0.30.1920.1050@0.30.1920.1050" timestamp="1588000152096" />
+    <state x="560" y="289" key="Vcs.Push.Dialog.v2/0.30.1920.1050@0.30.1920.1050" timestamp="1588000255045" />
     <state x="642" y="111" width="633" height="888" key="find.popup" timestamp="1587999271532">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
