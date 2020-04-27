@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/FairyBang.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FairyBang.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/extra/text.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/text.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,48 +130,67 @@
       <option name="project" value="LOCAL" />
       <updated>1588002140755</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Improved cities recognizing">
+      <created>1588016488116</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1588016488116</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Refactored">
+      <created>1588016511779</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1588016511779</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Changelog:&#10;- changed project structure&#10;- fixed `config reading`" />
     <MESSAGE value=".idea updates" />
+    <MESSAGE value="Improved cities recognizing" />
     <MESSAGE value="Refactored" />
     <option name="LAST_COMMIT_MESSAGE" value="Refactored" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="560" y="201" key="#Plugins" timestamp="1588019300494">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="560" y="201" key="#Plugins/0.30.1920.1050@0.30.1920.1050" timestamp="1588019300494" />
     <state x="646" y="149" key="#__main___(1)" timestamp="1588001603131">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="646" y="149" key="#__main___(1)/0.30.1920.1050@0.30.1920.1050" timestamp="1588001603131" />
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588002140587">
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588016511684">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588002140587" />
-    <state x="747" y="315" key="FileChooserDialogImpl" timestamp="1588001456078">
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588016511684" />
+    <state x="747" y="315" key="FileChooserDialogImpl" timestamp="1588019739968">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="747" y="315" key="FileChooserDialogImpl/0.30.1920.1050@0.30.1920.1050" timestamp="1588001456078" />
-    <state width="1878" height="271" key="GridCell.Tab.0.bottom" timestamp="1588016430116">
+    <state x="747" y="315" key="FileChooserDialogImpl/0.30.1920.1050@0.30.1920.1050" timestamp="1588019739968" />
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588020712226">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="271" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588016430116" />
-    <state width="1878" height="271" key="GridCell.Tab.0.center" timestamp="1588016430115">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588020712226" />
+    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588020712225">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="271" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588016430115" />
-    <state width="1878" height="271" key="GridCell.Tab.0.left" timestamp="1588016430115">
+    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588020712225" />
+    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588020712225">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="271" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588016430115" />
-    <state width="1878" height="271" key="GridCell.Tab.0.right" timestamp="1588016430115">
+    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588020712225" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588020712225">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="271" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588016430115" />
-    <state x="456" y="189" key="SettingsEditor" timestamp="1588001459471">
+    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588020712225" />
+    <state x="456" y="189" key="SettingsEditor" timestamp="1588020743108">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="456" y="189" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1588001459471" />
+    <state x="456" y="189" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1588020743108" />
     <state x="560" y="289" key="Vcs.Push.Dialog.v2" timestamp="1588002143202">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
@@ -177,5 +199,9 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="642" y="111" width="633" height="888" key="find.popup/0.30.1920.1050@0.30.1920.1050" timestamp="1587999271532" />
+    <state x="623" y="260" width="672" height="678" key="search.everywhere.popup" timestamp="1588019232263">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="623" y="260" width="672" height="678" key="search.everywhere.popup/0.30.1920.1050@0.30.1920.1050" timestamp="1588019232263" />
   </component>
 </project>

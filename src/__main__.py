@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import telebot
 
-from telebot import types
+from telebot import types, apihelper
 
 from src.models import User, GirlsFilter, ExtendedGirlsFilter, session
 from src.extra import utils, API_TOKEN, AVAILABLE_COUNTRIES_LIST
@@ -17,6 +17,7 @@ from src.extra.text import *
 # AFTER SLEEPING STEP
 # - make settings (change: country, town, enter: promo code)
 
+apihelper.proxy = {'https':'socks5h://127.0.0.1:9050'}
 bot = telebot.TeleBot(API_TOKEN)
 
 
@@ -62,7 +63,8 @@ def about(message):
 
 @bot.message_handler(regexp='Настройки')
 def settings(message):
-    print(333, message.text)
+    keyboard = utils.create_inline_keyboard(SETTINGS_ITEMS, row_width=1)
+    bot.send_message(message.chat.id, SETTINGS, reply_markup=keyboard)
 
 
 class CallbackQuery:
