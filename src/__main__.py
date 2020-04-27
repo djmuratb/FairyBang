@@ -30,7 +30,9 @@ def process_welcome_step(message):
 
 
 def process_city_step(message):
-    if message.text in AVAILABLE_CITIES_LIST:
+    text = message.text.capitalize()
+
+    if text in AVAILABLE_CITIES_LIST:
         menu_keyboard = utils.create_reply_keyboard(*MENU_ITEMS)
         bot.send_message(message.chat.id, MENU_WELCOME, reply_markup=menu_keyboard)
     elif message.text == '/reset':
