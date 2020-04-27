@@ -1,5 +1,6 @@
 
 api token: 917583816:AAG-Jf82LgKFrEFS_ECgbjF7VYVpGwOOjdo
+db engine: sqlite:///fairybang.db
 
 countries:
   - 🇷🇺 Россия

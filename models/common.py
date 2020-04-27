@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 
-engine = create_engine('sqlite:///fairybang.db')
+engine = create_engine(DB_ENGINE)
 Base = declarative_base()
 
 Base.metadata.create_all(engine)
