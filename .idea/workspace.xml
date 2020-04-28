@@ -4,8 +4,10 @@
     <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/extra/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/extra/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/config.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/extra/text.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/text.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/extra/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,9 +85,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="utils" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="FairyBang" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/extra" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/extra/utils.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.__main__ " />
+        <item itemvalue="Python.utils" />
         <item itemvalue="Python.__main__" />
       </list>
     </recent_temporary>
@@ -150,7 +174,14 @@
       <option name="project" value="LOCAL" />
       <updated>1588020863880</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Changelog:&#10;- added raw statistic&#10;- extended `user` model">
+      <created>1588029018692</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1588029018692</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -159,7 +190,8 @@
     <MESSAGE value="Improved cities recognizing" />
     <MESSAGE value="Refactored" />
     <MESSAGE value="Added socks proxy supporting" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added socks proxy supporting" />
+    <MESSAGE value="Changelog:&#10;- added raw statistic&#10;- extended `user` model" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changelog:&#10;- added raw statistic&#10;- extended `user` model" />
   </component>
   <component name="WindowStateProjectService">
     <state x="560" y="201" key="#Plugins" timestamp="1588019300494">
@@ -170,30 +202,34 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="646" y="149" key="#__main___(1)/0.30.1920.1050@0.30.1920.1050" timestamp="1588001603131" />
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588020863597">
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588029018559">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588020863597" />
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588029018559" />
     <state x="747" y="315" key="FileChooserDialogImpl" timestamp="1588019739968">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="747" y="315" key="FileChooserDialogImpl/0.30.1920.1050@0.30.1920.1050" timestamp="1588019739968" />
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588028730282">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588035735969">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588028730282" />
-    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588028730281">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588035735969" />
+    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588035735969">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588028730281" />
-    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588028730280">
+    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588035735969" />
+    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588035735968">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588028730280" />
-    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588028730282">
+    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588035735968" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588035735969">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588028730282" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588035735969" />
+    <state x="548" y="294" key="IDE.errors.dialog" timestamp="1588029064549">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="548" y="294" key="IDE.errors.dialog/0.30.1920.1050@0.30.1920.1050" timestamp="1588029064549" />
     <state x="456" y="189" key="SettingsEditor" timestamp="1588020743108">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>

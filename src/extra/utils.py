@@ -2,6 +2,8 @@
 import os
 import yaml
 
+from collections import ChainMap
+
 from telebot import types
 
 
@@ -28,3 +30,7 @@ def load_config(cfg):
 
     with open(path) as file:
         return yaml.load(file, Loader=yaml.FullLoader)
+
+
+def merge_list_of_dicts(lst):
+    return dict(ChainMap(*lst))
