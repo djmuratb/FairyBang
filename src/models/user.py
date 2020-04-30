@@ -21,9 +21,9 @@ class User(Base):
     qiwi_addr           = Column(Numeric, nullable=True)
     btc_addr            = Column(String, nullable=True)
 
-    girls_filter            = relationship('GirlsFilter', uselist=False, back_populates='user')
-    extended_girls_filter   = relationship('ExtendedGirlsFilter', uselist=False, back_populates='user')
-    services                = relationship('Services', uselist=False, back_populates='user')
+    girls_filter            = relationship('GirlsFilter', uselist=False, back_populates='user', cascade='all,delete,delete-orphan')
+    extended_girls_filter   = relationship('ExtendedGirlsFilter', uselist=False, back_populates='user', cascade='all,delete,delete-orphan')
+    services                = relationship('Services', uselist=False, back_populates='user', cascade='all,delete,delete-orphan')
 
     def __init__(self, username):
         self.username = username

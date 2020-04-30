@@ -4,7 +4,7 @@ import telebot
 
 from telebot import types, apihelper
 
-from src.models import User, GirlsFilter, ExtendedGirlsFilter, session
+from src.models import User, GirlsFilter, ExtendedGirlsFilter, Services, session
 from src.extra import utils, API_TOKEN, AVAILABLE_COUNTRIES_LIST, PROMOCODES
 from src.extra.text import *
 
@@ -12,9 +12,38 @@ from src.extra.text import *
 apihelper.proxy = {'https':'socks5h://127.0.0.1:9050'}
 bot = telebot.TeleBot(API_TOKEN)
 
+user_dict = {}
+
+
+def write_changes(obj, attr=None, value=None, only_commit=True):
+    if attr and value:
+        obj.__setattr__(attr, value)
+
+    if not only_commit:
+        session.add(obj)
+
+    session.commit()
+
+
+def create_user(username, chat_id):
+    try:
+        user = user_dict[chat_id]
+    except KeyError:
+        user = session.query(User).filter_by(username=username).first()
+        if not user:
+            user = User(username)
+            user.girls_filter = GirlsFilter()
+            user.extended_girls_filter = ExtendedGirlsFilter()
+            user.services = Services()
+            write_changes(user, only_commit=False)
+
+        user_dict[chat_id] = user
+
 
 @bot.message_handler(commands=['start'])
 def process_welcome_step(message):
+    create_user(message.from_user.username, message.chat.id)
+
     welcome = MSG_WELCOME.format(message.from_user.username)
     keyboard = utils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, row_width=1)
 
@@ -26,6 +55,7 @@ def process_city_step(message):
     city = message.text.capitalize()
 
     if city in AVAILABLE_CITIES_LIST:
+        write_changes(user_dict[message.chat.id].girls_filter, 'city', city)
         bot.send_message(message.chat.id, MSG_MENU_ATTENTION, reply_markup=KB_MENU)
     elif message.text == '/reset':
         msg = bot.send_message(message.chat.id, MSG_RESET)
@@ -75,7 +105,8 @@ def statistic(message):
 
 class CallbackQuery:
     @staticmethod
-    def cb_countries(chat_id):
+    def cb_countries(country_name, chat_id, username):
+        write_changes(user_dict[chat_id].girls_filter, 'country', country_name)
         msg = bot.send_message(chat_id, MSG_ENTER_CITY)
         bot.register_next_step_handler(msg, process_city_step)
 
@@ -87,11 +118,10 @@ class CallbackQuery:
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    cb_text = call.message.json['reply_markup']['inline_keyboard'][0][0]['text']
-
-    if cb_text in AVAILABLE_COUNTRIES_LIST:
-        CallbackQuery.cb_countries(call.message.chat.id)
-    elif 'PROMOCODE' in cb_text:
+    data = call.data.split('_')[1]
+    if data in AVAILABLE_COUNTRIES_LIST:
+        CallbackQuery.cb_countries(data, call.message.chat.id, call.message.from_user.username)
+    elif 'PROMOCODE' in data:
         CallbackQuery.cb_promocode(call.message.chat.id, call.message.message_id)
 
 
