@@ -11,8 +11,8 @@ class GirlsFilter(Base):
     id            = Column(Integer, primary_key=True)
 
     #       --- location ---
-    country       = Column(String(30), name='Страна')
-    city          = Column(String(50), name='Город')
+    country       = Column(String(30), name='Страна', default='🇷🇺 Россия')
+    city          = Column(String(50), name='Город', default='Москва')
     subway        = Column(String(50), name='Район', nullable=True)
 
     #       --- appearance details ---

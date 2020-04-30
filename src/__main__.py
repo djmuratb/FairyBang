@@ -2,16 +2,19 @@
 # -*- coding: utf-8 -*-
 import telebot
 
+from datetime import datetime
+
 from telebot import types, apihelper
 
 from src.models import User, GirlsFilter, ExtendedGirlsFilter, Services, session
-from src.extra import utils, API_TOKEN, AVAILABLE_COUNTRIES_LIST, PROMOCODES
+from src.extra import utils, API_TOKEN, ENABLE_TOR, AVAILABLE_COUNTRIES_LIST, PROMOCODES
 from src.extra.text import *
 
 
-apihelper.proxy = {'https':'socks5h://127.0.0.1:9050'}
-bot = telebot.TeleBot(API_TOKEN)
+if ENABLE_TOR:
+    apihelper.proxy = {'https':'socks5h://127.0.0.1:9050'}
 
+bot = telebot.TeleBot(API_TOKEN)
 user_dict = {}
 
 
@@ -26,18 +29,16 @@ def write_changes(obj, attr=None, value=None, only_commit=True):
 
 
 def create_user(username, chat_id):
-    try:
-        user = user_dict[chat_id]
-    except KeyError:
-        user = session.query(User).filter_by(username=username).first()
-        if not user:
-            user = User(username)
-            user.girls_filter = GirlsFilter()
-            user.extended_girls_filter = ExtendedGirlsFilter()
-            user.services = Services()
-            write_changes(user, only_commit=False)
+    user = session.query(User).filter_by(username=username).first()
+    if not user:
+        user = User(username)
+        user.girls_filter = GirlsFilter()
+        user.extended_girls_filter = ExtendedGirlsFilter()
+        user.services = Services()
+        write_changes(user, only_commit=False)
 
-        user_dict[chat_id] = user
+    user_dict[chat_id] = user
+    return user
 
 
 @bot.message_handler(commands=['start'])
@@ -48,7 +49,7 @@ def process_welcome_step(message):
     keyboard = utils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, row_width=1)
 
     bot.send_message(message.chat.id, welcome, parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
-    bot.send_message(message.chat.id, MSG_ENTER_COUNTRY, reply_markup=keyboard)
+    bot.send_message(message.chat.id, MSG_ENTER_COUNTRY, parse_mode='Markdown', reply_markup=keyboard)
 
 
 def process_city_step(message):
@@ -56,23 +57,23 @@ def process_city_step(message):
 
     if city in AVAILABLE_CITIES_LIST:
         write_changes(user_dict[message.chat.id].girls_filter, 'city', city)
-        bot.send_message(message.chat.id, MSG_MENU_ATTENTION, reply_markup=KB_MENU)
+        bot.send_message(message.chat.id, MSG_MENU_ATTENTION, parse_mode='Markdown', reply_markup=KB_MENU)
     elif message.text == '/reset':
-        msg = bot.send_message(message.chat.id, MSG_RESET)
+        msg = bot.send_message(message.chat.id, MSG_RESET, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_welcome_step)
     else:
-        msg = bot.send_message(message.chat.id, MSG_UNAVAILABLE_CITY)
+        msg = bot.send_message(message.chat.id, MSG_UNAVAILABLE_CITY, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_city_step)
 
 
 def process_promocode_step(message):
     promocode = message.text
     if promocode in PROMOCODES.values():
-        bot.send_message(message.chat.id, MSG_SUCCESS_PROMO, reply_markup=KB_MENU)
+        bot.send_message(message.chat.id, MSG_SUCCESS_PROMO, parse_mode='Markdown', reply_markup=KB_MENU)
     elif promocode.endswith('Отмена'):
-        bot.send_message(message.chat.id, MSG_CANCELED, reply_markup=KB_MENU)
+        bot.send_message(message.chat.id, MSG_CANCELED, parse_mode='Markdown', reply_markup=KB_MENU)
     else:
-        msg = bot.send_message(message.chat.id, MSG_ERROR_PROMO, reply_markup=KB_CANCEL)
+        msg = bot.send_message(message.chat.id, MSG_ERROR_PROMO, parse_mode='Markdown', reply_markup=KB_CANCEL)
         bot.register_next_step_handler(msg, process_promocode_step)
 
 
@@ -90,29 +91,40 @@ def filters(message):
 def about(message):
     abouts = {'Гарантии': MSG_GUARANTY, 'О сервисе': MSG_ABOUT_SERVICE}
     about_text = abouts.get(' '.join(message.text.split()[1:]))
-    bot.send_message(message.chat.id, about_text)
+    bot.send_message(message.chat.id, about_text, parse_mode='Markdown')
 
 
 @bot.message_handler(regexp='Скидки')
 def discounts(message):
-    bot.send_message(message.chat.id, MSG_DISCOUNTS, reply_markup=KB_PROMOCODE)
+    bot.send_message(message.chat.id, MSG_DISCOUNTS, parse_mode='Markdown', reply_markup=KB_PROMOCODE)
 
 
 @bot.message_handler(regexp='Статистика')
 def statistic(message):
-    bot.send_message(message.chat.id, MSG_STATISTIC)
+    user = create_user(message.from_user.username, message.chat.id)
+    msg = MSG_STATISTIC.format(
+        0,
+        0,
+        0,
+
+        utils.get_delta_days_from_dates(user.registration_date, datetime.now()),
+        user.total_txs,
+        int(user.total_qiwi_sum),
+        user.total_girls,
+    )
+    bot.send_message(message.chat.id, msg, parse_mode='Markdown')
 
 
 class CallbackQuery:
     @staticmethod
     def cb_countries(country_name, chat_id, username):
         write_changes(user_dict[chat_id].girls_filter, 'country', country_name)
-        msg = bot.send_message(chat_id, MSG_ENTER_CITY)
+        msg = bot.send_message(chat_id, MSG_ENTER_CITY, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_city_step)
 
     @staticmethod
     def cb_promocode(chat_id, message_id):
-        msg = bot.edit_message_text(MSG_ENTER_PROMO, chat_id, message_id)
+        msg = bot.edit_message_text(MSG_ENTER_PROMO, chat_id, message_id, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_promocode_step)
 
 

@@ -2,6 +2,11 @@
 api token: 917583816:AAG-Jf82LgKFrEFS_ECgbjF7VYVpGwOOjdo
 db engine: sqlite:///fairybang.db?check_same_thread=False
 
+enable tor: True
+
+qiwi:
+  - +7 921 777 77 77
+
 countries:
   - 🇷🇺 Россия
 

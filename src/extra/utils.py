@@ -34,3 +34,7 @@ def load_config(cfg):
 
 def merge_list_of_dicts(lst):
     return dict(ChainMap(*lst))
+
+
+def get_delta_days_from_dates(first, latest):
+    return (latest - first).days
