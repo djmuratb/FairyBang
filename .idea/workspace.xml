@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="Changelog:&#10;- added tor proxy supporting from config.yaml&#10;- added block statistic&#10;- added statistic table&#10;- improved texts&#10;-">
-      <change afterPath="$PROJECT_DIR$/src/models/statistic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/extra/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/__init__.py" afterDir="false" />
+    <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/src/extra/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/extra/text.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/text.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/extra/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/girlsfilter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/girlsfilter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/user.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -242,7 +234,14 @@
       <option name="project" value="LOCAL" />
       <updated>1588267765439</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Changelog:&#10;- added tor proxy supporting from config.yaml&#10;- added block statistic&#10;- added statistic table&#10;- improved texts&#10;- minor fixes&#10;- refactored">
+      <created>1588285580416</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1588285580416</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -254,7 +253,8 @@
     <MESSAGE value="Changelog:&#10;- added raw statistic&#10;- extended `user` model" />
     <MESSAGE value="Changelog:&#10;- added PROMOCODES supporting&#10;- extend `user` model&#10;- refactored&#10;- minor fixes" />
     <MESSAGE value="Changelog:&#10;- added database supporting and syncing&#10;- minor fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changelog:&#10;- added database supporting and syncing&#10;- minor fixes" />
+    <MESSAGE value="Changelog:&#10;- added tor proxy supporting from config.yaml&#10;- added block statistic&#10;- added statistic table&#10;- improved texts&#10;- minor fixes&#10;- refactored" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changelog:&#10;- added tor proxy supporting from config.yaml&#10;- added block statistic&#10;- added statistic table&#10;- improved texts&#10;- minor fixes&#10;- refactored" />
   </component>
   <component name="WindowStateProjectService">
     <state x="560" y="201" key="#Plugins" timestamp="1588019300494">
@@ -265,10 +265,10 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="646" y="149" key="#__main___(1)/0.30.1920.1050@0.30.1920.1050" timestamp="1588001603131" />
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588285548118">
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588285580183">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588285548118" />
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588285580183" />
     <state x="747" y="315" key="FileChooserDialogImpl" timestamp="1588088476974">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
