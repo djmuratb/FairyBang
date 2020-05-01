@@ -84,7 +84,7 @@ def catalog(message):
 
 @bot.message_handler(regexp='Фильтры')
 def filters(message):
-    print(000, message.text)
+    bot.send_message(message.chat.id, MSG_FILTERS, parse_mode='Markdown', reply_markup=KB_FILTERS_MENU)
 
 
 @bot.message_handler(regexp='Гарантии|О сервисе')
