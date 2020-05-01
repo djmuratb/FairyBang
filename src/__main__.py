@@ -5,6 +5,7 @@ import telebot
 from datetime import datetime
 
 from telebot import types, apihelper
+from sqlalchemy.orm import lazyload
 
 from src.models import User, GirlsFilter, ExtendedGirlsFilter, Services, session
 from src.extra import utils, API_TOKEN, ENABLE_TOR, AVAILABLE_COUNTRIES_LIST, PROMOCODES
@@ -16,6 +17,7 @@ if ENABLE_TOR:
 
 bot = telebot.TeleBot(API_TOKEN)
 user_dict = {}
+state = {}
 
 
 def write_changes(obj, attr=None, value=None, only_commit=True):
@@ -127,6 +129,18 @@ class CallbackQuery:
         msg = bot.edit_message_text(MSG_ENTER_PROMO, chat_id, message_id, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_promocode_step)
 
+    @staticmethod
+    def filters_handler(username, data, chat_id):
+        filters = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter, 'Услуги': Services}
+        filter = filters.get(data.split(' ')[0])
+        options = [column.key for column in filter.__table__.columns if not 'id' in column.key]
+
+        lst = []
+        for i in range(0, len(options), 4):
+            lst.append(options[i: i+4])
+
+        print(lst)
+
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
@@ -135,6 +149,8 @@ def callback_query(call):
         CallbackQuery.cb_countries(data, call.message.chat.id, call.message.from_user.username)
     elif 'PROMOCODE' in data:
         CallbackQuery.cb_promocode(call.message.chat.id, call.message.message_id)
+    elif data in FILTERS_ITEMS:
+        CallbackQuery.filters_handler(call.message.from_user.username, data, call.message.chat.id)
 
 
 def main_loop():
