@@ -137,12 +137,8 @@ class CallbackQuery:
 
         d = {}
 
-        print(vars(user.girls_filter))
-
         for column in user.girls_filter.__table__.columns:
-            print(column.name)
-            res = getattr(user.girls_filter, column.name)
-            print(res)
+            print(column.key, column.name)
 
         # keyboard = utils.create_inline_keyboard(*lst[0])
         # bot.edit_message_text('some msg', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)

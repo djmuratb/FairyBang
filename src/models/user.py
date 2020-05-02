@@ -26,3 +26,4 @@ class User(Base):
 
 
 Base.metadata.create_all(engine)
+Base.prepare(engine)
