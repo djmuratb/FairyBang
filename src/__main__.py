@@ -130,16 +130,22 @@ class CallbackQuery:
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod
-    def filters_handler(username, data, chat_id):
+    def filters_handler(username, data, chat_id, message_id):
         filters = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter, 'Услуги': Services}
         filter = filters.get(data.split(' ')[0])
-        options = [column.key for column in filter.__table__.columns if not 'id' in column.key]
+        user = session.query(User).filter_by(username=username).one()
 
-        lst = []
-        for i in range(0, len(options), 4):
-            lst.append(options[i: i+4])
+        d = {}
 
-        print(lst)
+        print(vars(user.girls_filter))
+
+        for column in user.girls_filter.__table__.columns:
+            print(column.name)
+            res = getattr(user.girls_filter, column.name)
+            print(res)
+
+        # keyboard = utils.create_inline_keyboard(*lst[0])
+        # bot.edit_message_text('some msg', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -150,7 +156,7 @@ def callback_query(call):
     elif 'PROMOCODE' in data:
         CallbackQuery.cb_promocode(call.message.chat.id, call.message.message_id)
     elif data in FILTERS_ITEMS:
-        CallbackQuery.filters_handler(call.message.from_user.username, data, call.message.chat.id)
+        CallbackQuery.filters_handler(call.message.chat.username, data, call.message.chat.id, call.message.message_id)
 
 
 def main_loop():

@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="">
+    <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="refactored file with options">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/extra/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/extra/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/common.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +50,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="http.proxy" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -40,6 +59,27 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.__main__ ">
+    <configuration name="__init__ (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="FairyBang" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/models" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/models/__init__.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="__init__" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="FairyBang" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -74,27 +114,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/__main__.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="__main__" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="fairybang" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fairybang" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fairybang/__main__.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -148,10 +167,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.__main__ " />
-        <item itemvalue="Python.__init__" />
+        <item itemvalue="Python.__init__ (1)" />
         <item itemvalue="Python.test" />
+        <item itemvalue="Python.__init__" />
         <item itemvalue="Python.utils" />
-        <item itemvalue="Python.__main__" />
       </list>
     </recent_temporary>
   </component>
@@ -271,8 +290,34 @@
       <option name="project" value="LOCAL" />
       <updated>1588410668596</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Changelog:&#10;- added new option `debug` to config.yaml&#10;- refactored files with options">
+      <created>1588433680527</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1588433680527</updated>
+    </task>
+    <task id="LOCAL-00017" summary="refactored file with options">
+      <created>1588433800728</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1588433800728</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Changelog:&#10;- changed project structure&#10;- fixed `config reading`" />
@@ -288,7 +333,9 @@
     <MESSAGE value="Added filters menu skeleton" />
     <MESSAGE value="Added basics for `filters handler`" />
     <MESSAGE value="Added admin field in config.yaml" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added admin field in config.yaml" />
+    <MESSAGE value="Changelog:&#10;- added new option `debug` to config.yaml&#10;- refactored files with options" />
+    <MESSAGE value="refactored file with options" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactored file with options" />
   </component>
   <component name="WindowStateProjectService">
     <state x="560" y="201" key="#Plugins" timestamp="1588019300494">
@@ -299,49 +346,57 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="646" y="149" key="#__main___(1)/0.30.1920.1050@0.30.1920.1050" timestamp="1588001603131" />
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588410668093">
+    <state x="704" y="394" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1588449307369">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588410668093" />
+    <state x="704" y="394" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.30.1920.1050@0.30.1920.1050" timestamp="1588449307369" />
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588433683733">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588433683733" />
     <state x="747" y="315" key="FileChooserDialogImpl" timestamp="1588088476974">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="747" y="315" key="FileChooserDialogImpl/0.30.1920.1050@0.30.1920.1050" timestamp="1588088476974" />
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588433637190">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588449118075">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588433637190" />
-    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588433637188">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588449118075" />
+    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588449118073">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588433637188" />
-    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588433637187">
+    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588449118073" />
+    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588449118072">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588433637187" />
-    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588433637189">
+    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588449118072" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588449118074">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588433637189" />
-    <state x="548" y="294" key="IDE.errors.dialog" timestamp="1588029064549">
+    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588449118074" />
+    <state x="548" y="294" key="IDE.errors.dialog" timestamp="1588433735567">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="548" y="294" key="IDE.errors.dialog/0.30.1920.1050@0.30.1920.1050" timestamp="1588029064549" />
-    <state x="456" y="189" key="SettingsEditor" timestamp="1588433290294">
+    <state x="548" y="294" key="IDE.errors.dialog/0.30.1920.1050@0.30.1920.1050" timestamp="1588433735567" />
+    <state x="456" y="189" key="SettingsEditor" timestamp="1588449333936">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="456" y="189" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1588433290294" />
-    <state x="560" y="289" key="Vcs.Push.Dialog.v2" timestamp="1588296003801">
+    <state x="456" y="189" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1588449333936" />
+    <state x="560" y="289" key="Vcs.Push.Dialog.v2" timestamp="1588448925800">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="560" y="289" key="Vcs.Push.Dialog.v2/0.30.1920.1050@0.30.1920.1050" timestamp="1588296003801" />
+    <state x="560" y="289" key="Vcs.Push.Dialog.v2/0.30.1920.1050@0.30.1920.1050" timestamp="1588448925800" />
+    <state x="100" y="128" width="1720" height="852" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1588449119835">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="100" y="128" width="1720" height="852" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.30.1920.1050@0.30.1920.1050" timestamp="1588449119834" />
     <state x="642" y="111" width="633" height="888" key="find.popup" timestamp="1587999271532">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="642" y="111" width="633" height="888" key="find.popup/0.30.1920.1050@0.30.1920.1050" timestamp="1587999271532" />
-    <state x="623" y="260" width="672" height="678" key="search.everywhere.popup" timestamp="1588019232263">
+    <state x="623" y="260" width="672" height="678" key="search.everywhere.popup" timestamp="1588449302795">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="623" y="260" width="672" height="678" key="search.everywhere.popup/0.30.1920.1050@0.30.1920.1050" timestamp="1588019232263" />
+    <state x="623" y="260" width="672" height="678" key="search.everywhere.popup/0.30.1920.1050@0.30.1920.1050" timestamp="1588449302795" />
   </component>
 </project>
