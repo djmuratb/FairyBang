@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/extra/text.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/text.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/extra/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/extra/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/config.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,7 +257,14 @@
       <option name="project" value="LOCAL" />
       <updated>1588292403926</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Added basics for `filters handler`">
+      <created>1588296000184</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1588296000184</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -272,7 +279,8 @@
     <MESSAGE value="Changelog:&#10;- added tor proxy supporting from config.yaml&#10;- added block statistic&#10;- added statistic table&#10;- improved texts&#10;- minor fixes&#10;- refactored" />
     <MESSAGE value="minor fixes" />
     <MESSAGE value="Added filters menu skeleton" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added filters menu skeleton" />
+    <MESSAGE value="Added basics for `filters handler`" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added basics for `filters handler`" />
   </component>
   <component name="WindowStateProjectService">
     <state x="560" y="201" key="#Plugins" timestamp="1588019300494">
@@ -283,30 +291,30 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="646" y="149" key="#__main___(1)/0.30.1920.1050@0.30.1920.1050" timestamp="1588001603131" />
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588292403531">
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588295999948">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588292403531" />
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588295999948" />
     <state x="747" y="315" key="FileChooserDialogImpl" timestamp="1588088476974">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="747" y="315" key="FileChooserDialogImpl/0.30.1920.1050@0.30.1920.1050" timestamp="1588088476974" />
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588295978789">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588296033629">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588295978789" />
-    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588295978788">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588296033629" />
+    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588296033627">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588295978788" />
-    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588295978787">
+    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588296033627" />
+    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588296033626">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588295978787" />
-    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588295978788">
+    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588296033626" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588296033628">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588295978788" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588296033628" />
     <state x="548" y="294" key="IDE.errors.dialog" timestamp="1588029064549">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
@@ -315,10 +323,10 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="456" y="189" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1588088491600" />
-    <state x="560" y="289" key="Vcs.Push.Dialog.v2" timestamp="1588292409504">
+    <state x="560" y="289" key="Vcs.Push.Dialog.v2" timestamp="1588296003801">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="560" y="289" key="Vcs.Push.Dialog.v2/0.30.1920.1050@0.30.1920.1050" timestamp="1588292409504" />
+    <state x="560" y="289" key="Vcs.Push.Dialog.v2/0.30.1920.1050@0.30.1920.1050" timestamp="1588296003801" />
     <state x="642" y="111" width="633" height="888" key="find.popup" timestamp="1587999271532">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
