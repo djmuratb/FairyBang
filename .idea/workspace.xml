@@ -19,13 +19,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="fucking bug with incorrect columns names">
+    <list default="true" id="dc018d84-b9aa-4a7f-b092-2d6a2f0aa743" name="Default Changelist" comment="Fixes in db models">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/common.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/girlsfilter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/girlsfilter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/services.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/statistic.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/statistic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/extra/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/user.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -171,10 +168,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.__main__ " />
+        <item itemvalue="Python.utils" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.__init__ (1)" />
         <item itemvalue="Python.__init__" />
-        <item itemvalue="Python.utils" />
       </list>
     </recent_temporary>
   </component>
@@ -315,7 +312,14 @@
       <option name="project" value="LOCAL" />
       <updated>1588449881687</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Fixes in db models">
+      <created>1588460178577</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1588460178577</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -347,7 +351,8 @@
     <MESSAGE value="Changelog:&#10;- added new option `debug` to config.yaml&#10;- refactored files with options" />
     <MESSAGE value="refactored file with options" />
     <MESSAGE value="fucking bug with incorrect columns names" />
-    <option name="LAST_COMMIT_MESSAGE" value="fucking bug with incorrect columns names" />
+    <MESSAGE value="Fixes in db models" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixes in db models" />
   </component>
   <component name="WindowStateProjectService">
     <state x="560" y="201" key="#Plugins" timestamp="1588019300494">
@@ -370,22 +375,22 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="747" y="315" key="FileChooserDialogImpl/0.30.1920.1050@0.30.1920.1050" timestamp="1588088476974" />
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588453208245">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588462178106">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588453208245" />
-    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588453208244">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588462178106" />
+    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588462178105">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588453208244" />
-    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588453208244">
+    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588462178105" />
+    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588462178105">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588453208244" />
-    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588453208245">
+    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588462178105" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588462178106">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588453208245" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588462178106" />
     <state width="1878" height="335" key="GridCell.Tab.1.bottom" timestamp="1588450179439">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>

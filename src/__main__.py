@@ -109,12 +109,29 @@ def statistic(message):
         0,
         0,
 
-        utils.get_delta_days_from_dates(user.registration_date, datetime.now()),
+        utils.get_delta_days_from_dates(user.registration_date),
         user.total_txs,
         int(user.total_qiwi_sum),
         user.total_girls,
     )
     bot.send_message(message.chat.id, msg, parse_mode='Markdown')
+
+
+class CallbackQueryUtils:
+    @staticmethod
+    def get_girls_options(user_instance, msg_data):
+        filters = {
+            'Базовый': user_instance.girls_filter,
+            'Расширенный': user_instance.extended_girls_filter,
+            'Услуги': user_instance.services
+        }
+
+        filter = filters.get(msg_data.split(' ')[0])
+        return {
+            column.name: getattr(user_instance.girls_filter, column.key)
+            for column in user_instance.girls_filter.__table__.columns
+            if column.name not in ('id', 'user_id')
+        }
 
 
 class CallbackQuery:
@@ -130,15 +147,14 @@ class CallbackQuery:
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod
-    def filters_handler(username, data, chat_id, message_id):
-        filters = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter, 'Услуги': Services}
-        filter = filters.get(data.split(' ')[0])
+    def filters_handler(username, msg_data, chat_id, message_id):
         user = session.query(User).filter_by(username=username).one()
+        girls_options = CallbackQueryUtils.get_girls_options(user, msg_data)
+        print(girls_options)
+        go = utils.chunk_dict(girls_options, 4)
 
-        d = {}
-
-        for column in user.girls_filter.__table__.columns:
-            print(column.key, column.name)
+        for el in go:
+            print(el)
 
         # keyboard = utils.create_inline_keyboard(*lst[0])
         # bot.edit_message_text('some msg', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
@@ -146,13 +162,13 @@ class CallbackQuery:
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    data = call.data.split('_')[1]
-    if data in AVAILABLE_COUNTRIES_LIST:
-        CallbackQuery.cb_countries(data, call.message.chat.id, call.message.from_user.username)
-    elif 'PROMOCODE' in data:
+    msg_data = call.data.split('_')[1]
+    if msg_data in AVAILABLE_COUNTRIES_LIST:
+        CallbackQuery.cb_countries(msg_data, call.message.chat.id, call.message.from_user.username)
+    elif 'PROMOCODE' in msg_data:
         CallbackQuery.cb_promocode(call.message.chat.id, call.message.message_id)
-    elif data in FILTERS_ITEMS:
-        CallbackQuery.filters_handler(call.message.chat.username, data, call.message.chat.id, call.message.message_id)
+    elif msg_data in FILTERS_ITEMS:
+        CallbackQuery.filters_handler(call.message.chat.username, msg_data, call.message.chat.id, call.message.message_id)
 
 
 def main_loop():
