@@ -5,6 +5,9 @@ db engine: sqlite:///fairybang.db?check_same_thread=False
 
 enable tor: True
 
+# Debug: True (polling) / False (webhooks)
+debug: True
+
 qiwi:
   - +7 921 777 77 77
   - +7 922 888 88 88

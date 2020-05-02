@@ -32,7 +32,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="http.proxy" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -264,7 +264,14 @@
       <option name="project" value="LOCAL" />
       <updated>1588296000184</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Added admin field in config.yaml">
+      <created>1588410668595</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1588410668596</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -280,7 +287,8 @@
     <MESSAGE value="minor fixes" />
     <MESSAGE value="Added filters menu skeleton" />
     <MESSAGE value="Added basics for `filters handler`" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added basics for `filters handler`" />
+    <MESSAGE value="Added admin field in config.yaml" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added admin field in config.yaml" />
   </component>
   <component name="WindowStateProjectService">
     <state x="560" y="201" key="#Plugins" timestamp="1588019300494">
@@ -291,38 +299,38 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="646" y="149" key="#__main___(1)/0.30.1920.1050@0.30.1920.1050" timestamp="1588001603131" />
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588295999948">
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2" timestamp="1588410668093">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588295999948" />
+    <state x="550" y="30" width="820" height="1044" key="CommitChangelistDialog2/0.30.1920.1050@0.30.1920.1050" timestamp="1588410668093" />
     <state x="747" y="315" key="FileChooserDialogImpl" timestamp="1588088476974">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="747" y="315" key="FileChooserDialogImpl/0.30.1920.1050@0.30.1920.1050" timestamp="1588088476974" />
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588296033629">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom" timestamp="1588433637190">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588296033629" />
-    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588296033627">
+    <state width="1878" height="270" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1588433637190" />
+    <state width="1878" height="270" key="GridCell.Tab.0.center" timestamp="1588433637188">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588296033627" />
-    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588296033626">
+    <state width="1878" height="270" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1588433637188" />
+    <state width="1878" height="270" key="GridCell.Tab.0.left" timestamp="1588433637187">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588296033626" />
-    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588296033628">
+    <state width="1878" height="270" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1588433637187" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right" timestamp="1588433637189">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588296033628" />
+    <state width="1878" height="270" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1588433637189" />
     <state x="548" y="294" key="IDE.errors.dialog" timestamp="1588029064549">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="548" y="294" key="IDE.errors.dialog/0.30.1920.1050@0.30.1920.1050" timestamp="1588029064549" />
-    <state x="456" y="189" key="SettingsEditor" timestamp="1588088491600">
+    <state x="456" y="189" key="SettingsEditor" timestamp="1588433290294">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
-    <state x="456" y="189" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1588088491600" />
+    <state x="456" y="189" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1588433290294" />
     <state x="560" y="289" key="Vcs.Push.Dialog.v2" timestamp="1588296003801">
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
