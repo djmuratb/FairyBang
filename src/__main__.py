@@ -20,32 +20,34 @@ user_dict = {}
 state = {}
 
 
-def write_changes(obj, attr=None, value=None, only_commit=True):
-    if attr and value:
-        obj.__setattr__(attr, value)
+class Utils:
+    @staticmethod
+    def write_changes(obj, attr=None, value=None, only_commit=True):
+        if attr and value:
+            obj.__setattr__(attr, value)
 
-    if not only_commit:
-        session.add(obj)
+        if not only_commit:
+            session.add(obj)
 
-    session.commit()
+        session.commit()
 
+    @staticmethod
+    def create_user(username, chat_id):
+        user = session.query(User).filter_by(username=username).first()
+        if not user:
+            user = User(username)
+            user.girls_filter = GirlsFilter()
+            user.extended_girls_filter = ExtendedGirlsFilter()
+            user.services = Services()
+            Utils.write_changes(user, only_commit=False)
 
-def create_user(username, chat_id):
-    user = session.query(User).filter_by(username=username).first()
-    if not user:
-        user = User(username)
-        user.girls_filter = GirlsFilter()
-        user.extended_girls_filter = ExtendedGirlsFilter()
-        user.services = Services()
-        write_changes(user, only_commit=False)
-
-    user_dict[chat_id] = user
-    return user
+        user_dict[chat_id] = user
+        return user
 
 
 @bot.message_handler(commands=['start'])
 def process_welcome_step(message):
-    create_user(message.from_user.username, message.chat.id)
+    Utils.create_user(message.from_user.username, message.chat.id)
 
     welcome = MSG_WELCOME.format(message.from_user.username)
     keyboard = utils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, row_width=1)
@@ -58,7 +60,7 @@ def process_city_step(message):
     city = message.text.capitalize()
 
     if city in AVAILABLE_CITIES_LIST:
-        write_changes(user_dict[message.chat.id].girls_filter, 'city', city)
+        Utils.write_changes(user_dict[message.chat.id].girls_filter, 'city', city)
         bot.send_message(message.chat.id, MSG_MENU_ATTENTION, parse_mode='Markdown', reply_markup=KB_MENU)
     elif message.text == '/reset':
         msg = bot.send_message(message.chat.id, MSG_RESET, parse_mode='Markdown')
@@ -103,7 +105,7 @@ def discounts(message):
 
 @bot.message_handler(regexp='Статистика')
 def statistic(message):
-    user = create_user(message.from_user.username, message.chat.id)
+    user = Utils.create_user(message.from_user.username, message.chat.id)
     msg = MSG_STATISTIC.format(
         0,
         0,
@@ -137,7 +139,7 @@ class CallbackQueryUtils:
 class CallbackQuery:
     @staticmethod
     def cb_countries(country_name, chat_id, username):
-        write_changes(user_dict[chat_id].girls_filter, 'country', country_name)
+        Utils.write_changes(user_dict[chat_id].girls_filter, 'country', country_name)
         msg = bot.send_message(chat_id, MSG_ENTER_CITY, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_city_step)
 

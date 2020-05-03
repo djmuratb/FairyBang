@@ -9,7 +9,6 @@ from src.extra import DB_ENGINE
 engine = create_engine(DB_ENGINE)
 
 Base = declarative_base()
-Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
