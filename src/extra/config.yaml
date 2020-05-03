@@ -1,13 +1,27 @@
 
-admin username: LL4wliet
+# --- MAIN OPTIONS ---
+admin username: LL4wliet    # Set it without @ symbol.
 api token: 917583816:AAG-Jf82LgKFrEFS_ECgbjF7VYVpGwOOjdo
-db engine: sqlite:///fairybang.db?check_same_thread=False
 
+database:
+  drivername: sqlite
+  host: ''
+  port:
+  username: ''
+  password: ''
+  database: fairybang.db
+  query:
+    check_same_thread: False
+
+
+# --- OTHER OPTIONS ---
 enable tor: True
 
-# Debug: True (polling) / False (webhooks)
+# Debug: True (polling) / False (webhooks).
 debug: True
 
+
+# --- REQUIRE LISTS ---
 qiwi:
   - +7 921 777 77 77
   - +7 922 888 88 88
@@ -16,5 +30,5 @@ countries:
   - 🇷🇺 Россия
 
 promocodes:
-  - 5%: FB12NMQ4
-  - 10%: FB89LKJ2
+  5%: FB12NMQ4
+  10%: FB89LKJ2
