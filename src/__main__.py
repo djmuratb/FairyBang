@@ -129,8 +129,10 @@ class CallbackQueryUtils:
 
 class CallbackQuery:
     @staticmethod
-    def cb_countries(country_name, chat_id, username):
-        Utils.write_changes(user_dict[chat_id].girls_filter, 'country', country_name)
+    def cb_countries(country_name, username, chat_id):
+        user = Utils.create_user(username, chat_id)
+        Utils.write_changes(user.girls_filter, 'country', country_name)
+
         msg = bot.send_message(chat_id, MSG_ENTER_CITY, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_city_step)
 
@@ -140,7 +142,7 @@ class CallbackQuery:
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod
-    def filters_handler(username, raw_filter_name, chat_id, message_id):
+    def filters_handler(raw_filter_name, username, chat_id, message_id):
         user = session.query(User).filter_by(username=username).one()
         girl_options = CallbackQueryUtils.get_girls_options(user, raw_filter_name.split(' ')[0])
 
@@ -156,12 +158,16 @@ class CallbackQuery:
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     msg_data = call.data.split('_')[1]
+    username = call.message.chat.username
+    chat_id = call.message.chat.id
+    message_id = call.message.message_id
+
     if msg_data in AVAILABLE_COUNTRIES_LIST:
-        CallbackQuery.cb_countries(msg_data, call.message.chat.id, call.message.from_user.username)
+        CallbackQuery.cb_countries(msg_data, username, chat_id)
     elif 'PROMOCODE' in msg_data:
-        CallbackQuery.cb_promocode(call.message.chat.id, call.message.message_id)
+        CallbackQuery.cb_promocode(chat_id, message_id)
     elif msg_data in FILTERS_ITEMS:
-        CallbackQuery.filters_handler(call.message.chat.username, msg_data, call.message.chat.id, call.message.message_id)
+        CallbackQuery.filters_handler(msg_data, username, chat_id, message_id)
 
 
 def main_loop():
