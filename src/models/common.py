@@ -13,7 +13,7 @@ Base = declarative_base()
 class Common(Base):
     __abstract__ = True
 
-    def as_dict(self, obj, exlude_columns_names=('id', 'user_id')):
+    def as_dict(self, obj, exclude_columns_names=('id', 'user_id')):
         return {
             column.name: getattr(obj, column.key)
             for column in obj.__table__.columns
