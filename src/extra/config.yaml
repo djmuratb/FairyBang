@@ -5,10 +5,10 @@ api token: 917583816:AAG-Jf82LgKFrEFS_ECgbjF7VYVpGwOOjdo
 
 database:
   drivername: sqlite
-  host: ''
+  username:
+  password:
+  host:
   port:
-  username: ''
-  password: ''
   database: fairybang.db
   query:
     check_same_thread: False

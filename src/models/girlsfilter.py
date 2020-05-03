@@ -2,10 +2,10 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
-from src.models.common import Base, engine
+from src.models.common import Base, engine, Common
 
 
-class GirlsFilter(Base):
+class GirlsFilter(Common):
     __tablename__ = 'girls_filter'
 
     id            = Column(Integer, primary_key=True)
@@ -35,7 +35,7 @@ class GirlsFilter(Base):
         pass
 
 
-class ExtendedGirlsFilter(Base):
+class ExtendedGirlsFilter(Common):
     __tablename__ = 'extended_girls_filter'
 
     id                          = Column(Integer, primary_key=True)

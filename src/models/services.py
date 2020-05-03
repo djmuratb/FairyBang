@@ -2,10 +2,10 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
-from src.models.common import Base, engine
+from src.models.common import Base, engine, Common
 
 
-class Services(Base):
+class Services(Common):
     __tablename__ = 'services'
 
     id = Column(Integer, primary_key=True)
@@ -64,7 +64,7 @@ class Services(Base):
     extreme_f                   = Column(Boolean, name='Экстрим фистинг', nullable=True, key='extreme_f')
 
     #           --- additional ---
-    for_family                  = Column(Boolean, name='Есть молодой человек для семейной пары', nullable=True, key='for_familu')
+    for_family                  = Column(Boolean, name='Есть молодой человек для семейной пары', nullable=True, key='for_family')
     copro                       = Column(Boolean, name='Копро', nullable=True, key='copro')
     pip_show                    = Column(Boolean, name='Пип-Шоу', nullable=True, key='pip_show')
     shower                      = Column(Boolean, name='Помывка в душе', nullable=True, key='shower')

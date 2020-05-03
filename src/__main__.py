@@ -121,19 +121,10 @@ def statistic(message):
 
 class CallbackQueryUtils:
     @staticmethod
-    def get_girls_options(user_instance, msg_data):
-        filters = {
-            'Базовый': user_instance.girls_filter,
-            'Расширенный': user_instance.extended_girls_filter,
-            'Услуги': user_instance.services
-        }
-
-        filter = filters.get(msg_data.split(' ')[0])
-        return {
-            column.name: getattr(user_instance.girls_filter, column.key)
-            for column in user_instance.girls_filter.__table__.columns
-            if column.name not in ('id', 'user_id')
-        }
+    def get_girls_options(user, filter_name):
+        filters = {'Базовый': user.girls_filter, 'Расширенный': user.extended_girls_filter, 'Услуги': user.services}
+        filter = filters.get(filter_name)
+        return filter.as_dict(filter)
 
 
 class CallbackQuery:
@@ -149,14 +140,14 @@ class CallbackQuery:
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod
-    def filters_handler(username, msg_data, chat_id, message_id):
+    def filters_handler(username, raw_filter_name, chat_id, message_id):
         user = session.query(User).filter_by(username=username).one()
-        girls_options = CallbackQueryUtils.get_girls_options(user, msg_data)
-        print(girls_options)
-        go = utils.chunk_dict(girls_options, 4)
+        girl_options = CallbackQueryUtils.get_girls_options(user, raw_filter_name.split(' ')[0])
 
-        for el in go:
-            print(el)
+        # go = utils.chunk_dict(girls_options, 4)
+        #
+        # for el in go:
+        #     print(el)
 
         # keyboard = utils.create_inline_keyboard(*lst[0])
         # bot.edit_message_text('some msg', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)

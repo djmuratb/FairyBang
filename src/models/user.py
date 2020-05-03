@@ -3,10 +3,10 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from src.models.common import Base, engine
+from src.models.common import Base, engine, Common
 
 
-class User(Base):
+class User(Common):
     __tablename__ = 'user'
 
     id                  = Column(Integer, primary_key=True)
