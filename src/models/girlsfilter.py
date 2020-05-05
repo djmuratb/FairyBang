@@ -13,7 +13,7 @@ class GirlsFilter(Common):
     #       --- location ---
     country       = Column(String(30), name='Страна', default='🇷🇺 Россия', key='country')
     city          = Column(String(50), name='Город', default='Москва', key='city')
-    subway        = Column(String(50), name='Район', nullable=True, key='subway')
+    subway        = Column(String(50), name='Район', default='нет', key='subway')
 
     #       --- appearance details ---
     age_min       = Column(Integer, name='Возраст от', default=18, key='age_min')

@@ -16,10 +16,27 @@ def create_reply_keyboard(*buttons: Sequence[str], resize_keyboard: bool = True,
     return markup
 
 
-def create_inline_keyboard(*buttons: Sequence[str], cb_prefix: str ='cb_', row_width: int =2):
+def create_inline_keyboard(*buttons: Sequence[str], prefix: str ='cb_', postfix: str = '', row_width: int = 2):
     markup = types.InlineKeyboardMarkup(row_width)
-    markup.add(*(types.InlineKeyboardButton(button, callback_data=f'{cb_prefix}{button}') for button in buttons))
+    markup.add(
+        *(
+            types.InlineKeyboardButton(button, callback_data=f'{prefix}{button}{postfix}')
+            for button in buttons
+        )
+    )
     return markup
+
+
+def create_inline_keyboard_ext(*options: Sequence[str], prefix: str ='cb_', postfix: str = '', row_width: int = 1):
+    markup = types.InlineKeyboardMarkup(row_width)
+    markup.add(
+        *(
+            types.InlineKeyboardButton(option.name, callback_data=f'{prefix}{option.callback}')
+            for option in options
+        )
+    )
+    return markup
+
 
 
 def get_abs_path(file: str):
@@ -44,5 +61,13 @@ def get_delta_days_from_dates(first: datetime, latest: datetime = datetime.now()
 
 def chunk_dict(data: dict, parts_num: int):
     it = iter(data)
-    for i in range(0, len(data), parts_num):
-        yield {key: data[key] for key in islice(it, parts_num)}
+    return [
+        {key: data[key] for key in islice(it, parts_num)} for i in range(0, len(data), parts_num)
+    ]
+
+
+def chunk_list(data: list, parts_num: int):
+    it = iter(data)
+    return [
+        [d for d in islice(it, parts_num)] for i in range(0, len(data), parts_num)
+    ]

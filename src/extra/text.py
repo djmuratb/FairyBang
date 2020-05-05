@@ -120,5 +120,5 @@ KB_CANCEL = utils.create_reply_keyboard('❌ Отмена', row_width=1)
 
 # - INLINE -
 KB_PROMOCODE = utils.create_inline_keyboard('🔊 Ввести PROMOCODE')
-FILTERS_ITEMS = ('Базовый 💫', 'Расширенный ✨', 'Услуги ❄️️')
+FILTERS_ITEMS = ('Базовый', 'Расширенный', 'Услуги')
 KB_FILTERS_MENU = utils.create_inline_keyboard(*FILTERS_ITEMS, row_width=1)

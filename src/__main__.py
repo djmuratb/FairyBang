@@ -17,7 +17,7 @@ if ENABLE_TOR:
 
 bot = telebot.TeleBot(API_TOKEN)
 user_dict = {}
-state = {}
+filters_state = {}
 
 
 class Utils:
@@ -124,7 +124,23 @@ class CallbackQueryUtils:
     def get_girls_options(user, filter_name):
         filters = {'Базовый': user.girls_filter, 'Расширенный': user.extended_girls_filter, 'Услуги': user.services}
         filter = filters.get(filter_name)
-        return filter.as_dict(filter)
+        return filter.as_list(filter)
+
+    @staticmethod
+    def add_move_options(options, filter_name, state):
+        move_options = [(f'previous_{filter_name}', '⬅️ Предыдущая'), (f'next_{filter_name}', '➡️️')]
+        if state == 0:
+            add_options = move_options.pop()
+        else:
+            add_options = move_options
+
+        options.append(add_options)
+        return options
+
+
+    @staticmethod
+    def add_options_alignment():
+        pass
 
 
 class CallbackQuery:
@@ -142,17 +158,39 @@ class CallbackQuery:
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod
-    def filters_handler(raw_filter_name, username, chat_id, message_id):
+    def filters_handler(filter_name, username, chat_id, message_id):
         user = session.query(User).filter_by(username=username).one()
-        girl_options = CallbackQueryUtils.get_girls_options(user, raw_filter_name.split(' ')[0])
+        girls_options = CallbackQueryUtils.get_girls_options(user, filter_name)
 
-        # go = utils.chunk_dict(girls_options, 4)
-        #
-        # for el in go:
-        #     print(el)
+        state = filters_state.get(chat_id, 0)
+        print('STATE', state)
+        chuncked_girls_options = utils.chunk_list(girls_options, 5)
+        print('CHUNCKED', chuncked_girls_options)
 
-        # keyboard = utils.create_inline_keyboard(*lst[0])
-        # bot.edit_message_text('some msg', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
+        # ---
+        part_gilrs_options = chuncked_girls_options[state]
+
+        # ---
+        from collections import  namedtuple
+        Option = namedtuple('Option', ['name', 'callback'])
+
+        max_str_size = len(max((map(lambda x: ''.join(x[1:]), part_gilrs_options))))
+
+        kb_options = []
+        for key, *data in part_gilrs_options:
+            str_size = len(''.join(data))
+            whs_num = 1 if max_str_size - str_size == 0 else max_str_size - str_size
+            whs = ' ' * int(whs_num * 2.3777 + 35)
+            option = Option(name=whs.join(data), callback=key)
+            kb_options.append(option)
+
+
+        # ----
+        # part_gilrs_options = CallbackQueryUtils.add_move_options(part_gilrs_options, filter_name, state)
+        # print('PART', part_gilrs_options)
+
+        keyboard = utils.create_inline_keyboard_ext(*kb_options, prefix='filter_', row_width=1)
+        bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -162,12 +200,15 @@ def callback_query(call):
     chat_id = call.message.chat.id
     message_id = call.message.message_id
 
+    print(call.data)
+
     if msg_data in AVAILABLE_COUNTRIES_LIST:
         CallbackQuery.cb_countries(msg_data, username, chat_id)
     elif 'PROMOCODE' in msg_data:
         CallbackQuery.cb_promocode(chat_id, message_id)
     elif msg_data in FILTERS_ITEMS:
-        CallbackQuery.filters_handler(msg_data, username, chat_id, message_id)
+        filter_name = msg_data.split(' ')[0]
+        CallbackQuery.filters_handler(filter_name, username, chat_id, message_id)
 
 
 def main_loop():

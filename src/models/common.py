@@ -15,11 +15,32 @@ class Common(Base):
     __abstract__ = True
 
     def as_dict(self, obj, exclude_columns_names=('id', 'user_id')):
-        return {
-            column.name: getattr(obj, column.key)
-            for column in obj.__table__.columns
-            if column.name not in exclude_columns_names
-        }
+        d = {}
+        for column in obj.__table__.columns:
+            if column.name in exclude_columns_names:
+                continue
+
+            if column.name == column.key:
+                d.update({column.key: getattr(obj, column.key)})
+            else:
+                d.update({column.key: {column.name: getattr(obj, column.key)}})
+
+        return d
+
+
+    def as_list(self, obj, exclude_columns_names=('id', 'user_id'), calc_str_size=False):
+        l = []
+        for column in obj.__table__.columns:
+            if column.name in exclude_columns_names:
+                continue
+
+            if column.name == column.key:
+                l.append([column.key, str(getattr(obj, column.key))])
+            else:
+                l.append([column.key, column.name, str(getattr(obj, column.key))])
+
+        return l
+
 
 Session = sessionmaker(bind=engine)
 session = Session()
