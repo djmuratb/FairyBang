@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
+import re
+
 import yaml
 
-from datetime import datetime
+from datetime import datetime, date
 from collections import ChainMap
 from itertools import islice
 from typing import Sequence
@@ -71,3 +73,15 @@ def chunk_list(data: list, parts_num: int):
     return [
         [d for d in islice(it, parts_num)] for i in range(0, len(data), parts_num)
     ]
+
+
+def set_attrs_values_from_dict(d: dict, obj: object, date_specific=False):
+    pattern = re.compile(r'\d{4}(-\d{1,2})+')
+
+    for key, value in d.items():
+        if date_specific:
+            val = date(*map(int, value.split('-'))) if re.match(pattern, value) else value
+        else:
+            val = value
+
+        obj.__setattr__(key, val)

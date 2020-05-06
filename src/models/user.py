@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column, Integer, String, Float, DateTime, Numeric
+from sqlalchemy import Column, Integer, String, Float, DateTime, Numeric, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -10,12 +10,19 @@ class User(Common):
     __tablename__ = 'user'
 
     id                  = Column(Integer, primary_key=True)
+
     username            = Column(String(55), unique=True)
     registration_date   = Column(DateTime(timezone=True), server_default=func.now())
+
     total_txs           = Column(Integer, default=0)
     total_qiwi_sum      = Column(Float, default=0)
     total_btc_sum       = Column(Float, default=0)
     total_girls         = Column(Integer, default=0)
+
+    promocode           = Column(String, nullable=True)
+    promo_discount      = Column(String, nullable=True)
+    promo_valid_from    = Column(Date, nullable=True)
+    promo_valid_to      = Column(Date, nullable=True)
 
     girls_filter            = relationship('GirlsFilter', uselist=False, back_populates='user', cascade='all,delete,delete-orphan')
     extended_girls_filter   = relationship('ExtendedGirlsFilter', uselist=False, back_populates='user', cascade='all,delete,delete-orphan')

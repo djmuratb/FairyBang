@@ -32,8 +32,13 @@ class Utils:
         session.commit()
 
     @staticmethod
-    def create_user(username, chat_id):
+    def create_user(username, chat_id, updated=False):
         user = session.query(User).filter_by(username=username).first()
+
+        if updated:
+            user_dict[chat_id] = user
+            return user
+
         if not user:
             user = User(username)
             user.girls_filter = GirlsFilter()
@@ -71,13 +76,24 @@ def process_city_step(message):
 
 
 def process_promocode_step(message):
+    username = message.chat.username
+    chat_id = message.chat.id
     promocode = message.text
-    if promocode in PROMOCODES.values():
-        bot.send_message(message.chat.id, MSG_SUCCESS_PROMO, parse_mode='Markdown', reply_markup=KB_MENU)
+    promocode_data = PROMOCODES.get(promocode, None)
+
+    if promocode_data:
+        user = Utils.create_user(username, chat_id, updated=True)
+        user.promocode = promocode
+        utils.set_attrs_values_from_dict(promocode_data, user, date_specific=True)
+
+        Utils.write_changes(user)
+        bot.send_message(chat_id, MSG_SUCCESS_PROMO, parse_mode='Markdown', reply_markup=KB_MENU)
+
     elif promocode.endswith('Отмена'):
-        bot.send_message(message.chat.id, MSG_CANCELED, parse_mode='Markdown', reply_markup=KB_MENU)
+        bot.send_message(chat_id, MSG_CANCELED, parse_mode='Markdown', reply_markup=KB_MENU)
+
     else:
-        msg = bot.send_message(message.chat.id, MSG_ERROR_PROMO, parse_mode='Markdown', reply_markup=KB_CANCEL)
+        msg = bot.send_message(chat_id, MSG_ERROR_PROMO, parse_mode='Markdown', reply_markup=KB_CANCEL)
         bot.register_next_step_handler(msg, process_promocode_step)
 
 
@@ -100,7 +116,14 @@ def about(message):
 
 @bot.message_handler(regexp='Скидки')
 def discounts(message):
-    bot.send_message(message.chat.id, MSG_DISCOUNTS, parse_mode='Markdown', reply_markup=KB_PROMOCODE)
+    user = Utils.create_user(username=message.chat.username, chat_id=message.chat.id, updated=True)
+    if user.promocode:
+        discount_expires_days = utils.get_delta_days_from_dates(user.promo_valid_from, user.promo_valid_to)
+        text = MSG_DISCOUNTS.format(user.promocode, user.promo_discount, discount_expires_days)
+    else:
+        text = MSG_DISCOUNTS.format('не введен', 'отсутствует', 0)
+
+    bot.send_message(message.chat.id, text, parse_mode='Markdown', reply_markup=KB_PROMOCODE)
 
 
 @bot.message_handler(regexp='Статистика')
