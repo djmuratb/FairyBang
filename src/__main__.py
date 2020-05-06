@@ -16,7 +16,6 @@ if ENABLE_TOR:
     apihelper.proxy = {'https': 'socks5h://127.0.0.1:9050'}
 
 bot = telebot.TeleBot(API_TOKEN)
-user_dict = {}
 filters_state = {}
 
 
@@ -34,11 +33,6 @@ class Utils:
     @staticmethod
     def create_user(username, chat_id, updated=False):
         user = session.query(User).filter_by(username=username).first()
-
-        if updated:
-            user_dict[chat_id] = user
-            return user
-
         if not user:
             user = User(username)
             user.girls_filter = GirlsFilter()
@@ -46,39 +40,51 @@ class Utils:
             user.services = Services()
             Utils.write_changes(user, only_commit=False)
 
-        user_dict[chat_id] = user
         return user
+
+    @staticmethod
+    def get_message_data(obj, callback=False):
+        """
+        :param obj: message or call object
+        :return: username, chat_id, message_id, text of object.
+        """
+        if callback:
+            data = (obj.message.chat.username, obj.message.chat.id, obj.message.message_id, obj.data)
+        else:
+            data = (obj.chat.username, obj.chat.id, obj.message_id, obj.text)
+
+        return data
 
 
 @bot.message_handler(commands=['start'])
 def process_welcome_step(message):
-    Utils.create_user(message.from_user.username, message.chat.id)
+    username, chat_id, message_id, msg_text = Utils.get_message_data(message)
+    Utils.create_user(username, chat_id)
 
-    welcome = MSG_WELCOME.format(message.from_user.username)
+    welcome = MSG_WELCOME.format(username)
     keyboard = utils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, row_width=1)
 
-    bot.send_message(message.chat.id, welcome, parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
-    bot.send_message(message.chat.id, MSG_ENTER_COUNTRY, parse_mode='Markdown', reply_markup=keyboard)
+    bot.send_message(chat_id, welcome, parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
+    bot.send_message(chat_id, MSG_ENTER_COUNTRY, parse_mode='Markdown', reply_markup=keyboard)
 
 
 def process_city_step(message):
-    city = message.text.capitalize()
+    username, chat_id, message_id, msg_text = Utils.get_message_data(message)
+    city = msg_text.capitalize()
 
     if city in AVAILABLE_CITIES_LIST:
-        Utils.write_changes(user_dict[message.chat.id].girls_filter, 'city', city)
-        bot.send_message(message.chat.id, MSG_MENU_ATTENTION, parse_mode='Markdown', reply_markup=KB_MENU)
-    elif message.text == '/reset':
-        msg = bot.send_message(message.chat.id, MSG_RESET, parse_mode='Markdown')
+        Utils.write_changes(Utils.create_user(username, chat_id).girls_filter, 'city', city)
+        bot.send_message(chat_id, MSG_MENU_ATTENTION, parse_mode='Markdown', reply_markup=KB_MENU)
+    elif text == '/reset':
+        msg = bot.send_message(chat_id, MSG_RESET, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_welcome_step)
     else:
-        msg = bot.send_message(message.chat.id, MSG_UNAVAILABLE_CITY, parse_mode='Markdown')
+        msg = bot.send_message(chat_id, MSG_UNAVAILABLE_CITY, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_city_step)
 
 
 def process_promocode_step(message):
-    username = message.chat.username
-    chat_id = message.chat.id
-    promocode = message.text
+    username, chat_id, message_id, promocode = Utils.get_message_data(message)
     promocode_data = PROMOCODES.get(promocode, None)
 
     if promocode_data:
@@ -116,19 +122,21 @@ def about(message):
 
 @bot.message_handler(regexp='Скидки')
 def discounts(message):
-    user = Utils.create_user(username=message.chat.username, chat_id=message.chat.id, updated=True)
+    username, chat_id, message_id, msg_text = Utils.get_message_data(message)
+    user = Utils.create_user(username=username, chat_id=chat_id, updated=True)
     if user.promocode:
         discount_expires_days = utils.get_delta_days_from_dates(user.promo_valid_from, user.promo_valid_to)
         text = MSG_DISCOUNTS.format(user.promocode, user.promo_discount, discount_expires_days)
     else:
         text = MSG_DISCOUNTS.format('не введен', 'отсутствует', 0)
 
-    bot.send_message(message.chat.id, text, parse_mode='Markdown', reply_markup=KB_PROMOCODE)
+    bot.send_message(chat_id, text, parse_mode='Markdown', reply_markup=KB_PROMOCODE)
 
 
 @bot.message_handler(regexp='Статистика')
 def statistic(message):
-    user = Utils.create_user(message.from_user.username, message.chat.id)
+    username, chat_id, message_id, msg_text = Utils.get_message_data(message)
+    user = Utils.create_user(username, chat_id)
     msg = MSG_STATISTIC.format(
         0,
         0,
@@ -139,7 +147,7 @@ def statistic(message):
         int(user.total_qiwi_sum),
         user.total_girls,
     )
-    bot.send_message(message.chat.id, msg, parse_mode='Markdown')
+    bot.send_message(chat_id, msg, parse_mode='Markdown')
 
 
 class CallbackQueryUtils:
@@ -218,12 +226,8 @@ class CallbackQuery:
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    msg_data = call.data.split('_')[1]
-    username = call.message.chat.username
-    chat_id = call.message.chat.id
-    message_id = call.message.message_id
-
-    print(call.data)
+    username, chat_id, message_id, msg_text = Utils.get_message_data(call, callback=True)
+    msg_data = msg_text.split('_')[1]
 
     if msg_data in AVAILABLE_COUNTRIES_LIST:
         CallbackQuery.cb_countries(msg_data, username, chat_id)
