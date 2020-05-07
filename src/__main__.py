@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import itertools
+import collections as cs
+
 import telebot
 
 from datetime import datetime
@@ -151,6 +154,8 @@ def statistic(message):
 
 
 class CallbackQueryUtils:
+    move_options_data = (('⬅️ Предыдущая', 'previous_{}'), ('➡️️ Следующая', 'next_{}'))
+
     @staticmethod
     def get_girls_options(user, filter_name):
         filters = {'Базовый': user.girls_filter, 'Расширенный': user.extended_girls_filter, 'Услуги': user.services}
@@ -158,19 +163,18 @@ class CallbackQueryUtils:
         return filter.as_list(filter)
 
     @staticmethod
-    def add_move_options(options, filter_name, state):
-        move_options = [(f'previous_{filter_name}', '⬅️ Предыдущая'), (f'next_{filter_name}', '➡️️')]
+    def add_move_options(options, filter_name, state, option_object):
+        data = CallbackQueryUtils.move_options_data
+        move_options = (option_object(name, callback.format(filter_name)) for name, callback in data)
         if state == 0:
-            add_options = move_options.pop()
+            move_options = itertools.islice(move_options, 1, None)
         else:
-            add_options = move_options
+            move_options = move_options
 
-        options.append(add_options)
-        return options
-
+        return itertools.chain(options, move_options)
 
     @staticmethod
-    def add_options_alignment():
+    def get_option_name_with_indent():
         pass
 
 
@@ -202,11 +206,10 @@ class CallbackQuery:
         part_gilrs_options = chuncked_girls_options[state]
 
         # ---
-        from collections import  namedtuple
-        Option = namedtuple('Option', ['name', 'callback'])
+
+        Option = cs.namedtuple('Option', ['name', 'callback'])
 
         max_str_size = len(max((map(lambda x: ''.join(x[1:]), part_gilrs_options))))
-
         kb_options = []
         for key, *data in part_gilrs_options:
             str_size = len(''.join(data))
@@ -215,11 +218,13 @@ class CallbackQuery:
             option = Option(name=whs.join(data), callback=key)
             kb_options.append(option)
 
+        print('KB_OPTIONS', kb_options)
 
         # ----
-        # part_gilrs_options = CallbackQueryUtils.add_move_options(part_gilrs_options, filter_name, state)
-        # print('PART', part_gilrs_options)
+        kb_options = CallbackQueryUtils.add_move_options(kb_options, filter_name, state, Option)
 
+
+        # SEND MSG
         keyboard = utils.create_inline_keyboard_ext(*kb_options, prefix='filter_', row_width=1)
         bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
 
@@ -228,6 +233,8 @@ class CallbackQuery:
 def callback_query(call):
     username, chat_id, message_id, msg_text = Utils.get_message_data(call, callback=True)
     msg_data = msg_text.split('_')[1]
+
+    print('--- CALLBACK DATA --- ', msg_text)
 
     if msg_data in AVAILABLE_COUNTRIES_LIST:
         CallbackQuery.cb_countries(msg_data, username, chat_id)
