@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import re
 import itertools
+import functools
 import collections as cs
 
 import telebot
@@ -65,7 +67,7 @@ def process_welcome_step(message):
     Utils.create_user(username, chat_id)
 
     welcome = MSG_WELCOME.format(username)
-    keyboard = utils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, row_width=1)
+    keyboard = utils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, prefix='main_country_', row_width=1)
 
     bot.send_message(chat_id, welcome, parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
     bot.send_message(chat_id, MSG_ENTER_COUNTRY, parse_mode='Markdown', reply_markup=keyboard)
@@ -153,29 +155,81 @@ def statistic(message):
     bot.send_message(chat_id, msg, parse_mode='Markdown')
 
 
-class CallbackQueryUtils:
-    move_options_data = (('⬅️ Предыдущая', 'previous_{}'), ('➡️️ Следующая', 'next_{}'))
+class CatalogCallbackQuery:
+    def __init__(self, query_name, username, chat_id, increment):
+        self._filter_name = query_name
+        self._username = username
+        self._chat_id = chat_id
+        self._increment = increment
+
+    def get_keyboard_options(self):
+        pass
+
+
+class FiltersCallbackQuery:
+    Option = cs.namedtuple('Option', ['name', 'callback'])
+    move_options_data = (('⬅️ Предыдущая', 'move_previous_{}'), ('➡️️ Следующая', 'move_next_{}'))
+
+    _chunk_size = 6
+
+    def __init__(self, query_name, username, chat_id, increment):
+        self._filter_name    = query_name
+        self._username       = username
+        self._chat_id        = chat_id
+        self._increment      = increment
+
+        self._state          = None
 
     @staticmethod
-    def get_girls_options(user, filter_name):
+    def get_max_size_name_of_all_options(all_options):
+        return len(max((map(lambda x: ''.join(x[1:]), all_options))))
+
+    def get_option_name_with_indent(self, all_options, name_data):
+        max_str_size = self.get_max_size_name_of_all_options(all_options)
+        str_size = len(''.join(name_data))
+        whs_num = 1 if max_str_size - str_size == 0 else max_str_size - str_size
+        whs = ' ' * int(whs_num * 2.3777 + 35)
+        option_name = whs.join(name_data)
+        return option_name
+
+    def get_girls_options(self):
+        user = session.query(User).filter_by(username=self._username).one()
         filters = {'Базовый': user.girls_filter, 'Расширенный': user.extended_girls_filter, 'Услуги': user.services}
-        filter = filters.get(filter_name)
+        filter = filters.get(self._filter_name)
         return filter.as_list(filter)
 
-    @staticmethod
-    def add_move_options(options, filter_name, state, option_object):
-        data = CallbackQueryUtils.move_options_data
-        move_options = (option_object(name, callback.format(filter_name)) for name, callback in data)
-        if state == 0:
-            move_options = itertools.islice(move_options, 1, None)
+    def get_chuncked_girls_options(self):
+        girls_options = self.get_girls_options()
+        return utils.chunk_list(girls_options, self._chunk_size)
+
+    def get_part_from_chuncked_girls_options(self):
+        chuncked_girls_options = self.get_chuncked_girls_options()
+        state = filters_state.get(self._chat_id, 0) + self._increment
+        if state == len(chuncked_girls_options):
+            state = 0
+
+        filters_state[self._chat_id] = self._state = state
+        return chuncked_girls_options[state]
+
+    def get_options_objects(self):
+        part_gilrs_options = self.get_part_from_chuncked_girls_options()
+        return (
+            self.Option(name=self.get_option_name_with_indent(part_gilrs_options, data), callback=key)
+            for key, *data in part_gilrs_options
+        )
+
+    def add_move_options(self):
+        options_objects = self.get_options_objects()
+        if self._state == 0:
+            move_options = (self.move_options_data[1], )
         else:
-            move_options = move_options
+            move_options = self.move_options_data
 
-        return itertools.chain(options, move_options)
+        move_options = (self.Option(name, callback.format(self._filter_name)) for name, callback in move_options)
+        return itertools.chain(options_objects, move_options)
 
-    @staticmethod
-    def get_option_name_with_indent():
-        pass
+    def get_keyboard_options(self):
+        return self.add_move_options()
 
 
 class CallbackQuery:
@@ -193,56 +247,53 @@ class CallbackQuery:
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod
-    def filters_handler(filter_name, username, chat_id, message_id):
-        user = session.query(User).filter_by(username=username).one()
-        girls_options = CallbackQueryUtils.get_girls_options(user, filter_name)
+    def common_handler(common_name, filter_name, username, chat_id, message_id, increment=0):
+        args = (filter_name, username, chat_id, increment)
+        if common_name == 'filters':
+            kb_options = FiltersCallbackQuery(*args).get_keyboard_options()
+        elif common_name == 'catalog':
+            kb_options = CatalogCallbackQuery(*args).get_keyboard_options()
 
-        state = filters_state.get(chat_id, 0)
-        print('STATE', state)
-        chuncked_girls_options = utils.chunk_list(girls_options, 5)
-        print('CHUNCKED', chuncked_girls_options)
-
-        # ---
-        part_gilrs_options = chuncked_girls_options[state]
-
-        # ---
-
-        Option = cs.namedtuple('Option', ['name', 'callback'])
-
-        max_str_size = len(max((map(lambda x: ''.join(x[1:]), part_gilrs_options))))
-        kb_options = []
-        for key, *data in part_gilrs_options:
-            str_size = len(''.join(data))
-            whs_num = 1 if max_str_size - str_size == 0 else max_str_size - str_size
-            whs = ' ' * int(whs_num * 2.3777 + 35)
-            option = Option(name=whs.join(data), callback=key)
-            kb_options.append(option)
-
-        print('KB_OPTIONS', kb_options)
-
-        # ----
-        kb_options = CallbackQueryUtils.add_move_options(kb_options, filter_name, state, Option)
-
-
-        # SEND MSG
-        keyboard = utils.create_inline_keyboard_ext(*kb_options, prefix='filter_', row_width=1)
+        keyboard = utils.create_inline_keyboard_ext(*kb_options, prefix=f'{common_name}_option_', row_width=1)
         bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     username, chat_id, message_id, msg_text = Utils.get_message_data(call, callback=True)
-    msg_data = msg_text.split('_')[1]
 
     print('--- CALLBACK DATA --- ', msg_text)
 
-    if msg_data in AVAILABLE_COUNTRIES_LIST:
-        CallbackQuery.cb_countries(msg_data, username, chat_id)
-    elif 'PROMOCODE' in msg_data:
+    # --- CATALOG / FILTERS patterns
+    pattern_common = re.compile(r'filters|catalog')
+    pattern_option = re.compile(r'(filters|catalog)_option')
+    pattern_option_move = re.compile(r'(filters|catalog)_option_move')
+
+    # --- WELCOME ---
+    if msg_text.startswith('main_country'):
+        country = msg_text.split('_')[-1]
+        CallbackQuery.cb_countries(country, username, chat_id)
+
+    # --- DISCOUNTS / enter promocde ---
+    elif msg_text.startswith('promocode'):
         CallbackQuery.cb_promocode(chat_id, message_id)
-    elif msg_data in FILTERS_ITEMS:
-        filter_name = msg_data.split(' ')[0]
-        CallbackQuery.filters_handler(filter_name, username, chat_id, message_id)
+
+    # --- CATALOG / FILTERS ---
+    elif re.search(pattern_option_move, msg_text):
+        msg_data = msg_text.split('_')
+
+        common_name = msg_data[0]
+        where, common_val = msg_data[-2:]
+        increment = 1 if where == 'next' else -1
+
+        CallbackQuery.common_handler(common_name, common_val, username, chat_id, message_id, increment=increment)
+
+    elif re.search(pattern_option, msg_text):
+        pass
+
+    elif re.search(pattern_common, msg_text):
+        common_name, common_val = msg_text.split('_')
+        CallbackQuery.common_handler(common_name, common_val, username, chat_id, message_id)
 
 
 def main_loop():
