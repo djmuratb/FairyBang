@@ -11,6 +11,7 @@ url      = str(URL(**DATABASE))
 engine   = create_engine(url)
 Base     = declarative_base()
 
+
 class Common(Base):
     __abstract__ = True
 
@@ -26,7 +27,6 @@ class Common(Base):
                 d.update({column.key: {column.name: getattr(obj, column.key)}})
 
         return d
-
 
     def as_list(self, obj, exclude_columns_names=('id', 'user_id'), calc_str_size=False):
         l = []
