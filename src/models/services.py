@@ -64,7 +64,7 @@ class Services(Common):
     extreme_f                   = Column(Boolean, name='Экстрим фистинг', nullable=True, key='extreme_f')
 
     #           --- additional ---
-    for_family                  = Column(Boolean, name='Есть молодой человек для семейной пары', nullable=True, key='for_family')
+    for_family                  = Column(Boolean, name='+ МЧ семейной паре', nullable=True, key='for_family')
     copro                       = Column(Boolean, name='Копро', nullable=True, key='copro')
     pip_show                    = Column(Boolean, name='Пип-Шоу', nullable=True, key='pip_show')
     shower                      = Column(Boolean, name='Помывка в душе', nullable=True, key='shower')
