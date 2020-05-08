@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import re
 
-from src.core import MainCBQ
+from src.core.callbackquery import MainCBQ
 from src.core.common import bot
 from src.core.botutils import BotUtils
 from src.extra.text import *

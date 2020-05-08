@@ -4,11 +4,10 @@ import collections as cs
 
 from abc import ABCMeta, abstractmethod
 
-from src.core import process_city_step, process_promocode_step
+from src.core.stepsprocess import process_city_step, process_promocode_step
 from src.core.common import bot
 from src.core.botutils import BotUtils
 from src.models import session, User
-from src.extra import utils
 from src.extra.text import *
 
 
@@ -32,7 +31,7 @@ class CatalogCBQ(BaseCBQ):
         self._increment = increment
 
     def get_keyboard_options(self):
-        pass
+        return []
 
 
 class FiltersCBQ(BaseCBQ):
@@ -101,7 +100,7 @@ class FiltersCBQ(BaseCBQ):
 class MainCBQ:
     @staticmethod
     def countries(country_name, username, chat_id):
-        user = BotUtils.create_user(username, chat_id)
+        user = BotUtils.create_user(username)
         BotUtils.write_changes(user.girls_filter, 'country', country_name)
 
         msg = bot.send_message(chat_id, MSG_ENTER_CITY, parse_mode='Markdown')
