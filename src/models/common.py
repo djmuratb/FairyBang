@@ -15,7 +15,8 @@ Base     = declarative_base()
 class Common(Base):
     __abstract__ = True
 
-    def as_dict(self, obj, exclude_columns_names=('id', 'user_id')):
+    @staticmethod
+    def as_dict(obj, exclude_columns_names=('id', 'user_id')):
         d = {}
         for column in obj.__table__.columns:
             if column.name in exclude_columns_names:
@@ -28,7 +29,8 @@ class Common(Base):
 
         return d
 
-    def as_list(self, obj, exclude_columns_names=('id', 'user_id'), calc_str_size=False):
+    @staticmethod
+    def as_list(obj, exclude_columns_names=('id', 'user_id'), calc_str_size=False):
         l = []
         for column in obj.__table__.columns:
             if column.name in exclude_columns_names:
