@@ -24,8 +24,10 @@ class BaseCBQ(metaclass=ABCMeta):
 
 
 class CatalogCBQ(BaseCBQ):
+    __slots__ = ('_query_name', '_username', '_chat_id', '_increment')
+
     def __init__(self, query_name, username, chat_id, increment):
-        self._filter_name = query_name
+        self._query_name = query_name
         self._username = username
         self._chat_id = chat_id
         self._increment = increment
@@ -35,10 +37,12 @@ class CatalogCBQ(BaseCBQ):
 
 
 class FiltersCBQ(BaseCBQ):
+    __slots__ = ('_query_name', '_username', '_chat_id', '_increment')
+
     _chunk_size = 6
 
     def __init__(self, query_name, username, chat_id, increment):
-        self._filter_name    = query_name
+        self._query_name    = query_name
         self._username       = username
         self._chat_id        = chat_id
         self._increment      = increment
@@ -60,7 +64,7 @@ class FiltersCBQ(BaseCBQ):
     def get_girls_options(self):
         user = session.query(User).filter_by(username=self._username).one()
         filters = {'Базовый': user.girls_filter, 'Расширенный': user.extended_girls_filter, 'Услуги': user.services}
-        filter_ = filters.get(self._filter_name)
+        filter_ = filters.get(self._query_name)
         return filter_.as_list(filter_)
 
     def get_chunck_girls_options(self):
@@ -90,7 +94,7 @@ class FiltersCBQ(BaseCBQ):
         else:
             move_options = self.move_options_data
 
-        move_options = (self.Option(name, callback.format(self._filter_name)) for name, callback in move_options)
+        move_options = (self.Option(name, callback.format(self._query_name)) for name, callback in move_options)
         return itertools.chain(options_objects, move_options)
 
     def get_keyboard_options(self):
