@@ -51,7 +51,11 @@ class FiltersCBQ(BaseCBQ):
 
     @staticmethod
     def get_max_size_name_of_all_options(all_options):
-        return len(max((map(lambda x: ''.join(x[1:]), all_options))))
+        return len(
+            max(
+                (map(lambda x: ''.join(x[1:]), all_options))
+            )
+        )
 
     def get_option_name_with_indent(self, all_options, name_data):
         max_str_size = self.get_max_size_name_of_all_options(all_options)
