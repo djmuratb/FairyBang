@@ -28,8 +28,8 @@ class GirlsFilter(Common):
     price_max     = Column(Integer, name='Цена до', default=20_000, key='price_max')
 
     #       --- relationship ---
-    user_id     = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-    user        = relationship('User', back_populates='girls_filter')
+    user_username   = Column(String, ForeignKey('user.username', ondelete='CASCADE'))
+    user            = relationship('User', back_populates='girls_filter')
 
     def __init__(self):
         pass
@@ -63,8 +63,8 @@ class ExtendedGirlsFilter(Common):
     departure_to_you_night_max  = Column(Integer, name='Выезд к Вам на ночь до', key='departure_to_you_night_max')
 
     #       --- relationship ---
-    user_id     = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-    user        = relationship('User', back_populates='extended_girls_filter')
+    user_username   = Column(String, ForeignKey('user.username', ondelete='CASCADE'))
+    user            = relationship('User', back_populates='extended_girls_filter')
     
     def __init__(self):
         pass

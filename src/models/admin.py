@@ -19,7 +19,7 @@ class Admin:
 class Statistic:
     __tablename__ = 'statistic'
 
-    lauch_date              = Column(Date, default='2020.04.24')
+    launch_date             = Column(Date, default='2020.04.24')
     total_girls             = Column(Integer)
     total_spend_money       = Column(Integer)
 

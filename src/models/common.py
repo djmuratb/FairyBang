@@ -16,7 +16,7 @@ class Common(Base):
     __abstract__ = True
 
     @staticmethod
-    def as_dict(obj, exclude_columns_names=('id', 'user_id')):
+    def as_dict(obj, exclude_columns_names=('id', 'user_id', 'user_username')):
         d = {}
         for column in obj.__table__.columns:
             if column.name in exclude_columns_names:
@@ -30,18 +30,18 @@ class Common(Base):
         return d
 
     @staticmethod
-    def as_list(obj, exclude_columns_names=('id', 'user_id'), calc_str_size=False):
-        l = []
+    def as_list(obj, exclude_columns_names=('id', 'user_id', 'user_username')):
+        result = []
         for column in obj.__table__.columns:
             if column.name in exclude_columns_names:
                 continue
 
             if column.name == column.key:
-                l.append([column.key, str(getattr(obj, column.key))])
+                result.append([column.key, str(getattr(obj, column.key))])
             else:
-                l.append([column.key, column.name, str(getattr(obj, column.key))])
+                result.append([column.key, column.name, str(getattr(obj, column.key))])
 
-        return l
+        return result
 
 
 Session = sessionmaker(bind=engine)

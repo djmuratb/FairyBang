@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 from src.core.stepsprocess import process_city_step, process_promocode_step
 from src.core.common import bot
 from src.core.botutils import BotUtils
-from src.models import session, User
+from src.models import session, GirlsFilter, ExtendedGirlsFilter, Services
 from src.extra.text import *
 
 
@@ -62,17 +62,18 @@ class FiltersCBQ(BaseCBQ):
         return option_name
 
     def get_girls_options(self):
-        user = session.query(User).filter_by(username=self._username).one()
-        filters = {'Базовый': user.girls_filter, 'Расширенный': user.extended_girls_filter, 'Услуги': user.services}
+        filters = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter, 'Услуги': Services}
         filter_ = filters.get(self._query_name)
-        return filter_.as_list(filter_)
+        return filter_.as_list(
+            session.query(filter_).filter(filter_.user_username == self._username).one()
+        )
 
-    def get_chunck_girls_options(self):
+    def get_chunk_girls_options(self):
         girls_options = self.get_girls_options()
         return utils.chunk_list(girls_options, self._chunk_size)
 
     def get_part_from_chunk_girls_options(self):
-        chunk_girls_options = self.get_chunck_girls_options()
+        chunk_girls_options = self.get_chunk_girls_options()
         state = filters_state.get(self._chat_id, 0) + self._increment
         if state == len(chunk_girls_options):
             state = 0
