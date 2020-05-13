@@ -79,7 +79,7 @@ class Services(Common):
     gr_input                    = Column(Boolean, name='Золотой дождь прием', nullable=True, key='gr_input')
 
     #           --- relationship ---
-    user_username   = Column(String, ForeignKey('user.username', ondelete='CASCADE'))
+    user_username   = Column(String(50), ForeignKey('user.username', ondelete='CASCADE'))
     user            = relationship('User', back_populates='services')
 
     def __init__(self):

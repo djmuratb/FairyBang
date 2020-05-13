@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import enum
+
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from sqlalchemy.orm import sessionmaker
@@ -16,16 +18,39 @@ class Common(Base):
     __abstract__ = True
 
     @staticmethod
+    def get_column_value(obj, column_key):
+        col_val = getattr(obj, column_key)
+        if isinstance(col_val, enum.Enum):
+            val = col_val.value
+        elif type(col_val) in (tuple, list):
+            val = '{} - {}'.format(*col_val)
+        else:
+            val = str(col_val)
+
+        return val
+
+    @staticmethod
+    def get_result_data(obj, column):
+        column_value = Common.get_column_value(obj, column.key)
+        if column.name == column.key:
+            data = (column.key, column_value)
+        else:
+            data = (column.key, column.name, column_value)
+
+        return data
+
+    @staticmethod
     def as_dict(obj, exclude_columns_names=('id', 'user_id', 'user_username')):
         d = {}
         for column in obj.__table__.columns:
             if column.name in exclude_columns_names:
                 continue
 
+            col_val = Common.get_column_value(obj, column.key)
             if column.name == column.key:
-                d.update({column.key: getattr(obj, column.key)})
+                d.update({column.key: col_val})
             else:
-                d.update({column.key: {column.name: getattr(obj, column.key)}})
+                d.update({column.key: {column.name: col_val}})
 
         return d
 
@@ -36,10 +61,7 @@ class Common(Base):
             if column.name in exclude_columns_names:
                 continue
 
-            if column.name == column.key:
-                result.append([column.key, str(getattr(obj, column.key))])
-            else:
-                result.append([column.key, column.name, str(getattr(obj, column.key))])
+            result.append(Common.get_result_data(obj, column))
 
         return result
 

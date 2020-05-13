@@ -80,7 +80,7 @@ def set_attrs_values_from_dict(d: dict, obj: object, date_specific=False):
 
     for key, value in d.items():
         if date_specific:
-            val = date(*map(int, value.split('-'))) if re.match(pattern, value) else value
+            val = date(*map(int, value.split('-'))) if re.match(pattern, str(value)) else value
         else:
             val = value
 

@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column, Integer, String, Float, DateTime, Numeric, Date
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, Float, DateTime, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from src.models.common import Base, engine, Common
+
+
+csc = 'all,delete,delete-orphan'
 
 
 class User(Common):
@@ -19,14 +25,22 @@ class User(Common):
     total_btc_sum       = Column(Float, default=0)
     total_girls         = Column(Integer, default=0)
 
-    promocode           = Column(String, nullable=True)
-    promo_discount      = Column(String, nullable=True)
+    promocode           = Column(String(20), nullable=True)
+    promo_discount      = Column(Integer, nullable=True)
     promo_valid_from    = Column(Date, nullable=True)
     promo_valid_to      = Column(Date, nullable=True)
 
-    girls_filter            = relationship('GirlsFilter', uselist=False, back_populates='user', cascade='all,delete,delete-orphan')
-    extended_girls_filter   = relationship('ExtendedGirlsFilter', uselist=False, back_populates='user', cascade='all,delete,delete-orphan')
-    services                = relationship('Services', uselist=False, back_populates='user', cascade='all,delete,delete-orphan')
+    girls_filter            = relationship('GirlsFilter', uselist=False, back_populates='user', cascade=csc)
+    extended_girls_filter   = relationship('ExtendedGirlsFilter', uselist=False, back_populates='user', cascade=csc)
+    services                = relationship('Services', uselist=False, back_populates='user', cascade=csc)
+
+    @hybrid_property
+    def days_since_register(self):
+        return (datetime.now() - self.registration_date).days
+
+    @hybrid_property
+    def discount_expires_days(self):
+        return (self.promo_valid_to - self.promo_valid_from).days
 
     def __init__(self, username):
         self.username = username

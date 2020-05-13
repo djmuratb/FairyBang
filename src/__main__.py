@@ -30,8 +30,7 @@ def discounts(message):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     user = BotUtils.create_user(username=username)
     if user.promocode:
-        discount_expires_days = utils.get_delta_days_from_dates(user.promo_valid_from, user.promo_valid_to)
-        text = MSG_DISCOUNTS.format(user.promocode, user.promo_discount, discount_expires_days)
+        text = MSG_DISCOUNTS.format(user.promocode, user.promo_discount, user.discount_expires_days)
     else:
         text = MSG_DISCOUNTS.format('не введен', 'отсутствует', 0)
 
@@ -47,7 +46,7 @@ def statistic(message):
         0,
         0,
 
-        utils.get_delta_days_from_dates(user.registration_date),
+        user.days_since_register,
         user.total_txs,
         int(user.total_qiwi_sum),
         user.total_girls,
@@ -63,12 +62,12 @@ def callback_query(call):
 
     # --- CATALOG / FILTERS patterns
     pattern_common = re.compile(r'filters|catalog')
-    pattern_option = re.compile(r'(filters|catalog)_option')
-    pattern_option_move = re.compile(r'(filters|catalog)_option_move')
+    pattern_option = re.compile(r'(filters|catalog):\w+:option')
+    pattern_option_move = re.compile(r'(filters|catalog):\w+:option:move_(next|prev)')
 
     # --- WELCOME ---
     if msg_text.startswith('main_country'):
-        country = msg_text.split('_')[-1]
+        country = msg_text.split(':')[-1]
         MainCBQ.countries(country, username, chat_id)
 
     # --- DISCOUNTS / enter promocode ---
@@ -77,19 +76,21 @@ def callback_query(call):
 
     # --- CATALOG / FILTERS ---
     elif re.search(pattern_option_move, msg_text):
-        msg_data = msg_text.split('_')
+        msg_data = msg_text.split(':')
+        common_name, filter_name = msg_data[:2]
+        move_where = msg_data[-1].split('_')[1]
 
-        common_name = msg_data[0]
-        where, common_val = msg_data[-2:]
-        increment = 1 if where == 'next' else -1
-
-        MainCBQ.common_handler(common_name, common_val, username, chat_id, message_id, increment=increment)
+        increment = 1 if move_where == 'next' else -1
+        MainCBQ.common_handler(common_name, filter_name, username, chat_id, message_id, increment=increment)
 
     elif re.search(pattern_option, msg_text):
-        pass
+        msg_data = msg_text.split(':')
+        msg_data.pop(2)
+        common_name, filter_name, option_name = msg_data
+        MainCBQ.options_handler(common_name, filter_name, option_name, username, chat_id, message_id)
 
     elif re.search(pattern_common, msg_text):
-        common_name, common_val = msg_text.split('_')
+        common_name, common_val = msg_text.split(':')
         MainCBQ.common_handler(common_name, common_val, username, chat_id, message_id)
 
 

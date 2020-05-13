@@ -4,6 +4,8 @@ import collections as cs
 
 from abc import ABCMeta, abstractmethod
 
+from sqlalchemy import inspect, Column
+
 from src.core.stepsprocess import process_city_step, process_promocode_step
 from src.core.common import bot
 from src.core.botutils import BotUtils
@@ -16,7 +18,7 @@ filters_state = {}
 
 class BaseCBQ(metaclass=ABCMeta):
     Option = cs.namedtuple('Option', ['name', 'callback'])
-    move_options_data = (('⬅️ Предыдущая', 'move_previous_{}'), ('➡️️ Следующая', 'move_next_{}'))
+    move_options_data = (('⬅️ Предыдущая', 'move_previous'), ('➡️️ Следующая', 'move_next'))
 
     @abstractmethod
     def get_keyboard_options(self):
@@ -39,15 +41,16 @@ class CatalogCBQ(BaseCBQ):
 class FiltersCBQ(BaseCBQ):
     __slots__ = ('_query_name', '_username', '_chat_id', '_increment')
 
-    _chunk_size = 6
+    _chunk_size = 7
 
     def __init__(self, query_name, username, chat_id, increment):
-        self._query_name    = query_name
+        self._query_name     = query_name
         self._username       = username
         self._chat_id        = chat_id
         self._increment      = increment
 
         self._state          = None
+        self._add_move       = True
 
     @staticmethod
     def get_max_size_name_of_all_options(all_options):
@@ -82,6 +85,9 @@ class FiltersCBQ(BaseCBQ):
         if state == len(chunk_girls_options):
             state = 0
 
+        if len(chunk_girls_options) == 1:
+            self._add_move = False
+
         filters_state[self._chat_id] = self._state = state
         return chunk_girls_options[state]
 
@@ -94,16 +100,62 @@ class FiltersCBQ(BaseCBQ):
 
     def add_move_options(self):
         options_objects = self.get_options_objects()
+
+        if not self._add_move:
+            return options_objects
+
         if self._state == 0:
             move_options = (self.move_options_data[1], )
         else:
             move_options = self.move_options_data
 
-        move_options = (self.Option(name, callback.format(self._query_name)) for name, callback in move_options)
+        move_options = (self.Option(name, callback) for name, callback in move_options)
         return itertools.chain(options_objects, move_options)
 
     def get_keyboard_options(self):
         return self.add_move_options()
+
+
+class FiltersOptionsHandler:
+    _filters = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter, 'Услуги': Services}
+
+    _msg1 = 'Введите значение от {} до {}.'
+    _msg2 = 'Введите один из представленных варинатов: {}.'
+    _msg3 = 'Введите следующее значение: {}.'
+
+    def __init__(self, filter_name, option_name_key, username, chat_id):
+        self._filter_name = filter_name
+        self._option_name_key = option_name_key
+        self._username = username
+        self._chat_id = chat_id
+
+        self._filter = self._filters.get(self._filter_name)
+
+    def get_msg_text(self, column: Column):
+        try:
+            data = column.type.enums
+        except AttributeError:
+            data = column.default.arg
+
+        if len(data) == 2:
+            msg = self._msg1.format(*data)
+        elif isinstance(data, list):
+            msg = self._msg2.format(', '.join(column.type.enums))
+        else:
+            msg = self._msg3.format(column.name)
+
+        return msg
+
+    def foo(self):
+        # FIXME: fix ext filter and services.
+        columns = inspect(self._filter).columns
+        msg = None
+
+        for col in columns:
+            if col.key == self._option_name_key:
+                msg = self.get_msg_text(col)
+
+        print(msg)
 
 
 class MainCBQ:
@@ -121,12 +173,19 @@ class MainCBQ:
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod
+    def options_handler(common_name, filter_name, option_name, username, chat_id, message_id, increment=0):
+        # args = (filter_name, option_name, username, chat_id, increment)
+        # FiltersOptions(*args).foo()
+
+        args = (filter_name, option_name, username, chat_id)
+        FiltersOptionsHandler(*args).foo()
+
+    @staticmethod
     def common_handler(common_name, filter_name, username, chat_id, message_id, increment=0):
         args = (filter_name, username, chat_id, increment)
-        if common_name == 'filters':
-            kb_options = FiltersCBQ(*args).get_keyboard_options()
-        elif common_name == 'catalog':
-            kb_options = CatalogCBQ(*args).get_keyboard_options()
+        common_classes = {'filters': FiltersCBQ, 'catalog': CatalogCBQ}
+        kb_options = common_classes.get(common_name)(*args).get_keyboard_options()
 
-        keyboard = utils.create_inline_keyboard_ext(*kb_options, prefix=f'{common_name}_option_', row_width=1)
+        prefix = f'{common_name}:{filter_name}:option:'
+        keyboard = utils.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
         bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
