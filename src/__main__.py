@@ -31,7 +31,7 @@ def discounts(message):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     user = BotUtils.create_user(username=username)
     if user.promocode:
-        text = MSG_DISCOUNTS.format(user.promocode, user.promo_discount, user.discount_expires_days)
+        text = MSG_DISCOUNTS.format(user.promocode, str(user.promo_discount) + ' %', user.discount_expires_days)
     else:
         text = MSG_DISCOUNTS.format('не введен', 'отсутствует', 0)
 
