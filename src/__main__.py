@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import re
 
+from src import SUPPORT_MAIL
 from src.core.callbackquery import MainCBQ
 from src.core.common import bot
 from src.core.utils.botutils import BotUtils
@@ -20,7 +21,7 @@ def filters(message):
 
 @bot.message_handler(regexp='Гарантии|О сервисе')
 def about(message):
-    abouts = {'Гарантии': MSG_GUARANTY, 'О сервисе': MSG_ABOUT_SERVICE}
+    abouts = {'Гарантии': MSG_GUARANTY, 'О сервисе': MSG_ABOUT_SERVICE.format(SUPPORT_MAIL)}
     about_text = abouts.get(' '.join(message.text.split()[1:]))
     bot.send_message(message.chat.id, about_text, parse_mode='Markdown')
 

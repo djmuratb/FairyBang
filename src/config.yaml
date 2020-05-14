@@ -18,6 +18,9 @@ enable tor: True
 # Debug: True (polling) / False (webhooks).
 debug: True
 
+# Support email address.
+mail: test@test.com
+
 
 # --- REQUIRE LISTS ---
 qiwi:

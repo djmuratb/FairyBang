@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from telebot import types
 
+from src import SUPPORT_MAIL
 from src.core.common import bot
-from src.core.utils.botutils import BotUtils
+from src.core.utils import pyutils
+from src.core.utils.botutils import BotUtils, Keyboards
 from src import AVAILABLE_COUNTRIES_LIST, PROMOCODES
 from src.messages import *
 
@@ -13,7 +15,7 @@ def start(message):
     BotUtils.create_user(username)
 
     welcome = MSG_WELCOME.format(username)
-    keyboard = pyutils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, prefix='main_country:', row_width=1)
+    keyboard = Keyboards.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, prefix='main_country:', row_width=1)
 
     bot.send_message(chat_id, welcome, parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
     bot.send_message(chat_id, MSG_ENTER_COUNTRY, parse_mode='Markdown', reply_markup=keyboard)
@@ -25,7 +27,7 @@ def process_city_step(message):
 
     if city in AVAILABLE_CITIES_LIST:
         BotUtils.write_changes(BotUtils.create_user(username).girls_filter, 'city', city)
-        bot.send_message(chat_id, MSG_MENU_ATTENTION, parse_mode='Markdown', reply_markup=KB_MENU)
+        bot.send_message(chat_id, MSG_MENU_ATTENTION.format(SUPPORT_MAIL), parse_mode='Markdown', reply_markup=KB_MENU)
     elif msg_text == '/reset':
         msg = bot.send_message(chat_id, MSG_RESET, parse_mode='Markdown')
         bot.register_next_step_handler(msg, start)
