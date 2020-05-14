@@ -13,7 +13,11 @@ url      = str(URL(**DATABASE))
 engine   = create_engine(url)
 Base     = declarative_base()
 
-exclude_columns_names_ = ('id', 'user_id', 'user_username')
+exclude_columns_names_ = (
+    'id',
+    'user_id',
+    'user_username',
+)
 
 
 class Common(Base):
