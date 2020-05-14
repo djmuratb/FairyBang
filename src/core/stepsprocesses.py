@@ -2,9 +2,9 @@
 from telebot import types
 
 from src.core.common import bot
-from src.core.botutils import BotUtils
+from src.core.utils.botutils import BotUtils
 from src.extra import AVAILABLE_COUNTRIES_LIST, PROMOCODES
-from src.extra.text import *
+from src.messages import *
 
 
 @bot.message_handler(commands=['start'])
@@ -13,7 +13,7 @@ def start(message):
     BotUtils.create_user(username)
 
     welcome = MSG_WELCOME.format(username)
-    keyboard = utils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, prefix='main_country:', row_width=1)
+    keyboard = pyutils.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, prefix='main_country:', row_width=1)
 
     bot.send_message(chat_id, welcome, parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
     bot.send_message(chat_id, MSG_ENTER_COUNTRY, parse_mode='Markdown', reply_markup=keyboard)
@@ -41,7 +41,7 @@ def process_promocode_step(message):
     if promocode_data:
         user = BotUtils.create_user(username)
         user.promocode = promocode
-        utils.set_attrs_values_from_dict(promocode_data, user, date_specific=True)
+        pyutils.set_attrs_values_from_dict(promocode_data, user, date_specific=True)
 
         BotUtils.write_changes(user)
         bot.send_message(chat_id, MSG_SUCCESS_PROMO, parse_mode='Markdown', reply_markup=KB_MENU)

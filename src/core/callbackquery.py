@@ -6,11 +6,11 @@ from abc import ABCMeta, abstractmethod
 
 from sqlalchemy import inspect, Column
 
-from src.core.stepsprocess import process_city_step, process_promocode_step, change_option_value_handler
+from src.core.stepsprocesses import process_city_step, process_promocode_step, change_option_value_handler
 from src.core.common import bot
-from src.core.botutils import BotUtils
+from src.core.utils.botutils import BotUtils
 from src.models import session, GirlsFilter, ExtendedGirlsFilter, Services
-from src.extra.text import *
+from src.messages import *
 
 
 filters_state = {}
@@ -77,7 +77,7 @@ class FiltersCBQ(BaseCBQ):
 
     def get_chunk_girls_options(self):
         girls_options = self.get_girls_options()
-        return utils.chunk_list(girls_options, self._chunk_size)
+        return pyutils.chunk_list(girls_options, self._chunk_size)
 
     def get_part_from_chunk_girls_options(self):
         chunk_girls_options = self.get_chunk_girls_options()
@@ -195,5 +195,5 @@ class MainCBQ:
         kb_options = common_classes.get(common_name)(*args).get_keyboard_options()
 
         prefix = f'{common_name}:{filter_name}:option:'
-        keyboard = utils.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
+        keyboard = pyutils.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
         bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)

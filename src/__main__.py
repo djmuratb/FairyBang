@@ -4,8 +4,8 @@ import re
 
 from src.core.callbackquery import MainCBQ
 from src.core.common import bot
-from src.core.botutils import BotUtils
-from src.extra.text import *
+from src.core.utils.botutils import BotUtils
+from src.messages import *
 
 
 @bot.message_handler(regexp='Каталог')

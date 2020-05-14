@@ -40,7 +40,6 @@ def create_inline_keyboard_ext(*options: Sequence[str], prefix: str ='cb_', post
     return markup
 
 
-
 def get_abs_path(file: str):
     return os.path.join(
         os.getcwd(), file

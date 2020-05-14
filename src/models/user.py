@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, Integer, String, Float, DateTime, Date
 from sqlalchemy.orm import relationship
@@ -36,7 +36,7 @@ class User(Common):
 
     @hybrid_property
     def days_since_register(self):
-        return (datetime.now() - self.registration_date).days
+        return (datetime.now(timezone.utc) - self.registration_date).days
 
     @hybrid_property
     def discount_expires_days(self):

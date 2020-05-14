@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from src.extra import utils
+from src.core.utils import pyutils
 
-CONFIG = utils.load_config('extra/config.yaml')
+CONFIG = pyutils.load_config('extra/config.yaml')
 
 ADMIN_USERNAME                  = CONFIG['admin username']
 API_TOKEN                       = CONFIG['api token']
