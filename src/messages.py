@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from src.core.utils import pyutils
+from src.core.utils.botutils import Keyboards
 
 AVAILABLE_CITIES_LIST = (
     'Дмитров',
@@ -129,10 +129,10 @@ MSG_HELP_RANGE = '\n\n_*Введите 2 значения через дефис.
 # --- KEYBOARD ITEMS ---
 
 # - REPLY -
-KB_MENU = pyutils.create_reply_keyboard('💄 Каталог', '🛠 Фильтры', '🛡 Гарантии', '🎁 Скидки', '📊 Статистика', '📓 О сервисе')
-KB_CANCEL = pyutils.create_reply_keyboard('❌ Отмена', row_width=1)
+KB_MENU = Keyboards.create_reply_keyboard('💄 Каталог', '🛠 Фильтры', '🛡 Гарантии', '🎁 Скидки', '📊 Статистика', '📓 О сервисе')
+KB_CANCEL = Keyboards.create_reply_keyboard('❌ Отмена', row_width=1)
 
 # - INLINE -
-KB_PROMOCODE = pyutils.create_inline_keyboard('🔊 Ввести PROMOCODE', prefix='promocode:')
+KB_PROMOCODE = Keyboards.create_inline_keyboard('🔊 Ввести PROMOCODE', prefix='promocode:')
 FILTERS_ITEMS = ('Базовый', 'Расширенный', 'Услуги')
-KB_FILTERS_MENU = pyutils.create_inline_keyboard(*FILTERS_ITEMS, prefix='filters:', row_width=1)
+KB_FILTERS_MENU = Keyboards.create_inline_keyboard(*FILTERS_ITEMS, prefix='filters:', row_width=1)

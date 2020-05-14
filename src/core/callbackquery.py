@@ -8,7 +8,8 @@ from sqlalchemy import inspect, Column
 
 from src.core.stepsprocesses import process_city_step, process_promocode_step, change_option_value_handler
 from src.core.common import bot
-from src.core.utils.botutils import BotUtils
+from src.core.utils import pyutils
+from src.core.utils.botutils import BotUtils, Keyboards
 from src.models import session, GirlsFilter, ExtendedGirlsFilter, Services
 from src.messages import *
 
@@ -195,5 +196,5 @@ class MainCBQ:
         kb_options = common_classes.get(common_name)(*args).get_keyboard_options()
 
         prefix = f'{common_name}:{filter_name}:option:'
-        keyboard = pyutils.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
+        keyboard = Keyboards.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
         bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
