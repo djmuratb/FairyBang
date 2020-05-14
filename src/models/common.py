@@ -13,6 +13,8 @@ url      = str(URL(**DATABASE))
 engine   = create_engine(url)
 Base     = declarative_base()
 
+exclude_columns_names_ = ('id', 'user_id', 'user_username')
+
 
 class Common(Base):
     __abstract__ = True
@@ -46,7 +48,7 @@ class Common(Base):
         return data
 
     @staticmethod
-    def as_dict(obj, exclude_columns_names=('id', 'user_id', 'user_username')):
+    def as_dict(obj, exclude_columns_names=exclude_columns_names_):
         d = {}
         for column in obj.__table__.columns:
             if column.name in exclude_columns_names:
@@ -61,7 +63,7 @@ class Common(Base):
         return d
 
     @staticmethod
-    def as_list(obj, exclude_columns_names=('id', 'user_id', 'user_username')):
+    def as_list(obj, exclude_columns_names=exclude_columns_names_):
         result = []
         for column in obj.__table__.columns:
             if column.name in exclude_columns_names:

@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Enum, ForeignKey, ARRAY
 from sqlalchemy.orm import relationship
 
 from src.models.common import Base, engine, Common
-from src.models.enums import *
+from src.models.extra.enums import *
 
 
 class GirlsFilter(Common):
