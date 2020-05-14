@@ -147,7 +147,6 @@ class FiltersOptionsHandler:
         return msg
 
     def foo(self):
-        # FIXME: fix ext filter and services.
         columns = inspect(self._filter).columns
         msg = None
 

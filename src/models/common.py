@@ -26,10 +26,12 @@ class Common(Base):
         col_val = getattr(obj, column_key)
         if isinstance(col_val, enum.Enum):
             val = col_val.value
+        elif isinstance(col_val, str):
+            val = str(col_val)
         elif type(col_val) in (tuple, list):
             val = '{} - {}'.format(*col_val)
         else:
-            val = str(col_val)
+            val = 'не задано'
 
         return val
 
