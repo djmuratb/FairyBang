@@ -3,7 +3,7 @@ import telebot
 
 from telebot import apihelper
 
-from src.extra import ENABLE_TOR, API_TOKEN
+from src import ENABLE_TOR, API_TOKEN
 
 
 if ENABLE_TOR:

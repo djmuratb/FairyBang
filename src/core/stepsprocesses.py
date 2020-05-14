@@ -3,7 +3,7 @@ from telebot import types
 
 from src.core.common import bot
 from src.core.utils.botutils import BotUtils
-from src.extra import AVAILABLE_COUNTRIES_LIST, PROMOCODES
+from src import AVAILABLE_COUNTRIES_LIST, PROMOCODES
 from src.messages import *
 
 

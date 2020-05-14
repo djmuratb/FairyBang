@@ -6,7 +6,7 @@ from sqlalchemy.engine.url import URL
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-from src.extra import DATABASE
+from src import DATABASE
 
 
 url      = str(URL(**DATABASE))
