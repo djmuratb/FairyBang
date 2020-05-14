@@ -37,7 +37,6 @@ def process_city_step(message):
 def process_promocode_step(message):
     username, chat_id, message_id, promocode = BotUtils.get_message_data(message)
     promocode_data = PROMOCODES.get(promocode, None)
-    print(111, promocode_data)
 
     if promocode_data:
         user = BotUtils.create_user(username)
@@ -53,3 +52,8 @@ def process_promocode_step(message):
     else:
         msg = bot.send_message(chat_id, MSG_ERROR_PROMO, parse_mode='Markdown', reply_markup=KB_CANCEL)
         bot.register_next_step_handler(msg, process_promocode_step)
+
+
+def change_option_value_handler(message, **kwargs):
+    # TODO: write validator
+    pass

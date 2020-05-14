@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 
 from sqlalchemy import inspect, Column
 
-from src.core.stepsprocess import process_city_step, process_promocode_step
+from src.core.stepsprocess import process_city_step, process_promocode_step, change_option_value_handler
 from src.core.common import bot
 from src.core.botutils import BotUtils
 from src.models import session, GirlsFilter, ExtendedGirlsFilter, Services
@@ -119,9 +119,9 @@ class FiltersCBQ(BaseCBQ):
 class FiltersOptionsHandler:
     _filters = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter, 'Услуги': Services}
 
-    _msg1 = 'Введите значение от {} до {}.'
-    _msg2 = 'Введите один из представленных варинатов: {}.'
-    _msg3 = 'Введите следующее значение: {}.'
+    _msg1 = 'Введите значение от *{}* до *{}*.'
+    _msg2 = 'Введите один из представленных варинатов: *{}*.'
+    _msg3 = 'Введите следующее значение: *{}*.'
 
     def __init__(self, filter_name, option_name_key, username, chat_id):
         self._filter_name = filter_name
@@ -135,26 +135,35 @@ class FiltersOptionsHandler:
         try:
             data = column.type.enums
         except AttributeError:
-            data = column.default.arg
+            try:
+                data = column.default.arg
+            except AttributeError:
+                data = ''
 
         if len(data) == 2:
-            msg = self._msg1.format(*data)
+            msg = self._msg1.format(*data) + MSG_HELP_RANGE
         elif isinstance(data, list):
             msg = self._msg2.format(', '.join(column.type.enums))
         else:
             msg = self._msg3.format(column.name)
+            if not data:
+                msg += MSG_HELP_RANGE
 
         return msg
 
-    def foo(self):
+    def send_change_option_value_msg(self):
         columns = inspect(self._filter).columns
         msg = None
 
         for col in columns:
             if col.key == self._option_name_key:
                 msg = self.get_msg_text(col)
+                msg = MSG_CHANGE_OPTION_VAL.format(msg)
 
-        print(msg)
+        chat_msg = bot.send_message(self._chat_id, msg, parse_mode='Markdown', reply_markup=KB_CANCEL)
+
+        # TODO: set require kwargs
+        bot.register_next_step_handler(chat_msg, change_option_value_handler)
 
 
 class MainCBQ:
@@ -177,7 +186,7 @@ class MainCBQ:
         # FiltersOptions(*args).foo()
 
         args = (filter_name, option_name, username, chat_id)
-        FiltersOptionsHandler(*args).foo()
+        FiltersOptionsHandler(*args).send_change_option_value_msg()
 
     @staticmethod
     def common_handler(common_name, filter_name, username, chat_id, message_id, increment=0):

@@ -54,6 +54,11 @@ def statistic(message):
     bot.send_message(chat_id, msg, parse_mode='Markdown')
 
 
+@bot.message_handler(regexp='Отмена')
+def cancel(message):
+    bot.send_message(message.chat.id, MSG_CANCELED, reply_markup=KB_MENU)
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
