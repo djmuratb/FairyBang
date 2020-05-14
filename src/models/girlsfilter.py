@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column, Integer, String, Boolean, Enum, ForeignKey, ARRAY
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, ARRAY
 from sqlalchemy.orm import relationship
 
 from src.models.common import Base, engine, Common
@@ -14,7 +14,8 @@ class GirlsFilter(Common):
     #       --- location ---
     country       = Column(String(30), name='Страна', default='🇷🇺 Россия', key='country')
     city          = Column(String(50), name='Город', default='Москва', key='city')
-    subway        = Column(Enum(Subway, values_callable=lambda obj: [e.value for e in obj]), name='Район', default=Subway.two.value, key='subway')
+    subway        = Column(Enum(Subway, values_callable=Common.values_callable, name='Район'),
+                           name='Район', default=Subway.two.value, key='subway')
 
     #       --- appearance details ---
     age           = Column(ARRAY(Integer, as_tuple=True), name='Возраст', default=(18, 80), key='age')
@@ -38,15 +39,23 @@ class ExtendedGirlsFilter(Common):
     id                          = Column(Integer, primary_key=True)
 
     #       --- additional appearance ---
-    category                    = Column(String(30), name='Категория', key='category')
-    hair_color                  = Column(String(20), name='Цвет волос', key='hair_color')
-    body_type                   = Column(String(20), name='Телосложение', key='body_type')
-    skin_color                  = Column(String(20), name='Цвет кожи', key='skin_color')
-    nationality                 = Column(String(30), name='Национальность', key='nationality')
+    category                    = Column(Enum(ExtCategory, values_callable=Common.values_callable, name='Категория'),
+                                         name='Категория', default=ExtCategory.not_important.value, key='category')
+    hair_color                  = Column(Enum(ExtHairColor, values_callable=Common.values_callable, name='Цвет волос'),
+                                         name='Цвет волос', default=ExtHairColor.not_important.value, key='hair_color')
+    body_type                   = Column(Enum(ExtBodyType, values_callable=Common.values_callable, name='Телосложение'),
+                                         name='Телосложение', default=ExtBodyType.not_important.value, key='body_type')
+    skin_color                  = Column(Enum(ExtSkinColor, values_callable=Common.values_callable, name='Цвет кожи'),
+                                         name='Цвет кожи', default=ExtSkinColor.not_important.value, key='skin_color')
+    nationality                 = Column(Enum(ExtNationality, values_callable=Common.values_callable,
+                                              name='Национальность'), name='Национальность',
+                                         default=ExtNationality.not_important.value, key='nationality')
 
     #       --- other ---
-    smoking                     = Column(Boolean, name='Курение', key='smoking')
-    girl_friends                = Column(Boolean, name='Подружки', key='girl_friends')
+    smoking                     = Column(Enum(ExtSmoking, values_callable=Common.values_callable, name='Курение'),
+                                         name='Курение', default=ExtSmoking.not_important.value, key='smoking')
+    girl_friends                = Column(Enum(ExtGirlFriends, values_callable=Common.values_callable, name='Подружки'),
+                                         name='Подружки', default=ExtGirlFriends.not_important.value, key='girl_friends')
 
     #       --- prices ---
     app_one_hour                = Column(ARRAY(Integer, as_tuple=True), name='Апартаменты 1 час', key='app_one_hour')

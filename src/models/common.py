@@ -18,6 +18,10 @@ class Common(Base):
     __abstract__ = True
 
     @staticmethod
+    def values_callable(obj):
+        return [e.value for e in obj]
+
+    @staticmethod
     def get_column_value(obj, column_key):
         col_val = getattr(obj, column_key)
         if isinstance(col_val, enum.Enum):
