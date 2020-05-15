@@ -79,10 +79,6 @@ def process_change_range_option_val_step(message, **kwargs):
         change_option_value(filter_class, username, key, valid_values)
         bot.send_message(chat_id, MSG_SUCCESS_CHANGE_OPTION, parse_mode='Markdown', reply_markup=KB_MENU)
     else:
+        func = process_change_range_option_val_step
         msg = bot.send_message(chat_id, MSG_INCORRECT_VALUE, parse_mode='Markdown')
-        bot.register_next_step_handler(
-            msg,
-            process_change_range_option_val_step,
-            default_values=default_values,
-            value_type=value_type
-        )
+        bot.register_next_step_handler(msg, func, default_values=default_values, value_type=value_type)
