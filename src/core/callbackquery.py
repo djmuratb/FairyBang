@@ -4,9 +4,9 @@ import collections as cs
 
 from abc import ABCMeta, abstractmethod
 
-from sqlalchemy import inspect, Column
+from sqlalchemy import inspect, Column, ARRAY, Enum
 
-from src.core.stepsprocesses import process_city_step, process_promocode_step, change_option_value_handler
+from src.core.stepsprocesses import process_city_step, process_promocode_step, process_change_range_option_val_step
 from src.core.common import bot
 from src.core.utils import pyutils
 from src.core.utils.botutils import BotUtils, Keyboards
@@ -120,6 +120,7 @@ class FiltersCBQ(BaseCBQ):
 class FiltersOptionsHandler:
     _filters = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter, 'Услуги': Services}
 
+    _msg0 = 'Введите диапазон значений.'
     _msg1 = 'Введите значение от *{}* до *{}*.'
     _msg2 = 'Введите один из представленных варинатов: *{}*.'
     _msg3 = 'Введите следующее значение: *{}*.'
@@ -130,41 +131,77 @@ class FiltersOptionsHandler:
         self._username = username
         self._chat_id = chat_id
 
-        self._filter = self._filters.get(self._filter_name)
+        self._filter_class = self._filters.get(self._filter_name)
 
-    def get_msg_text(self, column: Column):
-        try:
-            data = column.type.enums
-        except AttributeError:
+    def send_range_msg(self, msg, default_values, value_type, key):
+        chat_msg = bot.send_message(self._chat_id, msg, parse_mode='Markdown', reply_markup=KB_CANCEL)
+        bot.register_next_step_handler(
+            chat_msg,
+            process_change_range_option_val_step,
+            default_values=default_values,
+            value_type=value_type,
+            filter_class=self._filter_class,
+            key=key,
+        )
+
+    @staticmethod
+    def get_msg_value_from_column(column: Column):
+        column_type = column.__dict__['type']
+
+        if isinstance(column_type, ARRAY):
             try:
-                data = column.default.arg
+                data = (column.default.arg, 'range')
             except AttributeError:
-                data = ''
-
-        if len(data) == 2:
-            msg = self._msg1.format(*data) + MSG_HELP_RANGE
-        elif isinstance(data, list):
-            msg = self._msg2.format(', '.join(column.type.enums))
+                data = (None, 'range')
+        elif isinstance(column_type, Enum):
+            data = (column.type.enums, 'enum')
         else:
-            msg = self._msg3.format(column.name)
-            if not data:
-                msg += MSG_HELP_RANGE
+            data = ('', 'location')
 
-        return msg
+        return data
 
-    def send_change_option_value_msg(self):
-        columns = inspect(self._filter).columns
-        msg = None
+    def get_msg_data_from_column(self, column: Column):
+        value, value_type = self.get_msg_value_from_column(column)
+        if value_type == 'range':
+            if value:
+                text = self._msg1.format(*value) + MSG_HELP_RANGE
+            else:
+                text = self._msg0 + MSG_HELP_RANGE
+        elif value_type == 'enum':
+            text = self._msg2.format(', '.join(value))
+        else:
+            text = self._msg3.format(column.name)
+
+        return text, value, value_type
+
+    def get_msg_data(self):
+        columns = inspect(self._filter_class).columns
+        msg = value_type = default_values = key = None
 
         for col in columns:
             if col.key == self._option_name_key:
-                msg = self.get_msg_text(col)
+                msg, default_values, value_type = self.get_msg_data_from_column(col)
+                key = col.key
                 msg = MSG_CHANGE_OPTION_VAL.format(msg)
 
-        chat_msg = bot.send_message(self._chat_id, msg, parse_mode='Markdown', reply_markup=KB_CANCEL)
+        return msg, default_values, value_type, key
 
-        # TODO: set require kwargs
-        bot.register_next_step_handler(chat_msg, change_option_value_handler)
+    def send_change_option_value_msg(self):
+        # FIXME: под enums нужно использовать bod_edit_msg
+
+        if isinstance(self._filter_class, Services):
+            # TODO: change value of service option
+            return
+
+        msg, default_values, value_type, key = self.get_msg_data()
+
+        if value_type == 'range':
+            self.send_range_msg(msg, default_values, value_type, key)
+        elif value_type == 'enum':
+            pass
+        elif value_type == 'location':
+            # TODO: country / city / Subway process step
+            pass
 
 
 class MainCBQ:
@@ -177,8 +214,8 @@ class MainCBQ:
         bot.register_next_step_handler(msg, process_city_step)
 
     @staticmethod
-    def promocode(chat_id, message_id):
-        msg = bot.edit_message_text(MSG_ENTER_PROMO, chat_id, message_id, parse_mode='Markdown')
+    def promocode(chat_id):
+        msg = bot.send_message(chat_id, MSG_ENTER_PROMO, parse_mode='Markdown', reply_markup=KB_CANCEL)
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod

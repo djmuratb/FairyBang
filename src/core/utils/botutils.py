@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Sequence
+from collections import namedtuple
 
 from telebot import types
 
@@ -25,7 +26,7 @@ class Keyboards:
         return markup
 
     @staticmethod
-    def create_inline_keyboard_ext(*options: Sequence[str], prefix: str = 'cb_', postfix: str = '', row_width: int = 1):
+    def create_inline_keyboard_ext(*options: namedtuple, prefix: str = 'cb_', postfix: str = '', row_width: int = 1):
         markup = types.InlineKeyboardMarkup(row_width)
         markup.add(
             *(
@@ -39,6 +40,7 @@ class Keyboards:
 class BotUtils:
     @staticmethod
     def write_changes(obj, attr=None, value=None, only_commit=True):
+        # TODO: check update method
         if attr and value:
             obj.__setattr__(attr, value)
 

@@ -55,9 +55,10 @@ def statistic(message):
     bot.send_message(chat_id, msg, parse_mode='Markdown')
 
 
-@bot.message_handler(regexp='Отмена')
-def cancel(message):
-    bot.send_message(message.chat.id, MSG_CANCELED, reply_markup=KB_MENU)
+# # IMPORTANT: remove following later // its uses for debug
+# @bot.message_handler(regexp='Отмена')
+# def cancel(message):
+#     bot.send_message(message.chat.id, MSG_CANCELED, reply_markup=KB_MENU)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -78,7 +79,7 @@ def callback_query(call):
 
     # --- DISCOUNTS / enter promocode ---
     elif msg_text.startswith('promocode'):
-        MainCBQ.promocode(chat_id, message_id)
+        MainCBQ.promocode(chat_id)
 
     # --- CATALOG / FILTERS ---
     elif re.search(pattern_option_move, msg_text):
