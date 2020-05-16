@@ -3,10 +3,13 @@
 import re
 
 from src import SUPPORT_MAIL
-from src.core.callbackquery import MainCBQ
+from src.messages import *
+
 from src.core.common import bot
 from src.core.utils.botutils import BotUtils
-from src.messages import *
+
+from src.core.callbackqueries.main import MainCBQ
+from src.core.callbackqueries.common import common_handler
 
 
 @bot.message_handler(regexp='Каталог')
@@ -85,7 +88,7 @@ def callback_query(call):
         move_where = msg_data[-1].split('_')[1]
 
         increment = 1 if move_where == 'next' else -1
-        MainCBQ.common_handler(common_name, filter_name, *default_args, increment=increment)
+        common_handler(common_name, filter_name, *default_args, increment=increment)
 
     elif re.search(pattern_option, msg_text):
         msg_data = msg_text.split(':')
@@ -95,11 +98,11 @@ def callback_query(call):
 
     elif re.search(pattern_common, msg_text):
         common_name, common_val = msg_text.split(':')
-        MainCBQ.common_handler(common_name, common_val, *default_args)
+        common_handler(common_name, common_val, *default_args)
 
     elif re.search(pattern_change_enum_move_back, msg_text):
         filter_name = msg_text.split(':')[-1]
-        MainCBQ.common_handler('filters', filter_name, *default_args)
+        common_handler('filters', filter_name, *default_args)
 
     elif re.search(pattern_change_enum_option_value, msg_text):
         filter_name, option_key, option_value = msg_text.split(':')[1:]

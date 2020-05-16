@@ -20,11 +20,11 @@ exclude_columns_names_ = (
 )
 
 
-class CommonUtils:
+class _CommonUtils:
 
     @staticmethod
     def get_result_data(obj, column):
-        column_value = CommonUtils.get_column_value(obj, column.key)
+        column_value = _CommonUtils.get_column_value(obj, column.key)
         return (column.key, column_value) if column.name == column.key else (column.key, column.name, column_value)
 
     @staticmethod
@@ -42,7 +42,7 @@ class CommonUtils:
         elif type(col_val) in (tuple, list):
             val = '{} - {}'.format(*col_val)
         elif isinstance(col_val, bool):
-            val = CommonUtils.bool_to_special_char(col_val)
+            val = _CommonUtils.bool_to_special_char(col_val)
         else:
             val = 'не задано'
 
@@ -59,7 +59,7 @@ class Common(Base):
             if column.name in exclude_columns_names:
                 continue
 
-            col_val = CommonUtils.get_column_value(obj, column.key)
+            col_val = _CommonUtils.get_column_value(obj, column.key)
             if column.name == column.key:
                 d.update({column.key: col_val})
             else:
@@ -74,7 +74,7 @@ class Common(Base):
             if column.name in exclude_columns_names:
                 continue
 
-            result.append(CommonUtils.get_result_data(obj, column))
+            result.append(_CommonUtils.get_result_data(obj, column))
 
         return result
 
