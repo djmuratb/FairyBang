@@ -40,9 +40,8 @@ class MainCBQ:
         common_handler('filters', filter_name, username, chat_id, message_id)
 
     @staticmethod
-    def options_handler(common_name, filter_name, option_name, username, chat_id, message_id):
-        args = (filter_name, option_name, username, chat_id, message_id)
+    def options_handler(common_name, filter_name, option_name_key, username, chat_id, message_id):
         if common_name == 'filters':
-            FiltersOptionsHandler(*args).send_change_option_value_msg()
+            FiltersOptionsHandler(**locals()).send_change_option_value_msg()
         elif common_name == 'catalog':
             pass

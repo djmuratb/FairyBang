@@ -13,7 +13,7 @@ from src.core.utils.botutils import BotUtils, Keyboards
 from src.core.callbackqueries.common import common_handler
 
 
-class FiltersOptionsHandler:
+class BaseMixin:
     _msg0 = 'Введите диапазон значений.'
     _msg1 = 'Введите значение от *{}* до *{}*.'
     _msg2 = 'Выберите один из вариантов.'
@@ -21,52 +21,14 @@ class FiltersOptionsHandler:
 
     Option = cs.namedtuple('Option', ['name', 'callback'])
 
-    def __init__(self, filter_name, option_name_key, username, chat_id, message_id):
-        self._filter_name = filter_name
-        self._option_name_key = option_name_key
-        self._username = username
-        self._chat_id = chat_id
-        self._message_id = message_id
+    def __init__(self, **kwargs):
+        self._filter_name = kwargs['filter_name']
+        self._option_name_key = kwargs['option_name_key']
+        self._username = kwargs['username']
+        self._chat_id = kwargs['chat_id']
+        self._message_id = kwargs['message_id']
 
-        self._filter_class = FILTERS.get(self._filter_name)
-
-    def add_move_back_option(self, options):
-        move_cb = f'ch:back:{self._filter_name}'
-        return itertools.chain(options, (self.Option(name='⬅️ Назад', callback=move_cb),))
-
-    def get_options(self, default_values, option_key):
-        options = (
-            self.Option(name=val, callback=f'ch:{self._filter_name}:{option_key}:{val}')
-            for val in default_values
-        )
-        return self.add_move_back_option(options)
-
-    def send_enum_msg(self, msg, default_values, option_key):
-        options = self.get_options(default_values, option_key)
-        kb = Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=2)
-        bot.edit_message_text(msg, self._chat_id, self._message_id, parse_mode='Markdown', reply_markup=kb)
-
-    def send_range_msg(self, msg, default_values, value_type, key):
-        chat_msg = bot.send_message(self._chat_id, msg, parse_mode='Markdown', reply_markup=KB_CANCEL)
-        bot.register_next_step_handler(
-            chat_msg,
-            process_change_range_option_val_step,
-            default_values=default_values,
-            value_type=value_type,
-            filter_class=self._filter_class,
-            key=key,
-        )
-
-    def get_new_service_val(self):
-        column = self.get_selected_column()
-        o = session.query(Services).filter_by(user_username=self._username).one()
-        current_option_val = o.__getattribute__(column.key)
-        return (o, column.key, False) if current_option_val else (o, column.key, True)
-
-    def send_service_msg(self):
-        o, key, new_option_val = self.get_new_service_val()
-        BotUtils.write_changes(o, key, new_option_val)
-        common_handler('filters', self._filter_name, self._username, self._chat_id, self._message_id)
+        self._filter_class = FILTERS.get(kwargs.get('filter_name'))
 
     @staticmethod
     def get_msg_value_from_column(column: Column):
@@ -108,6 +70,65 @@ class FiltersOptionsHandler:
         selected_column = self.get_selected_column()
         return self.get_msg_data_from_column(selected_column)
 
+
+class RangeMixin(BaseMixin):
+    def send_range_msg(self, value_type, option_key, default_values, msg):
+        chat_msg = bot.send_message(self._chat_id, msg, parse_mode='Markdown', reply_markup=KB_CANCEL)
+        bot.register_next_step_handler(
+            chat_msg,
+            process_change_range_option_val_step,
+            default_values=default_values,
+            value_type=value_type,
+            filter_class=self._filter_class,
+            key=option_key,
+        )
+
+
+class EnumMixin(BaseMixin):
+    def add_move_back_option(self, options):
+        move_cb = f'ch:back:{self._filter_name}'
+        return itertools.chain(options, (self.Option(name='⬅️ Назад', callback=move_cb),))
+
+    def get_options(self, default_values, option_key):
+        options = (
+            self.Option(name=val, callback=f'ch:{self._filter_name}:{option_key}:{val}')
+            for val in default_values
+        )
+        return self.add_move_back_option(options)
+
+    def send_enum_msg(self, option_key, default_values, msg):
+        options = self.get_options(default_values, option_key)
+        kb = Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=2)
+        bot.edit_message_text(msg, self._chat_id, self._message_id, parse_mode='Markdown', reply_markup=kb)
+
+
+class ServicesMixin(BaseMixin):
+    def get_new_service_val(self):
+        column = self.get_selected_column()
+        o = session.query(Services).filter_by(user_username=self._username).one()
+        current_option_val = o.__getattribute__(column.key)
+        return (o, column.key, False) if current_option_val else (o, column.key, True)
+
+    def send_service_msg(self):
+        o, key, new_option_val = self.get_new_service_val()
+        BotUtils.write_changes(o, key, new_option_val)
+        common_handler('filters', self._filter_name, self._username, self._chat_id, self._message_id)
+
+
+class LocationMixin(BaseMixin):
+    def send_location_msg(self):
+        pass
+
+
+class StringMixin(BaseMixin):
+    def send_string_msg(self):
+        pass
+
+
+class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin, StringMixin):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def send_change_option_value_msg(self):
         if self._filter_class == Services:
             self.send_service_msg()
@@ -116,9 +137,9 @@ class FiltersOptionsHandler:
         msg, default_values, value_type, key = self.get_msg_data()
 
         if value_type == 'range':
-            self.send_range_msg(msg, default_values, value_type, key)
+            self.send_range_msg(value_type, key, default_values, msg)
         elif value_type == 'enum':
-            self.send_enum_msg(msg, default_values, key)
+            self.send_enum_msg(key, default_values, msg)
         elif value_type == 'location':
             # TODO: country / city / Subway process step
             pass

@@ -68,6 +68,10 @@ class Common(Base):
         return d
 
     @staticmethod
+    def as_genexpr(obj, exclude_columns_names=exclude_columns_names_):
+        pass
+
+    @staticmethod
     def as_list(obj, exclude_columns_names=exclude_columns_names_):
         result = []
         for column in obj.__table__.columns:
