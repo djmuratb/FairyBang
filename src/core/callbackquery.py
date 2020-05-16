@@ -13,7 +13,7 @@ from src.core.utils import pyutils
 from src.core.utils.botutils import BotUtils, Keyboards
 from src.core.utils.validators import VALIDATORS
 
-from src.models import session, GirlsFilter, ExtendedGirlsFilter, Services
+from src.models import session, Services, FILTERS
 from src.messages import *
 
 
@@ -73,8 +73,7 @@ class FiltersCBQ(BaseCBQ):
         return option_name
 
     def get_girls_options(self):
-        filters = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter, 'Услуги': Services}
-        filter_ = filters.get(self._query_name)
+        filter_ = FILTERS.get(self._query_name)
         return filter_.as_list(
             session.query(filter_).filter(filter_.user_username == self._username).one()
         )
@@ -121,8 +120,6 @@ class FiltersCBQ(BaseCBQ):
 
 
 class FiltersOptionsHandler:
-    _filters = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter, 'Услуги': Services}
-
     _msg0 = 'Введите диапазон значений.'
     _msg1 = 'Введите значение от *{}* до *{}*.'
     _msg2 = 'Выберите один из вариантов.'
@@ -137,7 +134,7 @@ class FiltersOptionsHandler:
         self._chat_id = chat_id
         self._message_id = message_id
 
-        self._filter_class = self._filters.get(self._filter_name)
+        self._filter_class = FILTERS.get(self._filter_name)
 
     def add_move_back_option(self, options):
         move_cb = f'ch:back:{self._filter_name}'
@@ -239,11 +236,9 @@ class MainCBQ:
 
     @staticmethod
     def change_enum_option_value(filter_name, option_key, value, username, chat_id, message_id):
-        # NOTE: need refactoring
-        filters_classes = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter}
-        filter_class = filters_classes.get(filter_name)
-
+        filter_class = FILTERS.get(filter_name)
         is_valid = VALIDATORS.get('enum').validate(enum_key=option_key, value=value)
+
         if is_valid:
             obj = session.query(filter_class).filter_by(user_username=username).one()
             BotUtils.write_changes(obj, option_key, value)

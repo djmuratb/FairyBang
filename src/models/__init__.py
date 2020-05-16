@@ -4,3 +4,10 @@ from src.models.user import User
 from src.models.girlsfilter import GirlsFilter, ExtendedGirlsFilter
 from src.models.services import Services
 from src.models.admin import Admin
+
+
+FILTERS = {
+    'Базовый'       : GirlsFilter,
+    'Расширенный'   : ExtendedGirlsFilter,
+    'Услуги'        : Services,
+}
