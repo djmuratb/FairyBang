@@ -191,22 +191,23 @@ class FiltersOptionsHandler:
         else:
             text = self._msg3.format(column.name)
 
-        return text, value, value_type, column.key
+        return MSG_CHANGE_OPTION_VAL.format(text), value, value_type, column.key
 
-    def get_msg_data(self):
+    def get_selected_column(self):
         columns = inspect(self._filter_class).columns
-        msg = value_type = default_values = key = None
-
         for col in columns:
             if col.key == self._option_name_key:
-                msg, default_values, value_type, key = self.get_msg_data_from_column(col)
-                msg = MSG_CHANGE_OPTION_VAL.format(msg)
+                return col
 
-        return msg, default_values, value_type, key
+    def get_msg_data(self):
+        selected_column = self.get_selected_column()
+        return self.get_msg_data_from_column(selected_column)
 
     def send_change_option_value_msg(self):
-        if isinstance(self._filter_class, Services):
+        if self._filter_class == Services:
             # TODO: change value of service option
+            column = self.get_selected_column()
+            print(111, column)
             return
 
         msg, default_values, value_type, key = self.get_msg_data()
