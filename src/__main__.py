@@ -58,6 +58,7 @@ def statistic(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
+    default_args = (username, chat_id, message_id)
 
     print('--- CALLBACK DATA --- ', msg_text)
 
@@ -65,6 +66,8 @@ def callback_query(call):
     pattern_common = re.compile(r'filters|catalog')
     pattern_option = re.compile(r'(filters|catalog):\w+:option')
     pattern_option_move = re.compile(r'(filters|catalog):\w+:option:move_(next|prev)')
+    pattern_change_enum_option_value = re.compile(r'ch:\w+:\w+:\w+')
+    pattern_change_enum_move_back = re.compile(r'ch:back:\w+')
 
     # --- WELCOME ---
     if msg_text.startswith('main_country'):
@@ -82,17 +85,25 @@ def callback_query(call):
         move_where = msg_data[-1].split('_')[1]
 
         increment = 1 if move_where == 'next' else -1
-        MainCBQ.common_handler(common_name, filter_name, username, chat_id, message_id, increment=increment)
+        MainCBQ.common_handler(common_name, filter_name, *default_args, increment=increment)
 
     elif re.search(pattern_option, msg_text):
         msg_data = msg_text.split(':')
         msg_data.pop(2)
         common_name, filter_name, option_name = msg_data
-        MainCBQ.options_handler(common_name, filter_name, option_name, username, chat_id, message_id)
+        MainCBQ.options_handler(common_name, filter_name, option_name, *default_args)
 
     elif re.search(pattern_common, msg_text):
         common_name, common_val = msg_text.split(':')
-        MainCBQ.common_handler(common_name, common_val, username, chat_id, message_id)
+        MainCBQ.common_handler(common_name, common_val, *default_args)
+
+    elif re.search(pattern_change_enum_move_back, msg_text):
+        filter_name = msg_text.split(':')[-1]
+        MainCBQ.change_enum_move_back(filter_name, *default_args)
+
+    elif re.search(pattern_change_enum_option_value, msg_text):
+        filter_name, option_key, option_value = msg_text.split(':')[1:]
+        MainCBQ.change_enum_option_value(filter_name, option_key, option_value, *default_args)
 
 
 def main_loop():

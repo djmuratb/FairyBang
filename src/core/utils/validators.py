@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from abc import ABCMeta, abstractmethod
 
+from src.models.extra.enums import ENUMS
+
 
 class ValidatorBase(metaclass=ABCMeta):
     @staticmethod
@@ -33,9 +35,9 @@ class RangeValidator(ValidatorBase):
 class EnumValidator(ValidatorBase):
     @staticmethod
     def validate(**kwargs):
-        value, enums = kwargs.values()
-        value = value.capitalize()
-        return value if value in enums else None
+        enum_key, value = kwargs.values()
+        enum = ENUMS.get(enum_key)
+        return value if value in (e.value for e in enum) else None
 
 
 class LocationValidator(ValidatorBase):

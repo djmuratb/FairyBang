@@ -6,10 +6,13 @@ from abc import ABCMeta, abstractmethod
 
 from sqlalchemy import inspect, Column, ARRAY, Enum
 
-from src.core.stepsprocesses import process_city_step, process_promocode_step, process_change_range_option_val_step
 from src.core.common import bot
+from src.core.stepsprocesses import process_city_step, process_promocode_step, process_change_range_option_val_step
+
 from src.core.utils import pyutils
 from src.core.utils.botutils import BotUtils, Keyboards
+from src.core.utils.validators import VALIDATORS
+
 from src.models import session, GirlsFilter, ExtendedGirlsFilter, Services
 from src.messages import *
 
@@ -122,16 +125,29 @@ class FiltersOptionsHandler:
 
     _msg0 = 'Введите диапазон значений.'
     _msg1 = 'Введите значение от *{}* до *{}*.'
-    _msg2 = 'Введите один из представленных варинатов: *{}*.'
+    _msg2 = 'Введите один из представленных вариантов: *{}*.'
     _msg3 = 'Введите следующее значение: *{}*.'
 
-    def __init__(self, filter_name, option_name_key, username, chat_id):
+    Option = cs.namedtuple('Option', ['name', 'callback'])
+
+    def __init__(self, filter_name, option_name_key, username, chat_id, message_id):
         self._filter_name = filter_name
         self._option_name_key = option_name_key
         self._username = username
         self._chat_id = chat_id
+        self._message_id = message_id
 
         self._filter_class = self._filters.get(self._filter_name)
+
+    def send_enum_msg(self, msg, default_values, option_key):
+        # NOTE: need refactoring
+        options = (
+            self.Option(name=val, callback=f'ch:{self._filter_name}:{option_key}:{val}')
+            for val in default_values
+        )
+        all_options = itertools.chain(options, (self.Option(name='Назад', callback=f'ch:back:{self._filter_name}'),))
+        kb = Keyboards.create_inline_keyboard_ext(*all_options, prefix='', row_width=2)
+        bot.edit_message_text(msg, self._chat_id, self._message_id, parse_mode='Markdown', reply_markup=kb)
 
     def send_range_msg(self, msg, default_values, value_type, key):
         chat_msg = bot.send_message(self._chat_id, msg, parse_mode='Markdown', reply_markup=KB_CANCEL)
@@ -168,6 +184,7 @@ class FiltersOptionsHandler:
             else:
                 text = self._msg0 + MSG_HELP_RANGE
         elif value_type == 'enum':
+            # FIXME: remove values from msg
             text = self._msg2.format(', '.join(value))
         else:
             text = self._msg3.format(column.name)
@@ -198,7 +215,7 @@ class FiltersOptionsHandler:
         if value_type == 'range':
             self.send_range_msg(msg, default_values, value_type, key)
         elif value_type == 'enum':
-            pass
+            self.send_enum_msg(msg, default_values, key)
         elif value_type == 'location':
             # TODO: country / city / Subway process step
             pass
@@ -219,11 +236,43 @@ class MainCBQ:
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod
-    def options_handler(common_name, filter_name, option_name, username, chat_id, message_id, increment=0):
-        # args = (filter_name, option_name, username, chat_id, increment)
-        # FiltersOptions(*args).foo()
+    def change_enum_move_back(filter_name, username, chat_id, message_id):
+        # NOTE: need refactoring
+        # ---
+        increment = 0
+        args = (filter_name, username, chat_id, increment)
+        kb_options = FiltersCBQ(*args).get_keyboard_options()
 
-        args = (filter_name, option_name, username, chat_id)
+        prefix = f'filters:{filter_name}:option:'
+        keyboard = Keyboards.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
+        bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
+
+    @staticmethod
+    def change_enum_option_value(filter_name, option_key, value, username, chat_id, message_id):
+        # NOTE: need refactoring
+        # TODO: remove increment and add it to specific class
+        filters_classes = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter}
+        filter_class = filters_classes.get(filter_name)
+        enum_validator = VALIDATORS.get('enum')
+
+        is_valid = enum_validator.validate(enum_key=option_key, value=value)
+        if is_valid:
+            obj = session.query(filter_class).filter_by(user_username=username).one()
+            BotUtils.write_changes(obj, option_key, value)
+
+        # ---
+        increment = 0
+        args = (filter_name, username, chat_id, increment)
+        kb_options = FiltersCBQ(*args).get_keyboard_options()
+
+        prefix = f'filters:{filter_name}:option:'
+        keyboard = Keyboards.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
+        bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
+
+    @staticmethod
+    def options_handler(common_name, filter_name, option_name, username, chat_id, message_id, increment=0):
+        # TODO: move to __main__ callback_query and remove it method
+        args = (filter_name, option_name, username, chat_id, message_id)
         FiltersOptionsHandler(*args).send_change_option_value_msg()
 
     @staticmethod

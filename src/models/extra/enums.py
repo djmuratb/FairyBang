@@ -72,3 +72,14 @@ class ExtGirlFriends(enum.Enum):
 
     exist           = 'Есть подружки'
     no_exist        = 'Без подруг'
+
+
+ENUMS = {
+    'category'      : ExtCategory,
+    'hair_color'    : ExtHairColor,
+    'body_type'     : ExtBodyType,
+    'skin_color'    : ExtSkinColor,
+    'nationality'   : ExtNationality,
+    'smoking'       : ExtSmoking,
+    'girl_friends'  : ExtGirlFriends,
+}

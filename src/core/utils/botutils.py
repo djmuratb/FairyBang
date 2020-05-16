@@ -26,7 +26,7 @@ class Keyboards:
         return markup
 
     @staticmethod
-    def create_inline_keyboard_ext(*options: namedtuple, prefix: str = 'cb_', postfix: str = '', row_width: int = 1):
+    def create_inline_keyboard_ext(*options: namedtuple, prefix: str = 'cb_', row_width: int = 1):
         markup = types.InlineKeyboardMarkup(row_width)
         markup.add(
             *(
