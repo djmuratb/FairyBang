@@ -47,7 +47,7 @@ class FiltersCBQ(BaseCBQ):
 
     _chunk_size = 7
 
-    def __init__(self, query_name, username, chat_id, increment):
+    def __init__(self, query_name, username, chat_id, increment=0):
         self._query_name     = query_name
         self._username       = username
         self._chat_id        = chat_id
@@ -225,6 +225,11 @@ class FiltersOptionsHandler:
             pass
 
 
+class MainCBQUtils:
+    def foo(self):
+        pass
+
+
 class MainCBQ:
     @staticmethod
     def countries(country_name, username, chat_id):
@@ -243,8 +248,7 @@ class MainCBQ:
     def change_enum_move_back(filter_name, username, chat_id, message_id):
         # NOTE: need refactoring
         # ---
-        increment = 0
-        args = (filter_name, username, chat_id, increment)
+        args = (filter_name, username, chat_id)
         kb_options = FiltersCBQ(*args).get_keyboard_options()
 
         prefix = f'filters:{filter_name}:option:'
@@ -257,16 +261,14 @@ class MainCBQ:
         # TODO: remove increment and add it to specific class
         filters_classes = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter}
         filter_class = filters_classes.get(filter_name)
-        enum_validator = VALIDATORS.get('enum')
 
-        is_valid = enum_validator.validate(enum_key=option_key, value=value)
+        is_valid = VALIDATORS.get('enum').validate(enum_key=option_key, value=value)
         if is_valid:
             obj = session.query(filter_class).filter_by(user_username=username).one()
             BotUtils.write_changes(obj, option_key, value)
 
         # ---
-        increment = 0
-        args = (filter_name, username, chat_id, increment)
+        args = (filter_name, username, chat_id)
         kb_options = FiltersCBQ(*args).get_keyboard_options()
 
         prefix = f'filters:{filter_name}:option:'
@@ -274,9 +276,12 @@ class MainCBQ:
         bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
 
     @staticmethod
-    def options_handler(common_name, filter_name, option_name, username, chat_id, message_id, increment=0):
+    def options_handler(common_name, filter_name, option_name, username, chat_id, message_id):
         args = (filter_name, option_name, username, chat_id, message_id)
-        FiltersOptionsHandler(*args).send_change_option_value_msg()
+        if common_name == 'filters':
+            FiltersOptionsHandler(*args).send_change_option_value_msg()
+        elif common_name == 'catalog':
+            pass
 
     @staticmethod
     def common_handler(common_name, filter_name, username, chat_id, message_id, increment=0):
