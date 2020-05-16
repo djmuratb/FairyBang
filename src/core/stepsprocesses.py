@@ -4,7 +4,6 @@ from telebot import types
 from src import SUPPORT_MAIL, AVAILABLE_COUNTRIES_LIST, PROMOCODES
 from src.messages import *
 
-from src.models import session
 from src.core.common import bot
 
 from src.core.utils import pyutils
@@ -70,7 +69,7 @@ def process_change_range_option_val_step(message, **kwargs):
     valid_values = VALIDATORS.get(value_type).validate(value=val, default_values=default_values)
 
     if valid_values:
-        BotUtils.write_changes(filter_class, {'user_username': username}, key, valid_values)
+        BotUtils.write_changes(filter_class, key, valid_values, filter_by={'user_username': username})
         bot.send_message(chat_id, MSG_SUCCESS_CHANGE_OPTION, parse_mode='Markdown', reply_markup=KB_MENU)
     else:
         msg = bot.send_message(chat_id, MSG_INCORRECT_VALUE, parse_mode='Markdown')

@@ -139,14 +139,20 @@ class FiltersOptionsHandler:
 
         self._filter_class = self._filters.get(self._filter_name)
 
-    def send_enum_msg(self, msg, default_values, option_key):
-        # NOTE: need refactoring
+    def add_move_back_option(self, options):
+        move_cb = f'ch:back:{self._filter_name}'
+        return itertools.chain(options, (self.Option(name='Назад', callback=move_cb),))
+
+    def get_options(self, default_values, option_key):
         options = (
             self.Option(name=val, callback=f'ch:{self._filter_name}:{option_key}:{val}')
             for val in default_values
         )
-        all_options = itertools.chain(options, (self.Option(name='Назад', callback=f'ch:back:{self._filter_name}'),))
-        kb = Keyboards.create_inline_keyboard_ext(*all_options, prefix='', row_width=2)
+        return self.add_move_back_option(options)
+
+    def send_enum_msg(self, msg, default_values, option_key):
+        options = self.get_options(default_values, option_key)
+        kb = Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=2)
         bot.edit_message_text(msg, self._chat_id, self._message_id, parse_mode='Markdown', reply_markup=kb)
 
     def send_range_msg(self, msg, default_values, value_type, key):
@@ -204,8 +210,6 @@ class FiltersOptionsHandler:
         return msg, default_values, value_type, key
 
     def send_change_option_value_msg(self):
-        # FIXME: под enums нужно использовать bod_edit_msg
-
         if isinstance(self._filter_class, Services):
             # TODO: change value of service option
             return
@@ -271,7 +275,6 @@ class MainCBQ:
 
     @staticmethod
     def options_handler(common_name, filter_name, option_name, username, chat_id, message_id, increment=0):
-        # TODO: move to __main__ callback_query and remove it method
         args = (filter_name, option_name, username, chat_id, message_id)
         FiltersOptionsHandler(*args).send_change_option_value_msg()
 

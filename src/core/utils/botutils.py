@@ -40,13 +40,13 @@ class Keyboards:
 class BotUtils:
     @staticmethod
     def get_obj(o, filter_by: dict):
-        if isinstance(o, type):
+        if isinstance(o, type) and filter_by:
             o = session.query(o).filter_by(**filter_by).one()
 
         return o
 
     @staticmethod
-    def write_changes(o: object or type, filter_by: dict = None, attr=None, value=None, only_commit=True):
+    def write_changes(o: object or type, attr=None, value=None, only_commit=True, filter_by: dict = None):
         # TODO: check update method
         obj = BotUtils.get_obj(o, filter_by)
         if attr and value:
