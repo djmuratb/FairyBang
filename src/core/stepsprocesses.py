@@ -59,14 +59,7 @@ def process_promocode_step(message):
         bot.register_next_step_handler(msg, process_promocode_step)
 
 
-def write_option_value(filter_class, username, key, value):
-    # NOTE: need refactoring
-    obj = session.query(filter_class).filter_by(user_username=username).one()
-    BotUtils.write_changes(obj, key, value)
-
-
 def process_change_range_option_val_step(message, **kwargs):
-    # NOTE: need refactoring
     username, chat_id, message_id, val = BotUtils.get_message_data(message)
 
     if val.endswith('Отмена'):
@@ -74,13 +67,11 @@ def process_change_range_option_val_step(message, **kwargs):
         return
 
     default_values, value_type, filter_class, key = kwargs.values()
-    range_validator = VALIDATORS.get(value_type)
+    valid_values = VALIDATORS.get(value_type).validate(value=val, default_values=default_values)
 
-    valid_values = range_validator.validate(value=val, default_values=default_values)
     if valid_values:
-        write_option_value(filter_class, username, key, valid_values)
+        BotUtils.write_changes(filter_class, {'user_username': username}, key, valid_values)
         bot.send_message(chat_id, MSG_SUCCESS_CHANGE_OPTION, parse_mode='Markdown', reply_markup=KB_MENU)
     else:
-        func = process_change_range_option_val_step
         msg = bot.send_message(chat_id, MSG_INCORRECT_VALUE, parse_mode='Markdown')
-        bot.register_next_step_handler(msg, func, default_values=default_values, value_type=value_type)
+        bot.register_next_step_handler(msg, process_change_range_option_val_step, **kwargs)
