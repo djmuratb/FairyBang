@@ -20,12 +20,17 @@ exclude_columns_names_ = (
 )
 
 
-class Common(Base):
-    __abstract__ = True
+class CommonUtils:
 
     @staticmethod
-    def values_callable(obj):
-        return [e.value for e in obj]
+    def get_result_data(obj, column):
+        column_value = CommonUtils.get_column_value(obj, column.key)
+        return (column.key, column_value) if column.name == column.key else (column.key, column.name, column_value)
+
+    @staticmethod
+    def bool_to_special_char(val: bool):
+        d = {True: 'да', False: 'нет'}
+        return d.get(val)
 
     @staticmethod
     def get_column_value(obj, column_key):
@@ -36,20 +41,16 @@ class Common(Base):
             val = str(col_val)
         elif type(col_val) in (tuple, list):
             val = '{} - {}'.format(*col_val)
+        elif isinstance(col_val, bool):
+            val = CommonUtils.bool_to_special_char(col_val)
         else:
             val = 'не задано'
 
         return val
 
-    @staticmethod
-    def get_result_data(obj, column):
-        column_value = Common.get_column_value(obj, column.key)
-        if column.name == column.key:
-            data = (column.key, column_value)
-        else:
-            data = (column.key, column.name, column_value)
 
-        return data
+class Common(Base):
+    __abstract__ = True
 
     @staticmethod
     def as_dict(obj, exclude_columns_names=exclude_columns_names_):
@@ -58,7 +59,7 @@ class Common(Base):
             if column.name in exclude_columns_names:
                 continue
 
-            col_val = Common.get_column_value(obj, column.key)
+            col_val = CommonUtils.get_column_value(obj, column.key)
             if column.name == column.key:
                 d.update({column.key: col_val})
             else:
@@ -73,9 +74,13 @@ class Common(Base):
             if column.name in exclude_columns_names:
                 continue
 
-            result.append(Common.get_result_data(obj, column))
+            result.append(CommonUtils.get_result_data(obj, column))
 
         return result
+
+    @staticmethod
+    def values_callable(obj):
+        return [e.value for e in obj]
 
 
 Session = sessionmaker(bind=engine)

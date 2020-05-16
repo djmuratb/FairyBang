@@ -49,7 +49,7 @@ class BotUtils:
     def write_changes(o: object or type, attr=None, value=None, only_commit=True, filter_by: dict = None):
         # TODO: check update method
         obj = BotUtils.get_obj(o, filter_by)
-        if attr and value:
+        if attr and value is not None:
             obj.__setattr__(attr, value)
 
         if not only_commit:

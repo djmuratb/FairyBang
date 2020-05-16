@@ -10,7 +10,7 @@ from src.core.common import bot
 from src.core.stepsprocesses import process_city_step, process_promocode_step, process_change_range_option_val_step
 
 from src.core.utils import pyutils
-from src.core.utils.botutils import BotUtils, Keyboards
+from src.core.utils.botutils import BotUtils
 from src.core.utils.validators import VALIDATORS
 
 from src.models import session, Services, FILTERS
@@ -163,6 +163,17 @@ class FiltersOptionsHandler:
             key=key,
         )
 
+    def get_new_service_val(self):
+        column = self.get_selected_column()
+        o = session.query(Services).filter_by(user_username=self._username).one()
+        current_option_val = o.__getattribute__(column.key)
+        return (o, column.key, False) if current_option_val else (o, column.key, True)
+
+    def send_service_msg(self):
+        o, key, new_option_val = self.get_new_service_val()
+        BotUtils.write_changes(o, key, new_option_val)
+        MainCBQ.common_handler('filters', self._filter_name, self._username, self._chat_id, self._message_id)
+
     @staticmethod
     def get_msg_value_from_column(column: Column):
         column_type = column.__dict__['type']
@@ -205,9 +216,7 @@ class FiltersOptionsHandler:
 
     def send_change_option_value_msg(self):
         if self._filter_class == Services:
-            # TODO: change value of service option
-            column = self.get_selected_column()
-            print(111, column)
+            self.send_service_msg()
             return
 
         msg, default_values, value_type, key = self.get_msg_data()
