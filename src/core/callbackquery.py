@@ -125,7 +125,7 @@ class FiltersOptionsHandler:
 
     _msg0 = 'Введите диапазон значений.'
     _msg1 = 'Введите значение от *{}* до *{}*.'
-    _msg2 = 'Введите один из представленных вариантов: *{}*.'
+    _msg2 = 'Выберите один из вариантов.'
     _msg3 = 'Введите следующее значение: *{}*.'
 
     Option = cs.namedtuple('Option', ['name', 'callback'])
@@ -141,7 +141,7 @@ class FiltersOptionsHandler:
 
     def add_move_back_option(self, options):
         move_cb = f'ch:back:{self._filter_name}'
-        return itertools.chain(options, (self.Option(name='Назад', callback=move_cb),))
+        return itertools.chain(options, (self.Option(name='⬅️ Назад', callback=move_cb),))
 
     def get_options(self, default_values, option_key):
         options = (
@@ -190,12 +190,11 @@ class FiltersOptionsHandler:
             else:
                 text = self._msg0 + MSG_HELP_RANGE
         elif value_type == 'enum':
-            # FIXME: remove values from msg
-            text = self._msg2.format(', '.join(value))
+            text = self._msg2
         else:
             text = self._msg3.format(column.name)
 
-        return text, value, value_type
+        return text, value, value_type, column.key
 
     def get_msg_data(self):
         columns = inspect(self._filter_class).columns
@@ -203,8 +202,7 @@ class FiltersOptionsHandler:
 
         for col in columns:
             if col.key == self._option_name_key:
-                msg, default_values, value_type = self.get_msg_data_from_column(col)
-                key = col.key
+                msg, default_values, value_type, key = self.get_msg_data_from_column(col)
                 msg = MSG_CHANGE_OPTION_VAL.format(msg)
 
         return msg, default_values, value_type, key
@@ -225,11 +223,6 @@ class FiltersOptionsHandler:
             pass
 
 
-class MainCBQUtils:
-    def foo(self):
-        pass
-
-
 class MainCBQ:
     @staticmethod
     def countries(country_name, username, chat_id):
@@ -245,20 +238,8 @@ class MainCBQ:
         bot.register_next_step_handler(msg, process_promocode_step)
 
     @staticmethod
-    def change_enum_move_back(filter_name, username, chat_id, message_id):
-        # NOTE: need refactoring
-        # ---
-        args = (filter_name, username, chat_id)
-        kb_options = FiltersCBQ(*args).get_keyboard_options()
-
-        prefix = f'filters:{filter_name}:option:'
-        keyboard = Keyboards.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
-        bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
-
-    @staticmethod
     def change_enum_option_value(filter_name, option_key, value, username, chat_id, message_id):
         # NOTE: need refactoring
-        # TODO: remove increment and add it to specific class
         filters_classes = {'Базовый': GirlsFilter, 'Расширенный': ExtendedGirlsFilter}
         filter_class = filters_classes.get(filter_name)
 
@@ -267,13 +248,7 @@ class MainCBQ:
             obj = session.query(filter_class).filter_by(user_username=username).one()
             BotUtils.write_changes(obj, option_key, value)
 
-        # ---
-        args = (filter_name, username, chat_id)
-        kb_options = FiltersCBQ(*args).get_keyboard_options()
-
-        prefix = f'filters:{filter_name}:option:'
-        keyboard = Keyboards.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
-        bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
+        MainCBQ.common_handler('filters', filter_name, username, chat_id, message_id)
 
     @staticmethod
     def options_handler(common_name, filter_name, option_name, username, chat_id, message_id):

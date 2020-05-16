@@ -99,7 +99,7 @@ def callback_query(call):
 
     elif re.search(pattern_change_enum_move_back, msg_text):
         filter_name = msg_text.split(':')[-1]
-        MainCBQ.change_enum_move_back(filter_name, *default_args)
+        MainCBQ.common_handler('filters', filter_name, *default_args)
 
     elif re.search(pattern_change_enum_option_value, msg_text):
         filter_name, option_key, option_value = msg_text.split(':')[1:]
