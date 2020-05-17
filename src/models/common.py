@@ -69,18 +69,15 @@ class Common(Base):
 
     @staticmethod
     def as_genexpr(obj, exclude_columns_names=exclude_columns_names_):
-        pass
+        return (
+            _CommonUtils.get_result_data(obj, column)
+            for column in obj.__table__.columns
+            if column.name not in exclude_columns_names
+        )
 
     @staticmethod
-    def as_list(obj, exclude_columns_names=exclude_columns_names_):
-        result = []
-        for column in obj.__table__.columns:
-            if column.name in exclude_columns_names:
-                continue
-
-            result.append(_CommonUtils.get_result_data(obj, column))
-
-        return result
+    def as_tuple(obj, exclude_columns_names=exclude_columns_names_):
+        return tuple(Common.as_genexpr(obj, exclude_columns_names))
 
     @staticmethod
     def values_callable(obj):

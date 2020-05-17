@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+import itertools
 
 import yaml
 
 from datetime import datetime, date
 from collections import ChainMap
-from itertools import islice
 
 
 def get_abs_path(file: str):
@@ -32,15 +32,21 @@ def get_delta_days_from_dates(first: datetime, latest: datetime = datetime.now()
 def chunk_dict(data: dict, parts_num: int):
     it = iter(data)
     return [
-        {key: data[key] for key in islice(it, parts_num)} for i in range(0, len(data), parts_num)
+        {key: data[key] for key in itertools.islice(it, parts_num)} for i in range(0, len(data), parts_num)
     ]
 
 
 def chunk_list(data: list, parts_num: int):
     it = iter(data)
     return [
-        [d for d in islice(it, parts_num)] for i in range(0, len(data), parts_num)
+        [d for d in itertools.islice(it, parts_num)] for _ in range(0, len(data), parts_num)
     ]
+
+
+def chunk_genexpr(data, parts_num):
+    genexpr, genexpr_cp = itertools.tee(data, 2)
+    stop = sum(1 for _ in genexpr_cp)
+    return (itertools.islice(genexpr, parts_num) for _ in range(0, stop, parts_num))
 
 
 def set_attrs_values_from_dict(d: dict, obj: object, date_specific=False):

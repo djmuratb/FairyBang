@@ -41,7 +41,7 @@ class FiltersCBQ(BaseCBQ):
 
     def get_girls_options(self):
         filter_ = FILTERS.get(self._query_name)
-        return filter_.as_list(
+        return filter_.as_tuple(
             session.query(filter_).filter(filter_.user_username == self._username).one()
         )
 
