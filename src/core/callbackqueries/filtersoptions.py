@@ -130,7 +130,7 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
         self._send_msg_funcs = {
             'range'  : self.send_range_msg,
             'enum'   : self.send_enum_msg,
-            'other'  : self.send_other_msg,
+            'other'  : self.send_other_msg_handler,
         }
 
     @staticmethod
@@ -141,6 +141,7 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
     def send_other_msg_handler(self, option_key, default_values, msg):
         if self.is_location(option_key):
             self.send_location_msg(option_key, msg)
+            return
 
         self.send_other_msg(option_key, default_values, msg)
 
