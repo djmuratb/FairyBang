@@ -2,13 +2,6 @@
 import enum
 
 
-# --- Base enums ---
-class Subway(enum.Enum):
-    one = '1'
-    two = '2'
-    three = '3'
-
-
 # --- Extended girls filter enums ---
 class ExtCategory(enum.Enum):
     not_important   = 'Не важно'
