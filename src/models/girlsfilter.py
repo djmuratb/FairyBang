@@ -14,8 +14,7 @@ class GirlsFilter(Common):
     #       --- location ---
     country       = Column(String(30), name='Страна', default='🇷🇺 Россия', key='country')
     city          = Column(String(50), name='Город', default='Москва', key='city')
-    subway        = Column(Enum(Subway, values_callable=Common.values_callable, name='Район'),
-                           name='Район', default=Subway.two.value, key='subway')
+    subway        = Column(String(50), name='Район', nullable=True, key='subway')
 
     #       --- appearance details ---
     age           = Column(ARRAY(Integer, as_tuple=True), name='Возраст', default=(18, 80), key='age')

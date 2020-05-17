@@ -102,48 +102,52 @@ class EnumMixin(BaseMixin):
 
 
 class ServicesMixin(BaseMixin):
-    def get_new_service_val(self):
+    def _get_new_service_val(self):
         column = self.get_selected_column()
         o = session.query(Services).filter_by(user_username=self._username).one()
         current_option_val = o.__getattribute__(column.key)
         return (o, column.key, False) if current_option_val else (o, column.key, True)
 
     def send_service_msg(self):
-        o, key, new_option_val = self.get_new_service_val()
+        o, key, new_option_val = self._get_new_service_val()
         BotUtils.write_changes(o, key, new_option_val)
         common_handler('filters', self._filter_name, self._username, self._chat_id, self._message_id)
 
 
 class LocationMixin(BaseMixin):
-    def send_location_msg(self):
+    def send_location_msg(self, option_key, msg):
         pass
 
 
-class StringMixin(BaseMixin):
-    def send_string_msg(self):
+class OtherMixin(BaseMixin):
+    def send_other_msg(self, option_key, default_values, msg):
         pass
 
 
-class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin, StringMixin):
+class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin, OtherMixin):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._send_msg_funcs = {
+            'range'  : self.send_range_msg,
+            'enum'   : self.send_enum_msg,
+            'other'  : self.send_other_msg,
+        }
 
     @staticmethod
     def is_location(option_key):
         if option_key in ('country', 'city', 'subway'):
             return True
 
-    def send_enum_msg_handler(self, key, default_values, msg):
-        if self.is_location(key):
-            self.send_location_msg()
+    def send_other_msg_handler(self, option_key, default_values, msg):
+        if self.is_location(option_key):
+            self.send_location_msg(option_key, msg)
 
-        self.send_enum_msg(key, default_values, msg)
+        self.send_other_msg(option_key, default_values, msg)
 
     def send_change_option_value_msg(self):
         if self._filter_class == Services:
             self.send_service_msg()
             return
 
-        send_msg_funcs = {'range': self.send_range_msg, 'enum': self.send_enum_msg_handler, 'other': None}
         msg, default_values, value_type, key = self.get_msg_data()
-        send_msg_funcs[value_type](key, default_values, msg)
+        self._send_msg_funcs[value_type](key, default_values, msg)
