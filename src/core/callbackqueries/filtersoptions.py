@@ -103,8 +103,8 @@ class EnumMixin(BaseMixin):
 
 class ServicesMixin(BaseMixin):
     def _get_new_service_val(self):
-        column = self.get_selected_column()
         o = session.query(Services).filter_by(user_username=self._username).one()
+        column = self.get_selected_column()
         current_option_val = o.__getattribute__(column.key)
         return (o, column.key, False) if current_option_val else (o, column.key, True)
 
