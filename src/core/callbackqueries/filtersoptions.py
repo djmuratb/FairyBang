@@ -22,13 +22,13 @@ class BaseMixin:
     Option = cs.namedtuple('Option', ['name', 'callback'])
 
     def __init__(self, **kwargs):
-        self._filter_name = kwargs['filter_name']
-        self._option_name_key = kwargs['option_name_key']
-        self._username = kwargs['username']
-        self._chat_id = kwargs['chat_id']
-        self._message_id = kwargs['message_id']
+        self._filter_name       = kwargs['filter_name']
+        self._option_name_key   = kwargs['option_name_key']
+        self._username          = kwargs['username']
+        self._chat_id           = kwargs['chat_id']
+        self._message_id        = kwargs['message_id']
 
-        self._filter_class = FILTERS.get(kwargs.get('filter_name'))
+        self._filter_class      = FILTERS.get(kwargs.get('filter_name'))
 
     @staticmethod
     def get_msg_value_from_column(column: Column):
@@ -42,7 +42,7 @@ class BaseMixin:
         elif isinstance(column_type, Enum):
             data = (column.type.enums, 'enum')
         else:
-            data = ('', 'location')
+            data = ('', 'other')
 
         return data
 
@@ -72,13 +72,12 @@ class BaseMixin:
 
 
 class RangeMixin(BaseMixin):
-    def send_range_msg(self, value_type, option_key, default_values, msg):
+    def send_range_msg(self, option_key, default_values, msg):
         chat_msg = bot.send_message(self._chat_id, msg, parse_mode='Markdown', reply_markup=KB_CANCEL)
         bot.register_next_step_handler(
             chat_msg,
             process_change_range_option_val_step,
             default_values=default_values,
-            value_type=value_type,
             filter_class=self._filter_class,
             key=option_key,
         )
@@ -129,17 +128,22 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    @staticmethod
+    def is_location(option_key):
+        if option_key in ('country', 'city', 'subway'):
+            return True
+
+    def send_enum_msg_handler(self, key, default_values, msg):
+        if self.is_location(key):
+            self.send_location_msg()
+
+        self.send_enum_msg(key, default_values, msg)
+
     def send_change_option_value_msg(self):
         if self._filter_class == Services:
             self.send_service_msg()
             return
 
+        send_msg_funcs = {'range': self.send_range_msg, 'enum': self.send_enum_msg_handler, 'other': None}
         msg, default_values, value_type, key = self.get_msg_data()
-
-        if value_type == 'range':
-            self.send_range_msg(value_type, key, default_values, msg)
-        elif value_type == 'enum':
-            self.send_enum_msg(key, default_values, msg)
-        elif value_type == 'location':
-            # TODO: country / city / Subway process step
-            pass
+        send_msg_funcs[value_type](key, default_values, msg)

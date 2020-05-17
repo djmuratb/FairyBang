@@ -65,8 +65,8 @@ def process_change_range_option_val_step(message, **kwargs):
         bot.send_message(chat_id, MSG_CANCELED, reply_markup=KB_MENU)
         return
 
-    default_values, value_type, filter_class, key = kwargs.values()
-    valid_values = VALIDATORS.get(value_type).validate(value=val, default_values=default_values)
+    default_values, filter_class, key = kwargs.values()
+    valid_values = VALIDATORS.get('range').validate(value=val, default_values=default_values)
 
     if valid_values:
         BotUtils.write_changes(filter_class, key, valid_values, filter_by={'user_username': username})
