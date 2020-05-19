@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+from src.messages import *
+
+from src.core.stepsprocesses import process_change_city_step
+
 from src.core.common import bot
-from src.core.utils.botutils import Keyboards
+from src.core.utils.botutils import BotUtils, Keyboards
 
 from src.core.callbackqueries.filters import FiltersCBQ
 from src.core.callbackqueries.catalog import CatalogCBQ
@@ -16,3 +20,11 @@ def common_handler(common_name, filter_name, username, chat_id, message_id, incr
     prefix = f'{common_name}:{filter_name}:option:'
     keyboard = Keyboards.create_inline_keyboard_ext(*kb_options, prefix=prefix, row_width=1)
     bot.edit_message_text(f'🅰️ *{filter_name}*', chat_id, message_id, parse_mode='Markdown', reply_markup=keyboard)
+
+
+def process_change_country_step(country_name, username, chat_id):
+    user = BotUtils.create_user(username)
+    BotUtils.write_changes(user.girls_filter, 'country', country_name)
+
+    msg = bot.send_message(chat_id, MSG_ENTER_CITY, parse_mode='Markdown')
+    bot.register_next_step_handler(msg, process_change_city_step)

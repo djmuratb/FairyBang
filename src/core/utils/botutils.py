@@ -39,16 +39,16 @@ class Keyboards:
 
 class BotUtils:
     @staticmethod
-    def get_obj(o, filter_by: dict):
-        if isinstance(o, type) and filter_by:
-            o = session.query(o).filter_by(**filter_by).one()
+    def get_obj(class_or_instance, filter_by: dict):
+        if isinstance(class_or_instance, type) and filter_by:
+            class_or_instance = session.query(class_or_instance).filter_by(**filter_by).one()
 
-        return o
+        return class_or_instance
 
     @staticmethod
-    def write_changes(o: object or type, attr=None, value=None, only_commit=True, filter_by: dict = None):
+    def write_changes(class_or_instance: object or type, attr=None, value=None, only_commit=True, filter_by: dict = None):
         # TODO: check update method
-        obj = BotUtils.get_obj(o, filter_by)
+        obj = BotUtils.get_obj(class_or_instance, filter_by)
         if attr and value is not None:
             obj.__setattr__(attr, value)
 

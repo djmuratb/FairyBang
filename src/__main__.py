@@ -9,7 +9,7 @@ from src.core.common import bot
 from src.core.utils.botutils import BotUtils
 
 from src.core.callbackqueries.main import MainCBQ
-from src.core.callbackqueries.common import common_handler
+from src.core.callbackqueries.common import common_handler, process_change_country_step
 
 
 @bot.message_handler(regexp='Каталог')
@@ -69,19 +69,26 @@ def callback_query(call):
     pattern_common = re.compile(r'filters|catalog')
     pattern_option = re.compile(r'(filters|catalog):\w+:option')
     pattern_option_move = re.compile(r'(filters|catalog):\w+:option:move_(next|prev)')
+
+    # - ch == change -
+    pattern_change_country_option_value = re.compile(r'filters:country')
     pattern_change_enum_option_value = re.compile(r'ch:\w+:\w+:\w+')
     pattern_change_enum_move_back = re.compile(r'ch:back:\w+')
 
     # --- WELCOME ---
     if msg_text.startswith('main_country'):
         country = msg_text.split(':')[-1]
-        MainCBQ.countries(country, username, chat_id)
+        process_change_country_step(country, username, chat_id)
 
     # --- DISCOUNTS / enter promocode ---
     elif msg_text.startswith('promocode'):
         MainCBQ.promocode(chat_id)
 
     # --- CATALOG / FILTERS ---
+    elif re.search(pattern_change_country_option_value, msg_text):
+        country = msg_text.split(':')[-1]
+        MainCBQ.change_country_option_value(country, *default_args[:2])
+
     elif re.search(pattern_option_move, msg_text):
         msg_data = msg_text.split(':')
         common_name, filter_name = msg_data[:2]

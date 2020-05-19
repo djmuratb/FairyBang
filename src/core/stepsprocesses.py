@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from telebot import types
 
-from src import SUPPORT_MAIL, AVAILABLE_COUNTRIES_LIST, PROMOCODES
+from src import SUPPORT_MAIL, PROMOCODES
 from src.messages import *
 
 from src.core.common import bot
@@ -17,25 +17,49 @@ def start(message):
     BotUtils.create_user(username)
 
     welcome = MSG_WELCOME.format(username)
-    keyboard = Keyboards.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, prefix='main_country:', row_width=1)
 
     bot.send_message(chat_id, welcome, parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
-    bot.send_message(chat_id, MSG_ENTER_COUNTRY, parse_mode='Markdown', reply_markup=keyboard)
+    bot.send_message(chat_id, MSG_ENTER_COUNTRY, parse_mode='Markdown', reply_markup=KB_COUNTRIES)
 
 
-def process_city_step(message):
+def process_change_city_step(message):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     city = msg_text.capitalize()
 
-    if city in AVAILABLE_CITIES_LIST:
+    # TODO: validate city.
+    if city in ('Дмитров', 'Москва'):
         BotUtils.write_changes(BotUtils.create_user(username).girls_filter, 'city', city)
+
+        if city == 'Москва':
+            msg = bot.send_message(chat_id, MSG_ENTER_SUBWAY, parse_mode='Markdown')
+            bot.register_next_step_handler(msg, process_change_subway_step)
+            return
+
         bot.send_message(chat_id, MSG_MENU_ATTENTION.format(SUPPORT_MAIL), parse_mode='Markdown', reply_markup=KB_MENU)
+
     elif msg_text == '/reset':
         msg = bot.send_message(chat_id, MSG_RESET, parse_mode='Markdown')
         bot.register_next_step_handler(msg, start)
     else:
-        msg = bot.send_message(chat_id, MSG_UNAVAILABLE_CITY, parse_mode='Markdown')
-        bot.register_next_step_handler(msg, process_city_step)
+        msg = bot.send_message(chat_id, MSG_UNAVAILABLE_LOCATION.format(city), parse_mode='Markdown')
+        bot.register_next_step_handler(msg, process_change_city_step)
+
+
+def process_change_subway_step(message):
+    username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
+    subway = msg_text.capitalize()
+
+    # TODO: validate subway
+    if subway in ('Лефортово', 'Бассманная'):
+        BotUtils.write_changes(BotUtils.create_user(username).girls_filter, 'subway', subway)
+        bot.send_message(chat_id, MSG_MENU_ATTENTION.format(SUPPORT_MAIL), parse_mode='Markdown', reply_markup=KB_MENU)
+
+    elif msg_text == '/reset':
+        msg = bot.send_message(chat_id, MSG_RESET, parse_mode='Markdown')
+        bot.register_next_step_handler(msg, start)
+    else:
+        msg = bot.send_message(chat_id, MSG_UNAVAILABLE_LOCATION.format(subway), parse_mode='Markdown')
+        bot.register_next_step_handler(msg, process_change_subway_step)
 
 
 def process_promocode_step(message):
@@ -74,3 +98,16 @@ def process_change_range_option_val_step(message, **kwargs):
     else:
         msg = bot.send_message(chat_id, MSG_INCORRECT_VALUE, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_change_range_option_val_step, **kwargs)
+
+
+def process_change_location_step(message, **kwargs):
+    # TODO: validate location
+    # TODO: write location into DATABASE
+    # TODO: register next step if city is moscow
+    # TODO: if location is subway and city is not Moscow - revert
+
+    username, chat_id, message_id, location = BotUtils.get_message_data(message)
+
+    if location.endswith('Отмена'):
+        bot.send_message(chat_id, MSG_CANCELED, reply_markup=KB_MENU)
+        return

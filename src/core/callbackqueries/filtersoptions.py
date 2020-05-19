@@ -8,7 +8,7 @@ from src.messages import *
 from src.models import session, FILTERS, Services
 
 from src.core.common import bot
-from src.core.stepsprocesses import process_change_range_option_val_step
+from src.core.stepsprocesses import process_change_range_option_val_step, process_change_location_step
 from src.core.utils.botutils import BotUtils, Keyboards
 from src.core.callbackqueries.common import common_handler
 
@@ -29,6 +29,17 @@ class BaseMixin:
         self._message_id        = kwargs['message_id']
 
         self._filter_class      = FILTERS.get(kwargs.get('filter_name'))
+
+    def _add_move_back_option(self, options):
+        move_cb = f'ch:back:{self._filter_name}'
+        return itertools.chain(options, (self.Option(name='⬅️ Назад', callback=move_cb),))
+
+    def _get_options(self, default_values, option_key, prefix):
+        options = (
+            self.Option(name=val, callback=f'{prefix}:{self._filter_name}:{option_key}:{val}')
+            for val in default_values
+        )
+        return self._add_move_back_option(options)
 
     @staticmethod
     def get_msg_value_from_column(column: Column):
@@ -84,39 +95,48 @@ class RangeMixin(BaseMixin):
 
 
 class EnumMixin(BaseMixin):
-    def add_move_back_option(self, options):
-        move_cb = f'ch:back:{self._filter_name}'
-        return itertools.chain(options, (self.Option(name='⬅️ Назад', callback=move_cb),))
-
-    def get_options(self, default_values, option_key):
-        options = (
-            self.Option(name=val, callback=f'ch:{self._filter_name}:{option_key}:{val}')
-            for val in default_values
-        )
-        return self.add_move_back_option(options)
 
     def send_enum_msg(self, option_key, default_values, msg):
-        options = self.get_options(default_values, option_key)
-        kb = Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=2)
+        options = self._get_options(default_values, option_key, prefix='ch')
+        kb = Keyboards.create_inline_keyboard_ext(*options, row_width=2)
         bot.edit_message_text(msg, self._chat_id, self._message_id, parse_mode='Markdown', reply_markup=kb)
 
 
 class ServicesMixin(BaseMixin):
-    def _get_new_service_val(self):
+    def _get_new_option_val(self):
         o = session.query(Services).filter_by(user_username=self._username).one()
         column = self.get_selected_column()
         current_option_val = o.__getattribute__(column.key)
         return (o, column.key, False) if current_option_val else (o, column.key, True)
 
     def send_service_msg(self):
-        o, key, new_option_val = self._get_new_service_val()
+        o, key, new_option_val = self._get_new_option_val()
         BotUtils.write_changes(o, key, new_option_val)
         common_handler('filters', self._filter_name, self._username, self._chat_id, self._message_id)
 
 
 class LocationMixin(BaseMixin):
-    def send_location_msg(self, option_key, msg):
-        pass
+
+    def _send_other_location_msg(self, option_key, msg_text):
+        msg = bot.send_message(self._chat_id, msg_text, self._message_id, parse_mode='Markdown', reply_markup=KB_CANCEL)
+        bot.register_next_step_handler(
+            msg,
+            process_change_location_step,
+            location=option_key,
+        )
+
+    def _send_country_msg(self, option_key, msg):
+        options = self._get_options(AVAILABLE_COUNTRIES_LIST, option_key, prefix='filters:country')
+        kb = Keyboards.create_inline_keyboard_ext(*options, row_width=1)
+        bot.edit_message_text(msg, self._chat_id, self._message_id, parse_mode='Markdown', reply_markup=kb)
+
+    def send_location_msg(self, option_key):
+        msg = MSGS_LOCATIONS.get(option_key)
+        if option_key == 'country':
+            self._send_country_msg(option_key, msg)
+            return
+
+        self._send_other_location_msg(option_key, msg)
 
 
 class OtherMixin(BaseMixin):
@@ -140,7 +160,7 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
 
     def send_other_msg_handler(self, option_key, default_values, msg):
         if self.is_location(option_key):
-            self.send_location_msg(option_key, msg)
+            self.send_location_msg(option_key)
             return
 
         self.send_other_msg(option_key, default_values, msg)
