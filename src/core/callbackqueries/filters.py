@@ -31,13 +31,10 @@ class FiltersCBQ(BaseCBQ):
             )
         )
 
-    def get_option_name_with_indent(self, all_options, name_data):
-        max_str_size = self.get_max_size_name_of_all_options(all_options)
-        str_size = len(''.join(name_data))
-        whs_num = 1 if max_str_size - str_size == 0 else max_str_size - str_size
-        whs = ' ' * int(whs_num * 2.3777 + 35)
-        option_name = whs.join(name_data)
-        return option_name
+    @staticmethod
+    def get_option_as_str(data):
+        option_key, option_value = data
+        return f'{option_key}  -  ( {option_value} )'
 
     def get_girls_options(self):
         filter_ = FILTERS.get(self._query_name)
@@ -62,10 +59,9 @@ class FiltersCBQ(BaseCBQ):
         return chunk_girls_options[state]
 
     def get_options_objects(self):
-        part_girls_options = self.get_part_from_chunk_girls_options()
         return (
-            self.Option(name=self.get_option_name_with_indent(part_girls_options, data), callback=key)
-            for key, *data in part_girls_options
+            self.Option(name=self.get_option_as_str(data), callback=key)
+            for key, *data in self.get_part_from_chunk_girls_options()
         )
 
     def add_move_options(self):
