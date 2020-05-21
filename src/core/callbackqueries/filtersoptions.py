@@ -14,6 +14,8 @@ from src.core.callbackqueries.common import common_handler
 
 
 class BaseMixin:
+    __slots__ = ('_filter_name', '_option_name_key', '_username', '_chat_id', '_message_id', '_filter_class')
+
     _msg0 = 'Введите диапазон значений.'
     _msg1 = 'Введите значение от *{}* до *{}*.'
     _msg2 = 'Выберите один из вариантов.'
