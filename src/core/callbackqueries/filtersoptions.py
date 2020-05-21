@@ -145,6 +145,8 @@ class OtherMixin(BaseMixin):
 
 
 class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin, OtherMixin):
+    __slots__ = ('_send_msg_funcs',)
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._send_msg_funcs = {
