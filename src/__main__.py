@@ -11,10 +11,18 @@ from src.core.utils.botutils import BotUtils
 from src.core.callbackqueries.main import MainCBQ
 from src.core.callbackqueries.common import common_handler, process_change_country_step
 
+from src.models import User
+
 
 @bot.message_handler(regexp='Каталог')
 def catalog(message):
-    print(000, message.text)
+    # TODO: выводить общее кол-во доступных анкет
+    username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
+    catalog_profiles_num = BotUtils.get_obj(User, {'username': username}).catalog_profiles_num
+
+    buttons = (f'⚙️ ПОКАЗЫВАТЬ ПО   -   {catalog_profiles_num}', '👠 ПОКАЗАТЬ АНКЕТЫ')
+    kb = Keyboards.create_inline_keyboard(*buttons, prefix=f'main_profiles_num', row_width=1)
+    bot.send_message(chat_id, MSG_CATALOG, parse_mode='Markdown', reply_markup=kb)
 
 
 @bot.message_handler(regexp='Фильтры')
@@ -33,8 +41,8 @@ def about(message):
 def discounts(message):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     user = BotUtils.create_user(username=username)
-    if user.promocode:
-        text = MSG_DISCOUNTS.format(user.promocode, str(user.promo_discount) + ' %', user.discount_expires_days)
+    if user.enter_promocode:
+        text = MSG_DISCOUNTS.format(user.enter_promocode, str(user.promo_discount) + ' %', user.discount_expires_days)
     else:
         text = MSG_DISCOUNTS.format('не введен', 'отсутствует', 0)
 
@@ -43,6 +51,7 @@ def discounts(message):
 
 @bot.message_handler(regexp='Статистика')
 def statistic(message):
+    # TODO: вывести общее кол-во доступных в боте анкет.
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     user = BotUtils.create_user(username)
     msg = MSG_STATISTIC.format(
@@ -82,9 +91,18 @@ def callback_query(call):
 
     # --- DISCOUNTS / enter promocode ---
     elif msg_text.startswith('promocode'):
-        MainCBQ.promocode(chat_id)
+        MainCBQ.enter_promocode(chat_id)
 
-    # --- CATALOG / FILTERS ---
+    # --- CATALOG ---
+    elif msg_text.startswith('main_profiles_num'):
+        try:
+            new_val = msg_text.split(':')[1]
+        except IndexError:
+            new_val = None
+
+        MainCBQ.set_catalog_profiles_num(*default_args, new_val)
+
+    # --- CATALOG / FILTERS (COMMON) ---
     elif re.search(pattern_change_country_option_value, msg_text):
         country = msg_text.split(':')[-1]
         MainCBQ.change_country_option_value(country, *default_args[:2])

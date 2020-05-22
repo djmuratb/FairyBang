@@ -72,7 +72,7 @@ def process_promocode_step(message):
 
     if promocode_data:
         user = BotUtils.create_user(username)
-        user.promocode = promocode
+        user.enter_promocode = promocode
         pyutils.set_attrs_values_from_dict(promocode_data, user, date_specific=True)
 
         BotUtils.write_changes(user)

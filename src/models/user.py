@@ -15,20 +15,22 @@ csc = 'all,delete,delete-orphan'
 class User(Common):
     __tablename__ = 'user'
 
-    id                  = Column(Integer, primary_key=True)
+    id                      = Column(Integer, primary_key=True)
 
-    username            = Column(String(55), unique=True)
-    registration_date   = Column(DateTime(timezone=True), server_default=func.now())
+    username                = Column(String(55), unique=True)
+    registration_date       = Column(DateTime(timezone=True), server_default=func.now())
 
-    total_txs           = Column(Integer, default=0)
-    total_qiwi_sum      = Column(Float, default=0)
-    total_btc_sum       = Column(Float, default=0)
-    total_girls         = Column(Integer, default=0)
+    catalog_profiles_num    = Column(Integer, default=1)
 
-    promocode           = Column(String(20), nullable=True)
-    promo_discount      = Column(Integer, nullable=True)
-    promo_valid_from    = Column(Date, nullable=True)
-    promo_valid_to      = Column(Date, nullable=True)
+    total_txs               = Column(Integer, default=0)
+    total_qiwi_sum          = Column(Float, default=0)
+    total_btc_sum           = Column(Float, default=0)
+    total_girls             = Column(Integer, default=0)
+
+    promocode               = Column(String(20), nullable=True)
+    promo_discount          = Column(Integer, nullable=True)
+    promo_valid_from        = Column(Date, nullable=True)
+    promo_valid_to          = Column(Date, nullable=True)
 
     girls_filter            = relationship('GirlsFilter', uselist=False, back_populates='user', cascade=csc)
     extended_girls_filter   = relationship('ExtendedGirlsFilter', uselist=False, back_populates='user', cascade=csc)
