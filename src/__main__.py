@@ -9,7 +9,7 @@ from src.core.common import bot
 from src.core.utils.botutils import BotUtils
 
 from src.core.callbackqueries.main import MainCBQ
-from src.core.callbackqueries.common import common_handler, process_change_country_step
+from src.core.callbackqueries.common import common_handler, process_change_country_step, create_main_catalog_keyboard
 
 from src.models import User
 
@@ -20,8 +20,7 @@ def catalog(message):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     catalog_profiles_num = BotUtils.get_obj(User, {'username': username}).catalog_profiles_num
 
-    buttons = (f'⚙️ ПОКАЗЫВАТЬ ПО   -   {catalog_profiles_num}', '👠 ПОКАЗАТЬ АНКЕТЫ')
-    kb = Keyboards.create_inline_keyboard(*buttons, prefix=f'main_profiles_num', row_width=1)
+    kb = create_main_catalog_keyboard(catalog_profiles_num)
     bot.send_message(chat_id, MSG_CATALOG, parse_mode='Markdown', reply_markup=kb)
 
 

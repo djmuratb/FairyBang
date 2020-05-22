@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import itertools
-import collections as cs
 
 from sqlalchemy import inspect, Column, ARRAY, Enum
 
@@ -9,6 +8,8 @@ from src.models import session, FILTERS, Services
 
 from src.core.common import bot
 from src.core.stepsprocesses import process_change_range_option_val_step, process_change_location_step
+from src.core.types import Option
+
 from src.core.utils.botutils import BotUtils, Keyboards
 from src.core.callbackqueries.common import common_handler
 
@@ -21,8 +22,6 @@ class BaseMixin:
     _msg2 = 'Выберите один из вариантов.'
     _msg3 = 'Введите следующее значение: *{}*.'
 
-    Option = cs.namedtuple('Option', ['name', 'callback'])
-
     def __init__(self, **kwargs):
         self._filter_name       = kwargs['filter_name']
         self._option_name_key   = kwargs['option_name_key']
@@ -34,11 +33,11 @@ class BaseMixin:
 
     def _add_move_back_option(self, options):
         move_cb = f'ch:back:{self._filter_name}'
-        return itertools.chain(options, (self.Option(name='⬅️ Назад', callback=move_cb),))
+        return itertools.chain(options, (Option(name='⬅️ Назад', callback=move_cb),))
 
     def _get_options(self, default_values, option_key, prefix):
         options = (
-            self.Option(name=val, callback=f'{prefix}:{self._filter_name}:{option_key}:{val}')
+            Option(name=val, callback=f'{prefix}:{self._filter_name}:{option_key}:{val}')
             for val in default_values
         )
         return self._add_move_back_option(options)

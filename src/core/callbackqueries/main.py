@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-import collections as cs
-
 from src.models import session, FILTERS
 
 from src.core.common import bot
+from src.core.types import Option
 
-from src.core.callbackqueries.common import common_handler
+from src.core.callbackqueries.common import common_handler, create_main_catalog_keyboard
 from src.core.callbackqueries.filtersoptions import FiltersOptionsHandler
 
 from src.core.stepsprocesses import process_promocode_step, process_change_location_step
@@ -21,15 +20,11 @@ class MainCBQ:
 
     @staticmethod
     def set_catalog_profiles_num(username, chat_id, message_id, new_val):
-        Option = cs.namedtuple('Option', ['name', 'callback'])
-
         if new_val:
             user = session.query(User).filter_by(username=username).one()
             BotUtils.write_changes(user, 'catalog_profiles_num', new_val)
 
-            buttons = (f'⚙️ ПОКАЗЫВАТЬ ПО   -   {user.catalog_profiles_num}', '👠 ПОКАЗАТЬ АНКЕТЫ')
-            kb = Keyboards.create_inline_keyboard(*buttons, prefix=f'main_profiles_num', row_width=1)
-
+            kb = create_main_catalog_keyboard(user.catalog_profiles_num)
             bot.edit_message_text(MSG_CATALOG, chat_id, message_id, parse_mode='Markdown',reply_markup=kb)
             bot.send_message(chat_id, MSG_SUCCESS_CHANGE_OPTION, parse_mode='Markdown')
         else:

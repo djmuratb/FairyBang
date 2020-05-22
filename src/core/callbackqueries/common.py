@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from src.messages import *
 
+from src.core.common import bot
+from src.core.types import Option
 from src.core.stepsprocesses import process_change_city_step
 
-from src.core.common import bot
 from src.core.utils.botutils import BotUtils, Keyboards
 
 from src.core.callbackqueries.filters import FiltersCBQ
@@ -28,3 +29,12 @@ def process_change_country_step(country_name, username, chat_id):
 
     msg = bot.send_message(chat_id, MSG_ENTER_CITY, parse_mode='Markdown')
     bot.register_next_step_handler(msg, process_change_city_step)
+
+
+def create_main_catalog_keyboard(catalog_profiles_num):
+    buttons = (
+        (f'⚙️ ПОКАЗЫВАТЬ ПО   -   {catalog_profiles_num}', 'main_profiles_num'),
+        ('👠 ПОКАЗАТЬ АНКЕТЫ', 'catalog')
+    )
+    options = (Option(name=name, callback=callback) for name, callback in buttons)
+    return Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=1)

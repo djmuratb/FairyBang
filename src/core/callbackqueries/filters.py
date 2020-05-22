@@ -2,6 +2,7 @@
 import itertools
 
 from src.models import session, FILTERS
+from src.core.types import Option
 from src.core.utils import pyutils
 from src.core.callbackqueries.base import BaseCBQ
 
@@ -60,7 +61,7 @@ class FiltersCBQ(BaseCBQ):
 
     def get_options_objects(self):
         return (
-            self.Option(name=self.get_option_as_str(data), callback=key)
+            Option(name=self.get_option_as_str(data), callback=key)
             for key, *data in self.get_part_from_chunk_girls_options()
         )
 
@@ -75,7 +76,7 @@ class FiltersCBQ(BaseCBQ):
         else:
             move_options = self.move_options_data
 
-        move_options = (self.Option(name, callback) for name, callback in move_options)
+        move_options = (Option(name, callback) for name, callback in move_options)
         return itertools.chain(options_objects, move_options)
 
     def get_keyboard_options(self):
