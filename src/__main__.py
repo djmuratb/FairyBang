@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import re
-
 from src import SUPPORT_MAIL
 from src.messages import *
 
 from src.core.common import bot
+from src.core.utils import pyutils
 from src.core.utils.botutils import BotUtils
 
+from src.core.callbackqueries.extra import *
+
+from src.core.callbackqueries.catalog import CatalogCBQ, create_main_catalog_keyboard, set_num_profiles_per_page
+from src.core.callbackqueries.filters import FiltersCBQ
+from src.core.callbackqueries.filtersoptions import FiltersOptionsHandler
 from src.core.callbackqueries.main import MainCBQ
-from src.core.callbackqueries.common import common_handler, process_change_country_step, create_main_catalog_keyboard
+# from src.core.callbackqueries import MainCBQ, FiltersCBQ, FiltersOptionsHandler, CatalogCBQ, \
+#     create_main_catalog_keyboard, set_num_profiles_per_page
+from src.core.callbackqueries.common import process_change_country_step
 
 from src.models import User
 
@@ -40,8 +46,8 @@ def about(message):
 def discounts(message):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     user = BotUtils.create_user(username=username)
-    if user.enter_promocode:
-        text = MSG_DISCOUNTS.format(user.enter_promocode, str(user.promo_discount) + ' %', user.discount_expires_days)
+    if user.promocode:
+        text = MSG_DISCOUNTS.format(user.promocode, str(user.promo_discount) + ' %', user.discount_expires_days)
     else:
         text = MSG_DISCOUNTS.format('не введен', 'отсутствует', 0)
 
@@ -66,71 +72,90 @@ def statistic(message):
     bot.send_message(chat_id, msg, parse_mode='Markdown')
 
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_query(call):
+def main_callback_query(call):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
-    default_args = (username, chat_id, message_id)
 
-    print('--- CALLBACK DATA --- ', msg_text)
-
-    # --- CATALOG / FILTERS patterns
-    pattern_common = re.compile(r'filters|catalog')
-    pattern_option = re.compile(r'(filters|catalog):\w+:option')
-    pattern_option_move = re.compile(r'(filters|catalog):\w+:option:move_(next|prev)')
-
-    # - ch == change -
-    pattern_change_country_option_value = re.compile(r'filters:country')
-    pattern_change_enum_option_value = re.compile(r'ch:\w+:\w+:\w+')
-    pattern_change_enum_move_back = re.compile(r'ch:back:\w+')
-
-    # --- WELCOME ---
-    if msg_text.startswith('main_country'):
+    if re.search(PN_SET, msg_text):
         country = msg_text.split(':')[-1]
         process_change_country_step(country, username, chat_id)
 
-    # --- DISCOUNTS / enter promocode ---
-    elif msg_text.startswith('promocode'):
+    elif re.search(PN_ENTER, msg_text):
         MainCBQ.enter_promocode(chat_id)
 
-    # --- CATALOG ---
-    elif msg_text.startswith('main_profiles_num'):
+
+def catalog_callback_query(call):
+    username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
+    default_args = (username, chat_id, message_id)
+
+    if re.search(PN_CAT_SET, msg_text):
         try:
-            new_val = msg_text.split(':')[1]
+            new_val = msg_text.split(':')[2]
         except IndexError:
             new_val = None
 
-        MainCBQ.set_catalog_profiles_num(*default_args, new_val)
+        set_num_profiles_per_page(*default_args, new_val)
 
-    # --- CATALOG / FILTERS (COMMON) ---
-    elif re.search(pattern_change_country_option_value, msg_text):
-        country = msg_text.split(':')[-1]
-        MainCBQ.change_country_option_value(country, *default_args[:2])
+    elif re.match(PN_CAT, msg_text):
+        CatalogCBQ(msg_text, username, chat_id).send_message()
 
-    elif re.search(pattern_option_move, msg_text):
-        msg_data = msg_text.split(':')
-        common_name, filter_name = msg_data[:2]
-        move_where = msg_data[-1].split('_')[1]
+    elif re.match(PN_CAT_MORE, msg_text):
+        pass
 
+    elif re.match(PN_CAT_PROFILE, msg_text):
+        pass
+
+    elif re.match(PN_CAT_BACK, msg_text):
+        pass
+
+    elif re.match(PN_CAT_PAY, msg_text):
+        pass
+
+
+def filters_callback_query(call):
+    username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
+    default_kwargs = {'username': username, 'chat_id': chat_id, 'message_id': message_id}
+
+    if re.match(PN_FIL, msg_text) or re.match(PN_CH_BACK, msg_text):
+        filter_name = msg_text.split(':')[1]
+        FiltersCBQ(filter_name, *default_kwargs.values()).send_message()
+        return
+
+    elif re.match(PN_FIL_OP, msg_text):
+        filter_name, option_key = msg_text.split(':')[1:]
+        kwargs = {'filter_name': filter_name, 'option_name_key': option_key}
+        kwargs.update(default_kwargs)
+        FiltersOptionsHandler(**kwargs).send_change_option_value_msg()
+        return
+
+    elif re.match(PN_FIL_MOVE, msg_text):
+        filter_name, move_where = msg_text.split(':')[1:]
         increment = 1 if move_where == 'next' else -1
-        common_handler(common_name, filter_name, *default_args, increment=increment)
+        FiltersCBQ(filter_name, *default_kwargs.values(), increment=increment).send_message()
 
-    elif re.search(pattern_option, msg_text):
-        msg_data = msg_text.split(':')
-        msg_data.pop(2)
-        common_name, filter_name, option_name = msg_data
-        MainCBQ.options_handler(common_name, filter_name, option_name, *default_args)
+    elif re.match(PN_FIL_ENTER, msg_text):
+        country = msg_text.split(':')[-1]
+        FiltersOptionsHandler.change_country_option_value(country, username, chat_id)
 
-    elif re.search(pattern_common, msg_text):
-        common_name, common_val = msg_text.split(':')
-        common_handler(common_name, common_val, *default_args)
-
-    elif re.search(pattern_change_enum_move_back, msg_text):
-        filter_name = msg_text.split(':')[-1]
-        common_handler('filters', filter_name, *default_args)
-
-    elif re.search(pattern_change_enum_option_value, msg_text):
+    elif re.match(PN_CH_SET, msg_text):
         filter_name, option_key, option_value = msg_text.split(':')[1:]
-        MainCBQ.change_enum_option_value(filter_name, option_key, option_value, *default_args)
+        FiltersOptionsHandler.change_enum_option_value(filter_name, option_key, option_value, *default_kwargs.values())
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    msg_text = BotUtils.get_message_data(call, callback=True)[-1]
+    call.data = pyutils.remove_prefix(call.data)
+
+    print('--- CALLBACK DATA --- ', msg_text)
+
+    if msg_text.startswith('MAIN'):
+        main_callback_query(call)
+
+    if msg_text.startswith('CAT'):
+        catalog_callback_query(call)
+
+    if msg_text.startswith('FIL') or msg_text.startswith('CH'):
+        filters_callback_query(call)
 
 
 def main_loop():

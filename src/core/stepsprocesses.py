@@ -72,7 +72,7 @@ def process_promocode_step(message):
 
     if promocode_data:
         user = BotUtils.create_user(username)
-        user.enter_promocode = promocode
+        user.promocode = promocode
         pyutils.set_attrs_values_from_dict(promocode_data, user, date_specific=True)
 
         BotUtils.write_changes(user)
@@ -111,3 +111,5 @@ def process_change_location_step(message, **kwargs):
     if location.endswith('Отмена'):
         bot.send_message(chat_id, MSG_CANCELED, reply_markup=KB_MENU)
         return
+
+    bot.register_next_step_handler_by_chat_id(chat_id, process_change_location_step, kwargs=kwargs)

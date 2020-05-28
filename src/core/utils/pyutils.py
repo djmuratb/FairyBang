@@ -59,3 +59,10 @@ def set_attrs_values_from_dict(d: dict, obj: object, date_specific=False):
             val = value
 
         obj.__setattr__(key, val)
+
+
+def remove_prefix(s: str, prefixes: tuple = ('MAIN_', 'CAT_', 'FIL_')):
+    for prefix in prefixes:
+        s = s.replace(prefix, '')
+
+    return s

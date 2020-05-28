@@ -33,8 +33,8 @@ countries:
 promocodes:
   FB12NMQ4:
     promo_discount: 5
-    promo_valid_from: 2020-5-2
-    promo_valid_to: 2020-5-20
+    promo_valid_from: 2020-6-2
+    promo_valid_to: 2020-6-20
   FB89LKJ2:
     promo_discount: 10
     promo_valid_from: 2020-5-1

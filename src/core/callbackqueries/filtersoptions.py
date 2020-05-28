@@ -4,14 +4,14 @@ import itertools
 from sqlalchemy import inspect, Column, ARRAY, Enum
 
 from src.messages import *
-from src.models import session, FILTERS, Services
+from src.models import session, FILTERS, GirlsFilter, Services
 
 from src.core.common import bot
-from src.core.stepsprocesses import process_change_range_option_val_step, process_change_location_step
 from src.core.types import Option
-
 from src.core.utils.botutils import BotUtils, Keyboards
-from src.core.callbackqueries.common import common_handler
+from src.core.utils.validators import VALIDATORS
+from src.core.stepsprocesses import process_change_range_option_val_step, process_change_location_step
+from src.core.callbackqueries.filters import FiltersCBQ
 
 
 class BaseMixin:
@@ -32,12 +32,12 @@ class BaseMixin:
         self._filter_class      = FILTERS.get(kwargs.get('filter_name'))
 
     def _add_move_back_option(self, options):
-        move_cb = f'ch:back:{self._filter_name}'
+        move_cb = f'{PX_CH_BACK}{self._filter_name}'
         return itertools.chain(options, (Option(name='⬅️ Назад', callback=move_cb),))
 
-    def _get_options(self, default_values, option_key, prefix):
+    def get_options(self, default_values, option_key, prefix):
         options = (
-            Option(name=val, callback=f'{prefix}:{self._filter_name}:{option_key}:{val}')
+            Option(name=val, callback=f'{prefix}{self._filter_name}:{option_key}:{val}')
             for val in default_values
         )
         return self._add_move_back_option(options)
@@ -58,7 +58,7 @@ class BaseMixin:
 
         return data
 
-    def get_msg_data_from_column(self, column: Column):
+    def _get_msg_data_from_column(self, column: Column):
         value, value_type = self.get_msg_value_from_column(column)
         if value_type == 'range':
             if value:
@@ -72,15 +72,15 @@ class BaseMixin:
 
         return MSG_CHANGE_OPTION_VAL.format(text), value, value_type, column.key
 
-    def get_selected_column(self):
+    def _get_selected_column(self):
         columns = inspect(self._filter_class).columns
         for col in columns:
             if col.key == self._option_name_key:
                 return col
 
     def get_msg_data(self):
-        selected_column = self.get_selected_column()
-        return self.get_msg_data_from_column(selected_column)
+        selected_column = self._get_selected_column()
+        return self._get_msg_data_from_column(selected_column)
 
 
 class RangeMixin(BaseMixin):
@@ -98,22 +98,22 @@ class RangeMixin(BaseMixin):
 class EnumMixin(BaseMixin):
 
     def send_enum_msg(self, option_key, default_values, msg):
-        options = self._get_options(default_values, option_key, prefix='ch')
-        kb = Keyboards.create_inline_keyboard_ext(*options, row_width=2)
+        options = self.get_options(default_values, option_key, prefix=PX_CH_SET)
+        kb = Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=2)
         bot.edit_message_text(msg, self._chat_id, self._message_id, parse_mode='Markdown', reply_markup=kb)
 
 
 class ServicesMixin(BaseMixin):
     def _get_new_option_val(self):
         o = session.query(Services).filter_by(user_username=self._username).one()
-        column = self.get_selected_column()
+        column = self._get_selected_column()
         current_option_val = o.__getattribute__(column.key)
         return (o, column.key, False) if current_option_val else (o, column.key, True)
 
     def send_service_msg(self):
         o, key, new_option_val = self._get_new_option_val()
         BotUtils.write_changes(o, key, new_option_val)
-        common_handler('filters', self._filter_name, self._username, self._chat_id, self._message_id)
+        FiltersCBQ(self._filter_name, self._username, self._chat_id, self._message_id).send_message()
 
 
 class LocationMixin(BaseMixin):
@@ -127,7 +127,7 @@ class LocationMixin(BaseMixin):
         )
 
     def _send_country_msg(self, option_key, msg):
-        options = self._get_options(AVAILABLE_COUNTRIES_LIST, option_key, prefix='filters:country')
+        options = self.get_options(AVAILABLE_COUNTRIES_LIST, option_key, prefix=f'{PX_FIL_ENTER}')
         kb = Keyboards.create_inline_keyboard_ext(*options, row_width=1)
         bot.edit_message_text(msg, self._chat_id, self._message_id, parse_mode='Markdown', reply_markup=kb)
 
@@ -153,16 +153,16 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
         self._send_msg_funcs = {
             'range'  : self.send_range_msg,
             'enum'   : self.send_enum_msg,
-            'other'  : self.send_other_msg_handler,
+            'other'  : self._send_other_msg_handler,
         }
 
     @staticmethod
-    def is_location(option_key):
+    def _is_location(option_key):
         if option_key in ('country', 'city', 'subway'):
             return True
 
-    def send_other_msg_handler(self, option_key, default_values, msg):
-        if self.is_location(option_key):
+    def _send_other_msg_handler(self, option_key, default_values, msg):
+        if self._is_location(option_key):
             self.send_location_msg(option_key)
             return
 
@@ -175,3 +175,21 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
 
         msg, default_values, value_type, key = self.get_msg_data()
         self._send_msg_funcs[value_type](key, default_values, msg)
+
+    @staticmethod
+    def change_enum_option_value(filter_name, option_key, value, username, chat_id, message_id):
+        filter_class = FILTERS.get(filter_name)
+        is_valid = VALIDATORS.get('enum').validate(enum_key=option_key, value=value)
+
+        if is_valid:
+            obj = session.query(filter_class).filter_by(user_username=username).one()
+            BotUtils.write_changes(obj, option_key, value)
+
+        FiltersCBQ(filter_name, username, chat_id, message_id).send_message()
+
+    @staticmethod
+    def change_country_option_value(country, username, chat_id):
+        BotUtils.write_changes(GirlsFilter, 'country', country, filter_by={'user_username': username})
+
+        msg = bot.send_message(chat_id, MSGS_LOCATIONS['city'], parse_mode='Markdown', reply_markup=KB_CANCEL)
+        bot.register_next_step_handler(msg, process_change_location_step, location='city')

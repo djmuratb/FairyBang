@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from src import AVAILABLE_COUNTRIES_LIST
 from src.core.utils.botutils import Keyboards
+from src.core.callbackqueries.extra import *
 
 
 # --- MESSAGES ---
@@ -19,12 +20,10 @@ MSG_MENU_ATTENTION = """
 📧 *Служба поддержки: {}*
 """
 
-MSG_CATALOG_NUMBER_PROFILES = """
+MSG_CATALOG_NUM_PROFILES = """
 🔊 *Изменения*
 
 Выберите количество анкет , отображаемых за раз.
-
-_*Выберите одну цифру от 1 до 5._
 """
 MSG_CATALOG = """
 💄  *Каталог*
@@ -181,7 +180,7 @@ KB_MENU = Keyboards.create_reply_keyboard('💄 Каталог', '🛠 Филь�
 KB_CANCEL = Keyboards.create_reply_keyboard('❌ Отмена', row_width=1)
 
 # - INLINE -
-KB_COUNTRIES = Keyboards.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, prefix='main_country:', row_width=1)
-KB_PROMOCODE = Keyboards.create_inline_keyboard('🔊 Ввести PROMOCODE', prefix='promocode:')
+KB_COUNTRIES = Keyboards.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, prefix=PX_MAIN_SET, row_width=1)
+KB_PROMOCODE = Keyboards.create_inline_keyboard('🔊 Ввести PROMOCODE', prefix=PX_MAIN_ENTER)
 FILTERS_ITEMS = ('Базовый', 'Расширенный', 'Услуги')
-KB_FILTERS_MENU = Keyboards.create_inline_keyboard(*FILTERS_ITEMS, prefix='filters:', row_width=1)
+KB_FILTERS_MENU = Keyboards.create_inline_keyboard(*FILTERS_ITEMS, prefix=PX_FIL, row_width=1)

@@ -2,8 +2,13 @@
 import itertools
 
 from src.models import session, FILTERS
+
+from src.core.common import bot
 from src.core.types import Option
 from src.core.utils import pyutils
+from src.core.utils.botutils import Keyboards
+
+from src.core.callbackqueries.extra import *
 from src.core.callbackqueries.base import BaseCBQ
 
 
@@ -11,18 +16,23 @@ filters_state = {}
 
 
 class FiltersCBQ(BaseCBQ):
-    __slots__ = ('_query_name', '_username', '_chat_id', '_increment')
+    __slots__ = ('_filter_name', '_username', '_chat_id', '_increment')
 
     _chunk_size = 7
 
-    def __init__(self, query_name, username, chat_id, increment=0):
-        self._query_name     = query_name
+    def __init__(self, filter_name, username, chat_id, message_id, increment=0):
+        self._filter_name    = filter_name
         self._username       = username
         self._chat_id        = chat_id
+        self._message_id     = message_id
         self._increment      = increment
 
         self._state          = None
         self._add_move       = True
+        self._move_options_data = (
+            ('⬅️ Предыдущая', f'{PX_FIL_MOVE}{self._filter_name}:prev'),
+            ('➡️️ Следующая', f'{PX_FIL_MOVE}{self._filter_name}:next')
+        )
 
     @staticmethod
     def get_max_size_name_of_all_options(all_options):
@@ -37,17 +47,18 @@ class FiltersCBQ(BaseCBQ):
         option_key, option_value = data
         return f'{option_key}  -  ( {option_value} )'
 
-    def get_girls_options(self):
-        filter_ = FILTERS.get(self._query_name)
+    @property
+    def girls_options(self):
+        filter_ = FILTERS.get(self._filter_name)
         return filter_.as_tuple(
             session.query(filter_).filter(filter_.user_username == self._username).one()
         )
 
     def get_chunk_girls_options(self):
-        girls_options = self.get_girls_options()
-        return pyutils.chunk_list(girls_options, self._chunk_size)
+        return pyutils.chunk_list(self.girls_options, self._chunk_size)
 
-    def get_part_from_chunk_girls_options(self):
+    @property
+    def part_from_chunk_girls_options(self):
         chunk_girls_options = self.get_chunk_girls_options()
         state = filters_state.get(self._chat_id, 0) + self._increment
         if state == len(chunk_girls_options):
@@ -60,9 +71,10 @@ class FiltersCBQ(BaseCBQ):
         return chunk_girls_options[state]
 
     def get_options_objects(self):
+        prefix = f'{PX_FIL_OP}{self._filter_name}:'
         return (
-            Option(name=self.get_option_as_str(data), callback=key)
-            for key, *data in self.get_part_from_chunk_girls_options()
+            Option(name=self.get_option_as_str(data), callback=prefix + key)
+            for key, *data in self.part_from_chunk_girls_options
         )
 
     def add_move_options(self):
@@ -72,12 +84,23 @@ class FiltersCBQ(BaseCBQ):
             return options_objects
 
         if self._state == 0:
-            move_options = (self.move_options_data[1], )
+            move_options = (self._move_options_data[1], )
         else:
-            move_options = self.move_options_data
+            move_options = self._move_options_data
 
         move_options = (Option(name, callback) for name, callback in move_options)
         return itertools.chain(options_objects, move_options)
 
-    def get_keyboard_options(self):
+    @property
+    def keyboard_options(self):
         return self.add_move_options()
+
+    def send_message(self):
+        keyboard = Keyboards.create_inline_keyboard_ext(*self.keyboard_options, prefix='', row_width=1)
+        bot.edit_message_text(
+            f'🅰️ *{self._filter_name}*',
+            self._chat_id,
+            self._message_id,
+            parse_mode='Markdown',
+            reply_markup=keyboard
+        )

@@ -26,7 +26,7 @@ class Keyboards:
         return markup
 
     @staticmethod
-    def create_inline_keyboard_ext(*options: namedtuple, prefix: str = 'cb_', row_width: int = 1):
+    def create_inline_keyboard_ext(*options: namedtuple, prefix: str = '', row_width: int = 1):
         markup = types.InlineKeyboardMarkup(row_width)
         markup.add(
             *(
@@ -74,7 +74,7 @@ class BotUtils:
         """
         :param obj: message or call object
         :param callback: if param is callback query data
-        :return: username, chat_id, message_id, text of object.
+        :return: username, chat_id, message_id, text.
         """
         if callback:
             data = (obj.message.chat.username, obj.message.chat.id, obj.message.message_id, obj.data)
