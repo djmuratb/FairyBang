@@ -3,14 +3,21 @@
 admin username: LL4wliet    # Set it without @ symbol.
 api token: 779864631:AAHZqhP43R8ah6RFCx43pcaygHGFSIGt3l8
 
-database:
-  drivername: postgresql
-  username: cyberpunk
-  password: punk
-  host: 127.0.0.1
-  port: 5432
-  database: fairybang
-
+databases:
+  main:
+    drivername: postgresql
+    username: cyberpunk
+    password: punk
+    host: 127.0.0.1
+    port: 5432
+    database: fairybang
+  girls:
+    drivername: postgresql
+    username: cyberpunk
+    password: punk
+    host: 127.0.0.1
+    port: 5432
+    database: girls
 
 # --- OTHER OPTIONS ---
 enable tor: True

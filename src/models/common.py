@@ -6,10 +6,10 @@ from sqlalchemy.engine.url import URL
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-from src import DATABASE
+from src import MAIN_DB
 
 
-url      = str(URL(**DATABASE))
+url      = str(URL(**MAIN_DB))
 engine   = create_engine(url)
 Base     = declarative_base()
 

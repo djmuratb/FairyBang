@@ -10,7 +10,7 @@ from src.core.utils import pyutils
 from src.core.utils.botutils import BotUtils
 
 from src.core.callbackqueries.common import MainCBQ, FiltersCBQ, FiltersOptionsHandler, CatalogCBQ, \
-    create_main_catalog_keyboard, set_num_profiles_per_page
+    create_main_catalog_keyboard, set_catalog_num_profiles_per_page
 
 
 @bot.message_handler(regexp='Каталог')
@@ -86,7 +86,7 @@ def catalog_callback_query(call):
         except IndexError:
             new_val = None
 
-        set_num_profiles_per_page(*default_args, new_val)
+        set_catalog_num_profiles_per_page(*default_args, new_val)
 
     elif re.match(PN_CAT, msg_text):
         CatalogCBQ(msg_text, username, chat_id).send_message()

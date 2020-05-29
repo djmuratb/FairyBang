@@ -17,7 +17,7 @@ def create_main_catalog_keyboard(catalog_profiles_num):
     return Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=1)
 
 
-def set_num_profiles_per_page(username, chat_id, message_id, new_val):
+def set_catalog_num_profiles_per_page(username, chat_id, message_id, new_val):
     def is_valid(val):
         return (val == 1 or val % 5 == 0) and val != 0
 
