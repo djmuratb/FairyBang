@@ -1,23 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from src import SUPPORT_MAIL
+from src.models import User
 from src.messages import *
 
 from src.core.common import bot
+from src.core.stepsprocesses import process_change_country_step
 from src.core.utils import pyutils
 from src.core.utils.botutils import BotUtils
 
-from src.core.callbackqueries.extra import *
-
-from src.core.callbackqueries.catalog import CatalogCBQ, create_main_catalog_keyboard, set_num_profiles_per_page
-from src.core.callbackqueries.filters import FiltersCBQ
-from src.core.callbackqueries.filtersoptions import FiltersOptionsHandler
-from src.core.callbackqueries.main import MainCBQ
-# from src.core.callbackqueries import MainCBQ, FiltersCBQ, FiltersOptionsHandler, CatalogCBQ, \
-#     create_main_catalog_keyboard, set_num_profiles_per_page
-from src.core.callbackqueries.common import process_change_country_step
-
-from src.models import User
+from src.core.callbackqueries.common import MainCBQ, FiltersCBQ, FiltersOptionsHandler, CatalogCBQ, \
+    create_main_catalog_keyboard, set_num_profiles_per_page
 
 
 @bot.message_handler(regexp='Каталог')

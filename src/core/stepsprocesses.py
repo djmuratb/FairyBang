@@ -7,7 +7,7 @@ from src.messages import *
 from src.core.common import bot
 
 from src.core.utils import pyutils
-from src.core.utils.botutils import BotUtils, Keyboards
+from src.core.utils.botutils import BotUtils
 from src.core.utils.validators import VALIDATORS
 
 
@@ -98,6 +98,14 @@ def process_change_range_option_val_step(message, **kwargs):
     else:
         msg = bot.send_message(chat_id, MSG_INCORRECT_VALUE, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_change_range_option_val_step, **kwargs)
+
+
+def process_change_country_step(country_name, username, chat_id):
+    user = BotUtils.create_user(username)
+    BotUtils.write_changes(user.girls_filter, 'country', country_name)
+
+    msg = bot.send_message(chat_id, MSG_ENTER_CITY, parse_mode='Markdown')
+    bot.register_next_step_handler(msg, process_change_city_step)
 
 
 def process_change_location_step(message, **kwargs):
