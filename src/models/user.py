@@ -46,7 +46,7 @@ class UserGirlBaseFilter(BaseFilterMixin, UserBase):
         pass
 
 
-class User(UserBase, Common):
+class User(UserBase):
     __tablename__ = 'users'
 
     id                      = Column(Integer, primary_key=True)
