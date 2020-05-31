@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String, LargeBinary, ForeignKey
 from sqlalchemy.orm import relationship
 
-from src.models.common import Common, GirlBase
+from src.models.common import GirlBase
 from src.models.mixins import BaseFilterMixin, ExtFilterMixin, ServicesMixin
 
 
@@ -33,7 +33,7 @@ class GirlBaseFilter(BaseFilterMixin, GirlBase):
     girl            = relationship('Girl', back_populates='base_filter')
 
 
-class Girl(Common, GirlBase):
+class Girl(GirlBase):
     __tablename__ = 'girls'
 
     id              = Column(Integer, primary_key=True)
