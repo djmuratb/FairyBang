@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey, ARRAY
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Enum, ARRAY
 
-from src.models.common import Base, engine, Common
+from src.models.common import Common
 from src.models.extra.enums import *
 
 
-class GirlsFilter(Common):
-    __tablename__ = 'girls_filter'
+class BaseFilter(Common):
+    __abstract__ = True
 
     id            = Column(Integer, primary_key=True)
 
@@ -24,16 +23,9 @@ class GirlsFilter(Common):
     #       --- price ---
     price         = Column(ARRAY(Integer, as_tuple=True), name='Цена', default=(1_000, 20_000), key='price')
 
-    #       --- relationship ---
-    user_username   = Column(String(50), ForeignKey('user.username', ondelete='CASCADE'))
-    user            = relationship('User', back_populates='girls_filter')
 
-    def __init__(self):
-        pass
-
-
-class ExtendedGirlsFilter(Common):
-    __tablename__ = 'extended_girls_filter'
+class ExtFilter(Common):
+    __abstract__ = True
 
     id                          = Column(Integer, primary_key=True)
 
@@ -61,13 +53,3 @@ class ExtendedGirlsFilter(Common):
     app_two_hours               = Column(ARRAY(Integer, as_tuple=True), name='Апартаменты 2 часа', key='app_two_hours')
     departure_to_you            = Column(ARRAY(Integer, as_tuple=True), name='Выезд к Вам', key='departure_to_you')
     departure_to_you_night      = Column(ARRAY(Integer, as_tuple=True), name='Выезд к Вам на ночь', key='departure_to_you_night')
-
-    #       --- relationship ---
-    user_username   = Column(String(50), ForeignKey('user.username', ondelete='CASCADE'))
-    user            = relationship('User', back_populates='extended_girls_filter')
-    
-    def __init__(self):
-        pass
-
-
-Base.metadata.create_all(engine)

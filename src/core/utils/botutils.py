@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from telebot import types
 
-from src.models import session, User, GirlsFilter, ExtendedGirlsFilter, Services
+from src.models import session, User, UserGirlBaseFilter, UserGirlExtFilter, UserGirlServices
 
 
 class Keyboards:
@@ -62,9 +62,9 @@ class BotUtils:
         user = session.query(User).filter_by(username=username).first()
         if not user:
             user = User(username)
-            user.girls_filter = GirlsFilter()
-            user.extended_girls_filter = ExtendedGirlsFilter()
-            user.services = Services()
+            user.base_filter = UserGirlBaseFilter()
+            user.ext_filter = UserGirlExtFilter()
+            user.services = UserGirlServices()
             BotUtils.write_changes(user, only_commit=False)
 
         return user

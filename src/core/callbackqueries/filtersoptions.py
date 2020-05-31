@@ -4,7 +4,7 @@ import itertools
 from sqlalchemy import inspect, Column, ARRAY, Enum
 
 from src.messages import *
-from src.models import session, FILTERS, GirlsFilter, Services
+from src.models import session, FILTERS, UserGirlBaseFilter, UserGirlServices
 
 from src.core.common import bot
 from src.core.types import Option
@@ -105,7 +105,7 @@ class EnumMixin(BaseMixin):
 
 class ServicesMixin(BaseMixin):
     def _get_new_option_val(self):
-        o = session.query(Services).filter_by(user_username=self._username).one()
+        o = session.query(UserGirlServices).filter_by(user_username=self._username).one()
         column = self._get_selected_column()
         current_option_val = o.__getattribute__(column.key)
         return (o, column.key, False) if current_option_val else (o, column.key, True)
@@ -169,7 +169,7 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
         self.send_other_msg(option_key, default_values, msg)
 
     def send_change_option_value_msg(self):
-        if self._filter_class == Services:
+        if self._filter_class == UserGirlServices:
             self.send_service_msg()
             return
 
@@ -189,7 +189,7 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
 
     @staticmethod
     def change_country_option_value(country, username, chat_id):
-        BotUtils.write_changes(GirlsFilter, 'country', country, filter_by={'user_username': username})
+        BotUtils.write_changes(UserGirlBaseFilter, 'country', country, filter_by={'user_username': username})
 
         msg = bot.send_message(chat_id, MSGS_LOCATIONS['city'], parse_mode='Markdown', reply_markup=KB_CANCEL)
         bot.register_next_step_handler(msg, process_change_location_step, location='city')

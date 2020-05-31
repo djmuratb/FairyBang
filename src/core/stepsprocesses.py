@@ -28,7 +28,7 @@ def process_change_city_step(message):
 
     # TODO: validate city.
     if city in ('Дмитров', 'Москва'):
-        BotUtils.write_changes(BotUtils.create_user(username).girls_filter, 'city', city)
+        BotUtils.write_changes(BotUtils.create_user(username).base_filter, 'city', city)
 
         if city == 'Москва':
             msg = bot.send_message(chat_id, MSG_ENTER_SUBWAY, parse_mode='Markdown')
@@ -51,7 +51,7 @@ def process_change_subway_step(message):
 
     # TODO: validate subway
     if subway in ('Лефортово', 'Бассманная'):
-        BotUtils.write_changes(BotUtils.create_user(username).girls_filter, 'subway', subway)
+        BotUtils.write_changes(BotUtils.create_user(username).base_filter, 'subway', subway)
         bot.send_message(chat_id, MSG_MENU_ATTENTION.format(SUPPORT_MAIL), parse_mode='Markdown', reply_markup=KB_MENU)
 
     elif msg_text == '/reset':
@@ -102,7 +102,7 @@ def process_change_range_option_val_step(message, **kwargs):
 
 def process_change_country_step(country_name, username, chat_id):
     user = BotUtils.create_user(username)
-    BotUtils.write_changes(user.girls_filter, 'country', country_name)
+    BotUtils.write_changes(user.base_filter, 'country', country_name)
 
     msg = bot.send_message(chat_id, MSG_ENTER_CITY, parse_mode='Markdown')
     bot.register_next_step_handler(msg, process_change_city_step)

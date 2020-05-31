@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, Boolean
 
-from src.models.common import Base, engine, Common
+from src.models.common import Common
 
 
 class Services(Common):
-    __tablename__ = 'services'
+    __abstract__ = True
 
     id = Column(Integer, primary_key=True)
 
@@ -77,13 +76,3 @@ class Services(Common):
     #           --- gold rain ---
     gr_output                   = Column(Boolean, name='Золотой дождь выдача', nullable=True, key='gr_output')
     gr_input                    = Column(Boolean, name='Золотой дождь прием', nullable=True, key='gr_input')
-
-    #           --- relationship ---
-    user_username   = Column(String(50), ForeignKey('user.username', ondelete='CASCADE'))
-    user            = relationship('User', back_populates='services')
-
-    def __init__(self):
-        pass
-
-
-Base.metadata.create_all(engine)
