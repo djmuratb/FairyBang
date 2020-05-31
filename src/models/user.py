@@ -66,8 +66,8 @@ class User(Common):
     promo_valid_from        = Column(Date, nullable=True)
     promo_valid_to          = Column(Date, nullable=True)
 
-    base_filter            = relationship('UserGirlBaseFilter', uselist=False, back_populates='user', cascade=csc)
-    ext_filter   = relationship('UserGirlExtFilter', uselist=False, back_populates='user', cascade=csc)
+    base_filter             = relationship('UserGirlBaseFilter', uselist=False, back_populates='user', cascade=csc)
+    ext_filter              = relationship('UserGirlExtFilter', uselist=False, back_populates='user', cascade=csc)
     services                = relationship('UserGirlServices', uselist=False, back_populates='user', cascade=csc)
 
     @hybrid_property
