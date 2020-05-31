@@ -6,8 +6,8 @@ from src.messages import *
 
 from src.core.common import bot
 from src.core.stepsprocesses import process_change_country_step
-from src.core.utils import pyutils
-from src.core.utils.botutils import BotUtils
+from src.core.helpers import pyutils
+from src.core.helpers.botutils import BotUtils
 
 from src.core.callbackqueries.common import MainCBQ, FiltersCBQ, FiltersOptionsHandler, CatalogCBQ, \
     create_main_catalog_keyboard, set_catalog_num_profiles_per_page

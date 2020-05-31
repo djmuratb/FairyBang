@@ -2,9 +2,9 @@
 from src.messages import *
 from src.models import user_session, User
 
-from src.core.types import Option
+from src.core.helpers.types import Option
 from src.core.common import bot
-from src.core.utils.botutils import BotUtils
+from src.core.helpers.botutils import BotUtils
 from src.core.callbackqueries.base import BaseCBQ
 
 

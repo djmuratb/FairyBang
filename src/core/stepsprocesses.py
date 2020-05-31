@@ -6,9 +6,9 @@ from src.messages import *
 
 from src.core.common import bot
 
-from src.core.utils import pyutils
-from src.core.utils.botutils import BotUtils
-from src.core.utils.validators import VALIDATORS
+from src.core.helpers import pyutils
+from src.core.helpers.botutils import BotUtils
+from src.core.helpers.validators import VALIDATORS
 
 
 @bot.message_handler(commands=['start'])

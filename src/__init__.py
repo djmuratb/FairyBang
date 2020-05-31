@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from src.core.utils import pyutils
+from src.core.helpers import pyutils
 
 CONFIG = pyutils.load_config('config.yaml')
 

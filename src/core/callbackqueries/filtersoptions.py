@@ -7,9 +7,9 @@ from src.messages import *
 from src.models import user_session, FILTERS, UserGirlBaseFilter, UserGirlServices
 
 from src.core.common import bot
-from src.core.types import Option
-from src.core.utils.botutils import BotUtils, Keyboards
-from src.core.utils.validators import VALIDATORS
+from src.core.helpers.types import Option
+from src.core.helpers.botutils import BotUtils, Keyboards
+from src.core.helpers.validators import VALIDATORS
 from src.core.stepsprocesses import process_change_range_option_val_step, process_change_location_step
 from src.core.callbackqueries.filters import FiltersCBQ
 

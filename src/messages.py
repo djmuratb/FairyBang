@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from src import AVAILABLE_COUNTRIES_LIST
-from src.core.utils.botutils import Keyboards
+from src.core.helpers.botutils import Keyboards
 from src.core.callbackqueries.extra import *
 
 
