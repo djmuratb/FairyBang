@@ -4,10 +4,8 @@ from sqlalchemy import Column, Integer, Boolean
 from src.models.common import Common
 
 
-class Services(Common):
-    __abstract__ = True
-
-    id = Column(Integer, primary_key=True)
+class ServicesMixin:
+    id                          = Column(Integer, primary_key=True)
 
     #           --- sex ---
     anal                        = Column(Boolean, name='Анальный', nullable=True, key='anal')

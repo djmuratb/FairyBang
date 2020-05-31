@@ -49,8 +49,7 @@ class _CommonUtils:
         return val
 
 
-class Common(Base):
-    __abstract__ = True
+class Common:
 
     @staticmethod
     def as_dict(obj, exclude_columns_names=exclude_columns_names_):
@@ -82,6 +81,10 @@ class Common(Base):
     @staticmethod
     def values_callable(obj):
         return [e.value for e in obj]
+
+
+class UserBase(Base, Common):
+    __abstract__ = True
 
 
 Session = sessionmaker(bind=engine)

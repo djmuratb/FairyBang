@@ -5,9 +5,7 @@ from src.models.common import Common
 from src.models.extra.enums import *
 
 
-class BaseFilter(Common):
-    __abstract__ = True
-
+class BaseFilterMixin:
     id            = Column(Integer, primary_key=True)
 
     #       --- location ---
@@ -24,9 +22,7 @@ class BaseFilter(Common):
     price         = Column(ARRAY(Integer, as_tuple=True), name='Цена', default=(1_000, 20_000), key='price')
 
 
-class ExtFilter(Common):
-    __abstract__ = True
-
+class ExtFilterMixin:
     id                          = Column(Integer, primary_key=True)
 
     #       --- additional appearance ---

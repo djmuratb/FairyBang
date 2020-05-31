@@ -6,14 +6,14 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from src.models.common import Base, engine, Common
-from src.models.base import BaseFilter, ExtFilter, Services
+from src.models.common import Base, engine, Common, UserBase
+from src.models.mixins import BaseFilterMixin, ExtFilterMixin, ServicesMixin
 
 
 csc = 'all,delete,delete-orphan'
 
 
-class UserGirlServices(Services):
+class UserGirlServices(ServicesMixin, UserBase):
     __tablename__ = 'users_girl_services'
 
     #           --- relationship ---
@@ -24,7 +24,7 @@ class UserGirlServices(Services):
         pass
 
 
-class UserGirlExtFilter(ExtFilter):
+class UserGirlExtFilter(ExtFilterMixin, UserBase):
     __tablename__ = 'users_girl_ext_filter'
 
     #       --- relationship ---
@@ -35,7 +35,7 @@ class UserGirlExtFilter(ExtFilter):
         pass
 
 
-class UserGirlBaseFilter(BaseFilter):
+class UserGirlBaseFilter(BaseFilterMixin, UserBase):
     __tablename__ = 'users_girl_base_filter'
 
     #       --- relationship ---
@@ -46,7 +46,7 @@ class UserGirlBaseFilter(BaseFilter):
         pass
 
 
-class User(Common):
+class User(UserBase, Common):
     __tablename__ = 'users'
 
     id                      = Column(Integer, primary_key=True)
@@ -66,6 +66,7 @@ class User(Common):
     promo_valid_from        = Column(Date, nullable=True)
     promo_valid_to          = Column(Date, nullable=True)
 
+    #       --- relationship ---
     base_filter             = relationship('UserGirlBaseFilter', uselist=False, back_populates='user', cascade=csc)
     ext_filter              = relationship('UserGirlExtFilter', uselist=False, back_populates='user', cascade=csc)
     services                = relationship('UserGirlServices', uselist=False, back_populates='user', cascade=csc)
