@@ -6,12 +6,16 @@ from sqlalchemy.engine.url import URL
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-from src import MAIN_DB
+from src import USERS_DB, GIRLS_DB
 
 
-url      = str(URL(**MAIN_DB))
-engine   = create_engine(url)
-Base     = declarative_base()
+url_user      = str(URL(**USERS_DB))
+engine_user   = create_engine(url_user)
+BaseUser      = declarative_base()
+
+url_girl      = str(URL(**GIRLS_DB))
+engine_girl   = create_engine(url_girl)
+BaseGirl      = declarative_base()
 
 exclude_columns_names_ = (
     'id',
@@ -83,9 +87,16 @@ class Common:
         return [e.value for e in obj]
 
 
-class UserBase(Base, Common):
+class UserBase(BaseUser, Common):
     __abstract__ = True
 
 
-Session = sessionmaker(bind=engine)
-session = Session()
+class GirlBase(BaseGirl, Common):
+    __abstract__ = True
+
+
+UserSession = sessionmaker(bind=engine_user)
+user_session = UserSession()
+
+GirlSession = sessionmaker(bind=engine_girl)
+girl_session = GirlSession()

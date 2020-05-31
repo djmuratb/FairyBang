@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from src.models.common import Base, engine, UserBase
+from src.models.common import BaseUser, engine_user, UserBase
 from src.models.mixins import BaseFilterMixin, ExtFilterMixin, ServicesMixin
 
 
@@ -83,4 +83,4 @@ class User(UserBase):
         self.username = username
 
 
-Base.metadata.create_all(engine)
+BaseUser.metadata.create_all(engine_user)

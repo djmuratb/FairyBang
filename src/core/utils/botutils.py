@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from telebot import types
 
-from src.models import session, User, UserGirlBaseFilter, UserGirlExtFilter, UserGirlServices
+from src.models import user_session, User, UserGirlBaseFilter, UserGirlExtFilter, UserGirlServices
 
 
 class Keyboards:
@@ -41,7 +41,7 @@ class BotUtils:
     @staticmethod
     def get_obj(class_or_instance, filter_by: dict):
         if isinstance(class_or_instance, type) and filter_by:
-            class_or_instance = session.query(class_or_instance).filter_by(**filter_by).one()
+            class_or_instance = user_session.query(class_or_instance).filter_by(**filter_by).one()
 
         return class_or_instance
 
@@ -53,13 +53,13 @@ class BotUtils:
             obj.__setattr__(attr, value)
 
         if not only_commit:
-            session.add(obj)
+            user_session.add(obj)
 
-        session.commit()
+        user_session.commit()
 
     @staticmethod
     def create_user(username):
-        user = session.query(User).filter_by(username=username).first()
+        user = user_session.query(User).filter_by(username=username).first()
         if not user:
             user = User(username)
             user.base_filter = UserGirlBaseFilter()

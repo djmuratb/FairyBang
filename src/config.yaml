@@ -4,7 +4,7 @@ admin username: LL4wliet    # Set it without @ symbol.
 api token: 779864631:AAHZqhP43R8ah6RFCx43pcaygHGFSIGt3l8
 
 databases:
-  main:
+  user:
     drivername: postgresql
     username: cyberpunk
     password: punk

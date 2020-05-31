@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String, Float, Date, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
 
-from src.models.common import Base, engine
+from src.models.common import BaseUser, engine_user
 
 
 class Admin:
@@ -29,4 +29,4 @@ class Statistic:
         pass
 
 
-Base.metadata.create_all(engine)
+BaseUser.metadata.create_all(engine_user)

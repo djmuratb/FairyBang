@@ -4,7 +4,7 @@ import itertools
 from sqlalchemy import inspect, Column, ARRAY, Enum
 
 from src.messages import *
-from src.models import session, FILTERS, UserGirlBaseFilter, UserGirlServices
+from src.models import user_session, FILTERS, UserGirlBaseFilter, UserGirlServices
 
 from src.core.common import bot
 from src.core.types import Option
@@ -105,7 +105,7 @@ class EnumMixin(BaseMixin):
 
 class ServicesMixin(BaseMixin):
     def _get_new_option_val(self):
-        o = session.query(UserGirlServices).filter_by(user_username=self._username).one()
+        o = user_session.query(UserGirlServices).filter_by(user_username=self._username).one()
         column = self._get_selected_column()
         current_option_val = o.__getattribute__(column.key)
         return (o, column.key, False) if current_option_val else (o, column.key, True)
@@ -182,7 +182,7 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
         is_valid = VALIDATORS.get('enum').validate(enum_key=option_key, value=value)
 
         if is_valid:
-            obj = session.query(filter_class).filter_by(user_username=username).one()
+            obj = user_session.query(filter_class).filter_by(user_username=username).one()
             BotUtils.write_changes(obj, option_key, value)
 
         FiltersCBQ(filter_name, username, chat_id, message_id).send_message()

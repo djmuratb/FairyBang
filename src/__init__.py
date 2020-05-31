@@ -10,7 +10,7 @@ ENABLE_TOR                      = CONFIG['enable tor']
 DEBUG                           = CONFIG['debug']
 
 DATABASES                       = CONFIG['databases']
-MAIN_DB                         = DATABASES['main']
+USERS_DB                        = DATABASES['user']
 GIRLS_DB                        = DATABASES['girls']
 
 AVAILABLE_COUNTRIES_LIST        = CONFIG['countries']

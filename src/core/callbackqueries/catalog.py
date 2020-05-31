@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from src.messages import *
-from src.models import session, User
+from src.models import user_session, User
 
 from src.core.types import Option
 from src.core.common import bot
@@ -22,7 +22,7 @@ def set_catalog_num_profiles_per_page(username, chat_id, message_id, new_val):
         return (val == 1 or val % 5 == 0) and val != 0
 
     if new_val:
-        user = session.query(User).filter_by(username=username).one()
+        user = user_session.query(User).filter_by(username=username).one()
         BotUtils.write_changes(user, 'catalog_profiles_num', new_val)
 
         kb = create_main_catalog_keyboard(user.catalog_profiles_num)

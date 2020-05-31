@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import itertools
 
-from src.models import session, FILTERS
+from src.models import user_session, FILTERS
 
 from src.core.common import bot
 from src.core.types import Option
@@ -51,7 +51,7 @@ class FiltersCBQ(BaseCBQ):
     def girls_options(self):
         filter_ = FILTERS.get(self._filter_name)
         return filter_.as_tuple(
-            session.query(filter_).filter(filter_.user_username == self._username).one()
+            user_session.query(filter_).filter(filter_.user_username == self._username).one()
         )
 
     def get_chunk_girls_options(self):
