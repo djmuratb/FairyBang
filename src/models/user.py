@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from src.models.common import Base, engine, Common, UserBase
+from src.models.common import Base, engine, UserBase
 from src.models.mixins import BaseFilterMixin, ExtFilterMixin, ServicesMixin
 
 
