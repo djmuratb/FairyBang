@@ -62,6 +62,10 @@ class CatalogCBQ(BaseCBQ):
 
         !!! сделать разные класс методы , чтобы не дергать каждый раз полностью все объекты девушек
 
+        # FIXME:
+        1. Изменить в base_filter колонку age с массива на int , а в общей выпилить age и добавить в модель
+        юзверя колонку age в виде массива , как и все другие диапазоны
+
         # TODO:
         2. получить данные по фильтрам , который задал пользователь
         3. сделать выборку из бд с учетом лимита , сдвига и фильтров
@@ -76,6 +80,10 @@ class CatalogCBQ(BaseCBQ):
 
         girls = girl_session.\
             query(Girl).\
+            join(Girl.base_filter).options(subqueryload(Girl.base_filter)). \
+            filter(
+                GirlBaseFilter.age.in_(user_base_filter.age)
+            ). \
             join(Girl.ext_filter).options(subqueryload(Girl.ext_filter)). \
             filter(
                 or_(GirlExtFilter.category == 'Не важно', GirlExtFilter.category == user_ext_filter.category.value),
