@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, Date, ARRAY, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -27,6 +27,12 @@ class UserGirlServices(ServicesMixin, UserBase):
 class UserGirlExtFilter(ExtFilterMixin, UserBase):
     __tablename__ = 'users_girl_ext_filter'
 
+    #       --- prices ---
+    app_one_hour            = Column(ARRAY(Integer, as_tuple=True), name='Апартаменты 1 час', key='app_one_hour')
+    app_two_hours           = Column(ARRAY(Integer, as_tuple=True), name='Апартаменты 2 часа', key='app_two_hours')
+    departure_to_you        = Column(ARRAY(Integer, as_tuple=True), name='Выезд к Вам', key='departure_to_you')
+    departure_to_you_night  = Column(ARRAY(Integer, as_tuple=True), name='Выезд к Вам на ночь', key='departure_to_you_night')
+
     #       --- relationship ---
     user_username   = Column(String(50), ForeignKey('users.username', ondelete='CASCADE'))
     user            = relationship('User', back_populates='ext_filter')
@@ -37,6 +43,14 @@ class UserGirlExtFilter(ExtFilterMixin, UserBase):
 
 class UserGirlBaseFilter(BaseFilterMixin, UserBase):
     __tablename__ = 'users_girl_base_filter'
+
+    #       --- appearance details ---
+    age             = Column(ARRAY(Integer, as_tuple=True), name='Возраст', default=(18, 80), key='age')
+    height          = Column(ARRAY(Integer, as_tuple=True), name='Рост', default=(140, 200), key='height')
+    chest           = Column(ARRAY(Integer, as_tuple=True), name='Грудь', default=(1, 12), key='chest')
+
+    #       --- price ---
+    price           = Column(ARRAY(Integer, as_tuple=True), name='Цена', default=(1_000, 20_000), key='price')
 
     #       --- relationship ---
     user_username   = Column(String(50), ForeignKey('users.username', ondelete='CASCADE'))

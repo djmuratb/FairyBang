@@ -20,6 +20,12 @@ class GirlServices(ServicesMixin, GirlBase):
 class GirlExtFilter(ExtFilterMixin, GirlBase):
     __tablename__ = 'girl_ext_filter'
 
+    #       --- prices ---
+    app_one_hour            = Column(Integer, nullable=False, name='Апартаменты 1 час', key='app_one_hour')
+    app_two_hours           = Column(Integer, name='Апартаменты 2 часа', key='app_two_hours')
+    departure_to_you        = Column(Integer, nullable=False, name='Выезд к Вам', key='departure_to_you')
+    departure_to_you_night  = Column(Integer, nullable=False, name='Выезд к Вам на ночь', key='departure_to_you_night')
+
     #       --- relationship ---
     girl_id         = Column(Integer, ForeignKey('girls.id', ondelete='CASCADE'))
     girl            = relationship('Girl', back_populates='ext_filter')
@@ -27,6 +33,14 @@ class GirlExtFilter(ExtFilterMixin, GirlBase):
 
 class GirlBaseFilter(BaseFilterMixin, GirlBase):
     __tablename__ = 'girl_base_filter'
+
+    #       --- appearance details ---
+    age             = Column(Integer, name='Возраст', nullable=False, key='age')
+    height          = Column(Integer, name='Рост', key='height')
+    chest           = Column(Integer, name='Грудь', key='chest')
+
+    #       --- price ---
+    price           = Column(Integer, name='Цена', nullable=False, key='price')
 
     #       --- relationship ---
     girl_id         = Column(Integer, ForeignKey('girls.id', ondelete='CASCADE'))
