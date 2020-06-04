@@ -31,15 +31,15 @@ exclude_columns_names_ = (
 class _CommonUtils:
 
     @staticmethod
-    def get_obj_type(column, table_name):
+    def get_column_type_class(column, table_name):
         for table in meta.sorted_tables:
             if table.name == table_name:
                 try:
-                    t = table.columns[column.key].type
+                    col_type = table.columns[column.key].type
                 except KeyError:
-                    t = table.columns[column.name].type
+                    col_type = table.columns[column.name].type
 
-                return type(t)
+                return type(col_type)
 
     @staticmethod
     def get_result_data(obj, column):
@@ -53,9 +53,8 @@ class _CommonUtils:
 
     @staticmethod
     def get_column_value(obj, column):
-        col_type = _CommonUtils.get_obj_type(column, obj.__class__.__table__.name)
+        col_type = _CommonUtils.get_column_type_class(column, obj.__class__.__table__.name)
         col_val = getattr(obj, column.key)
-        # print(111, column_type, column.key, col_val)
 
         if col_val is None:
             val = 'не задано'

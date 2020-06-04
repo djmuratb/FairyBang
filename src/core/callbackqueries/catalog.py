@@ -91,6 +91,8 @@ class CatalogCBQ(BaseCBQ):
         # print(222, res.category.property.columns)
         # print(333, res.__dict__['category'].property.columns)
 
+        # print(111, getattr(user_ext_filter, 'category').value)
+
 
         # for el in user_ext_filter.as_tuple(user_ext_filter):
         #     print(el)
