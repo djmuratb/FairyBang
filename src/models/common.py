@@ -35,12 +35,7 @@ class _CommonUtils:
     def get_column_type_class(column, table_name):
         for table in meta.sorted_tables:
             if table.name == table_name:
-                try:
-                    col_type = table.columns[column.key].type
-                except KeyError:
-                    col_type = table.columns[column.name].type
-
-                return type(col_type)
+                return type(table.columns[column.name].type)
 
     @staticmethod
     def create_column_result_set(instance, column):
