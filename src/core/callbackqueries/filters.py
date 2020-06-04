@@ -9,14 +9,14 @@ from src.core.helpers import pyutils
 from src.core.helpers.botutils import Keyboards
 
 from src.core.callbackqueries.extra import *
-from src.core.callbackqueries.base import BaseCBQ
 
 
 filters_state = {}
 
 
-class FiltersCBQ(BaseCBQ):
-    __slots__ = ('_filter_name', '_username', '_chat_id', '_increment')
+class FiltersCBQ:
+    __slots__ = ('_filter_name', '_username', '_chat_id', '_message_id',
+                 '_increment', '_state', '_add_move', '_move_options_data')
 
     _chunk_size = 7
 
@@ -92,7 +92,7 @@ class FiltersCBQ(BaseCBQ):
         move_options = (KeyboardOption(name, callback) for name, callback in move_options)
         return itertools.chain(options_objects, move_options)
 
-    def send_message(self):
+    def send_options(self):
         keyboard = Keyboards.create_inline_keyboard_ext(*self.keyboard_options, prefix='', row_width=1)
         bot.edit_message_text(
             f'🅰️ *{self._filter_name}*',

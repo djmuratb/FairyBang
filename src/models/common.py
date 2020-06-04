@@ -49,8 +49,7 @@ class _CommonUtils:
 
     @staticmethod
     def bool_to_special_char(val: bool):
-        d = {True: 'да', False: 'нет'}
-        return d.get(val)
+        return 'да' if val else 'нет'
 
     @staticmethod
     def get_value_and_type(instance, column):
@@ -83,8 +82,10 @@ class _CommonUtils:
 class Common:
 
     @staticmethod
-    def as_dict(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT):
-        pass
+    def as_dict(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT, only_key_val=False):
+        # TODO: сделать только key:value в один словарь
+        if only_key_val:
+            pass
 
     @staticmethod
     def as_genexpr(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT):

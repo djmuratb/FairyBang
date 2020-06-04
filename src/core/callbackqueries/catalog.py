@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from sqlalchemy.sql.sqltypes import INTEGER, VARCHAR, BOOLEAN
+from sqlalchemy.dialects.postgresql.base import ENUM
+from sqlalchemy.dialects.postgresql.array import ARRAY
+
 from src.messages import *
 from src.models import User, user_session, Girl, girl_session, UserGirlBaseFilter, UserGirlExtFilter, \
     UserGirlServices, GirlBaseFilter, GirlExtFilter
@@ -6,7 +10,6 @@ from src.models import User, user_session, Girl, girl_session, UserGirlBaseFilte
 from src.core.helpers.types import KeyboardOption
 from src.core.common import bot
 from src.core.helpers.botutils import BotUtils
-from src.core.callbackqueries.base import BaseCBQ
 
 
 def create_main_catalog_keyboard(catalog_profiles_num):
@@ -35,104 +38,66 @@ def set_catalog_profiles_limit(username, chat_id, message_id, new_val):
         bot.edit_message_text(MSG_CATALOG_NUM_PROFILES, chat_id, message_id, parse_mode='Markdown', reply_markup=kb)
 
 
-class GirlFilterMixin:
-    pass
+class CatalogBase:
+    __slots__ = ('_username', '_chat_id', '_message_id')
+
+    def __init__(self, **kwargs):
+        self._username      = kwargs['username']
+        self._chat_id       = kwargs['chat_id']
+        self._message_id    = kwargs.get('message_id', None)
 
 
-class CatalogCBQ(BaseCBQ):
-    __slots__ = ('_query_name', '_username', '_chat_id', '_increment')
+class CatPaymentDetail(CatalogBase):
+    __slots__ = ('_girl_id', )
 
-    def __init__(self, profiles_limit, username, chat_id, increment=0):
-        self._profiles_limit = profiles_limit
-        self._username = username
-        self._chat_id = chat_id
-        self._increment = increment
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._girl_id = kwargs.get('girl_id')
+
+    def send_payment_details(self):
+        pass
+
+
+class CatPayment(CatalogBase):
+    __slots__ = ('_girl_id', )
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._girl_id = kwargs.get('girl_id')
+
+    def send_payment(self):
+        pass
+
+
+class CatProfileDetail(CatalogBase):
+    __slots__ = ('_girl_id', )
+
+    def __init__(self, girl_id, **kwargs):
+        super().__init__(**kwargs)
+        self._girl_id = girl_id
+
+    def send_profile_detail(self):
+        pass
+
+
+class _GirlsSelectionMixin(CatalogBase):
+    __slots__ = ('_profiles_limit', '_increment')
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._profiles_limit    = kwargs.get('profiles_limit')
+        self._increment         = kwargs.get('increment', 0)
 
     def get_user_filters(self):
         return user_session.\
             query(UserGirlBaseFilter, UserGirlExtFilter, UserGirlServices).\
             filter_by(user_username=self._username).one()
 
-    def foo(self, instance):
-        lst = []
-        pattern_range = re.compile(r'не задано')
-        pattern_enum = re.compile(r'')
 
-    def send_message(self):
-        """
-        Useful:
-        # func name - send_previews
-        # query = girl_session.query(Girl).offset(2).limit(1).all()
-        # вывести имя , фото и id для колбэка
+class CatProfiles(_GirlsSelectionMixin):
 
-        !!! сделать разные класс методы , чтобы не дергать каждый раз полностью все объекты девушек
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-        # FIXME:
-        1.сделать отдельную функцию для сбора фильтра диапазонов
-
-        # TODO:
-        2. получить данные по фильтрам , который задал пользователь
-        3. сделать выборку из бд с учетом лимита , сдвига и фильтров
-        4. сделать инлайн клавы для каждой девушки
-        5. вывести сообщения с превьюхами
-
-        """
-        user_base_filter, user_ext_filter, user_services = self.get_user_filters()
-
-        from sqlalchemy import or_, tuple_, and_
-        from sqlalchemy.orm import subqueryload
-
-        print(user_base_filter.as_tuple(user_base_filter))
-        print(user_ext_filter.as_tuple(user_ext_filter))
-        print(user_services.as_tuple(user_services))
-
-        print(111, getattr(user_ext_filter, 'category').value)
-
-
-        # for el in user_ext_filter.as_tuple(user_ext_filter):
-        #     print(el)
-
-        # girls = girl_session.\
-        #     query(Girl).\
-        #     join(Girl.base_filter).options(subqueryload(Girl.base_filter)). \
-        #     filter(
-        #         GirlBaseFilter.country == user_base_filter.country.split(' ')[-1],
-        #         GirlBaseFilter.city == user_base_filter.city,
-        #         # GirlBaseFilter.subway == user_base_filter.subway
-        #
-        #         GirlBaseFilter.age.in_(range(*user_base_filter.age)),
-        #         or_(GirlBaseFilter.height.is_(None), GirlBaseFilter.height.in_(range(*user_base_filter.height))),
-        #         or_(GirlBaseFilter.chest.is_(None), GirlBaseFilter.chest.in_(range(*user_base_filter.chest))),
-        #
-        #         GirlBaseFilter.price.in_(range(*user_base_filter.price)),
-        #     ). \
-        #     join(Girl.ext_filter).options(subqueryload(Girl.ext_filter)). \
-        #     filter(
-        #         # or_(GirlExtFilter.category == 'Не важно', GirlExtFilter.category == user_ext_filter.category.value),
-        #         # or_(GirlExtFilter.hair_color == 'Не важно', GirlExtFilter.hair_color == user_ext_filter.hair_color.value),
-        #         # or_(GirlExtFilter.body_type == 'Не важно', GirlExtFilter.body_type == user_ext_filter.body_type.value),
-        #         # or_(GirlExtFilter.category == 'Не важно', GirlExtFilter.category == user_ext_filter.category.value),
-        #         # or_(GirlExtFilter.category == 'Не важно', GirlExtFilter.category == user_ext_filter.category.value),
-        #         # or_(GirlExtFilter.category == 'Не важно', GirlExtFilter.category == user_ext_filter.category.value),
-        #         # or_(GirlExtFilter.category == 'Не важно', GirlExtFilter.category == user_ext_filter.category.value),
-        #     ).all()
-
-        # girls = girl_session.\
-        #     query(Girl).\
-        #     join(Girl.base_filter).options(subqueryload(Girl.base_filter)). \
-        #     filter(
-        #         GirlBaseFilter.age.in_(range(*user_base_filter.age))
-        #     ). \
-        #     join(Girl.ext_filter).options(subqueryload(Girl.ext_filter)). \
-        #     filter(
-        #         # or_(GirlExtFilter.category == 'Не важно', GirlExtFilter.category == user_ext_filter.category.value),
-        #     ).\
-        #     join(Girl.services).options(subqueryload(Girl.services)).\
-        #     filter_by(
-        #         # anal=user_services.anal,
-        #     ).all()
-
-        # print(girls)
-        #
-        # for o in girls:
-        #     print(o.__dict__)
+    def send_profiles(self):
+        pass

@@ -9,8 +9,9 @@ from src.core.stepsprocesses import process_change_country_step
 from src.core.helpers import pyutils
 from src.core.helpers.botutils import BotUtils
 
-from src.core.callbackqueries.common import MainCBQ, FiltersCBQ, FiltersOptionsHandler, CatalogCBQ, \
-    create_main_catalog_keyboard, set_catalog_profiles_limit
+from src.core.callbackqueries.common import MainCBQ, FiltersCBQ, FiltersOptionsHandler, \
+    create_main_catalog_keyboard, set_catalog_profiles_limit, CatProfiles, CatProfileDetail, CatPayment, \
+    CatPaymentDetail
 
 
 @bot.message_handler(regexp='Каталог')
@@ -79,6 +80,7 @@ def main_callback_query(call):
 def catalog_callback_query(call):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
     default_args = (username, chat_id, message_id)
+    default_kwargs = {'username': username, 'chat_id': chat_id, 'message_id': message_id}
 
     if re.search(PN_CAT_SET, msg_text):
         try:
@@ -90,7 +92,7 @@ def catalog_callback_query(call):
 
     elif re.match(PN_CAT, msg_text):
         profiles_limit = msg_text.split(':')[1]
-        CatalogCBQ(profiles_limit, username, chat_id).send_message()
+        CatProfiles(profiles_limit=profiles_limit, **default_kwargs).send_profiles()
 
     elif re.match(PN_CAT_MORE, msg_text):
         pass
@@ -111,7 +113,7 @@ def filters_callback_query(call):
 
     if re.match(PN_FIL, msg_text) or re.match(PN_CH_BACK, msg_text):
         filter_name = msg_text.split(':')[1]
-        FiltersCBQ(filter_name, *default_kwargs.values()).send_message()
+        FiltersCBQ(filter_name, *default_kwargs.values()).send_options()
         return
 
     elif re.match(PN_FIL_OP, msg_text):
@@ -124,7 +126,7 @@ def filters_callback_query(call):
     elif re.match(PN_FIL_MOVE, msg_text):
         filter_name, move_where = msg_text.split(':')[1:]
         increment = 1 if move_where == 'next' else -1
-        FiltersCBQ(filter_name, *default_kwargs.values(), increment=increment).send_message()
+        FiltersCBQ(filter_name, *default_kwargs.values(), increment=increment).send_options()
 
     elif re.match(PN_FIL_ENTER, msg_text):
         country = msg_text.split(':')[-1]

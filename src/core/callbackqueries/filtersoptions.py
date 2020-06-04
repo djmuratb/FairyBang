@@ -43,7 +43,7 @@ class BaseMixin:
         return self._add_move_back_option(options)
 
     @staticmethod
-    def get_msg_value_from_column(column: Column):
+    def _get_msg_value_from_column(column: Column):
         column_type = column.__dict__['type']
 
         if isinstance(column_type, ARRAY):
@@ -59,7 +59,7 @@ class BaseMixin:
         return data
 
     def _get_msg_data_from_column(self, column: Column):
-        value, value_type = self.get_msg_value_from_column(column)
+        value, value_type = self._get_msg_value_from_column(column)
         if value_type == 'range':
             if value:
                 text = self._msg1.format(*value) + MSG_HELP_RANGE
@@ -113,7 +113,7 @@ class ServicesMixin(BaseMixin):
     def send_service_msg(self):
         o, key, new_option_val = self._get_new_option_val()
         BotUtils.write_changes(o, key, new_option_val)
-        FiltersCBQ(self._filter_name, self._username, self._chat_id, self._message_id).send_message()
+        FiltersCBQ(self._filter_name, self._username, self._chat_id, self._message_id).send_options()
 
 
 class LocationMixin(BaseMixin):
@@ -185,7 +185,7 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
             obj = user_session.query(filter_class).filter_by(user_username=username).one()
             BotUtils.write_changes(obj, option_key, value)
 
-        FiltersCBQ(filter_name, username, chat_id, message_id).send_message()
+        FiltersCBQ(filter_name, username, chat_id, message_id).send_options()
 
     @staticmethod
     def change_country_option_value(country, username, chat_id):
