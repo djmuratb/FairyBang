@@ -7,7 +7,7 @@ from src.messages import *
 from src.models import user_session, FILTERS, UserGirlBaseFilter, UserGirlServices
 
 from src.core.common import bot
-from src.core.helpers.types import Option
+from src.core.helpers.types import KeyboardOption
 from src.core.helpers.botutils import BotUtils, Keyboards
 from src.core.helpers.validators import VALIDATORS
 from src.core.stepsprocesses import process_change_range_option_val_step, process_change_location_step
@@ -33,11 +33,11 @@ class BaseMixin:
 
     def _add_move_back_option(self, options):
         move_cb = f'{PX_CH_BACK}{self._filter_name}'
-        return itertools.chain(options, (Option(name='⬅️ Назад', callback=move_cb),))
+        return itertools.chain(options, (KeyboardOption(name='⬅️ Назад', callback=move_cb),))
 
     def get_options(self, default_values, option_key, prefix):
         options = (
-            Option(name=val, callback=f'{prefix}{self._filter_name}:{option_key}:{val}')
+            KeyboardOption(name=val, callback=f'{prefix}{self._filter_name}:{option_key}:{val}')
             for val in default_values
         )
         return self._add_move_back_option(options)

@@ -1,4 +1,14 @@
 import collections as cs
 
 
-Option = cs.namedtuple('Option', ['name', 'callback'])
+KeyboardOption = cs.namedtuple('KeyboardOption', [
+    'name',
+    'callback',
+])
+
+ColumnResultSet = cs.namedtuple('ColumnResultSet', [
+    'key',
+    'name',
+    'value',
+    'type',
+])

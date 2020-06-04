@@ -4,7 +4,7 @@ import itertools
 from src.models import user_session, FILTERS
 
 from src.core.common import bot
-from src.core.helpers.types import Option
+from src.core.helpers.types import KeyboardOption
 from src.core.helpers import pyutils
 from src.core.helpers.botutils import Keyboards
 
@@ -73,11 +73,12 @@ class FiltersCBQ(BaseCBQ):
     def get_options_objects(self):
         prefix = f'{PX_FIL_OP}{self._filter_name}:'
         return (
-            Option(name=self.get_option_as_str(data), callback=prefix + key)
-            for key, *data in self.part_from_chunk_girls_options
+            KeyboardOption(name=self.get_option_as_str(data), callback=prefix + key)
+            for key, *data, _ in self.part_from_chunk_girls_options
         )
 
-    def add_move_options(self):
+    @property
+    def keyboard_options(self):
         options_objects = self.get_options_objects()
 
         if not self._add_move:
@@ -88,12 +89,8 @@ class FiltersCBQ(BaseCBQ):
         else:
             move_options = self._move_options_data
 
-        move_options = (Option(name, callback) for name, callback in move_options)
+        move_options = (KeyboardOption(name, callback) for name, callback in move_options)
         return itertools.chain(options_objects, move_options)
-
-    @property
-    def keyboard_options(self):
-        return self.add_move_options()
 
     def send_message(self):
         keyboard = Keyboards.create_inline_keyboard_ext(*self.keyboard_options, prefix='', row_width=1)

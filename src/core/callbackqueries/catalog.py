@@ -3,7 +3,7 @@ from src.messages import *
 from src.models import User, user_session, Girl, girl_session, UserGirlBaseFilter, UserGirlExtFilter, \
     UserGirlServices, GirlBaseFilter, GirlExtFilter
 
-from src.core.helpers.types import Option
+from src.core.helpers.types import KeyboardOption
 from src.core.common import bot
 from src.core.helpers.botutils import BotUtils
 from src.core.callbackqueries.base import BaseCBQ
@@ -14,7 +14,7 @@ def create_main_catalog_keyboard(catalog_profiles_num):
         (f'⚙️ ПОКАЗЫВАТЬ ПО   -   {catalog_profiles_num}', f'{PX_CAT_SET}profiles_num'),
         ('👠 ПОКАЗАТЬ АНКЕТЫ', f'{PX_CAT}{catalog_profiles_num}')
     )
-    options = (Option(name=name, callback=callback) for name, callback in buttons)
+    options = (KeyboardOption(name=name, callback=callback) for name, callback in buttons)
     return Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=1)
 
 
@@ -30,7 +30,7 @@ def set_catalog_profiles_limit(username, chat_id, message_id, new_val):
         bot.edit_message_text(MSG_CATALOG, chat_id, message_id, parse_mode='Markdown', reply_markup=kb)
         bot.send_message(chat_id, MSG_SUCCESS_CHANGE_OPTION, parse_mode='Markdown')
     else:
-        options = (Option(name=f'{x}', callback=f'{PX_CAT_SET}profiles_num:{x}') for x in range(11) if is_valid(x))
+        options = (KeyboardOption(name=f'{x}', callback=f'{PX_CAT_SET}profiles_num:{x}') for x in range(11) if is_valid(x))
         kb = Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=1)
         bot.edit_message_text(MSG_CATALOG_NUM_PROFILES, chat_id, message_id, parse_mode='Markdown', reply_markup=kb)
 
@@ -85,13 +85,8 @@ class CatalogCBQ(BaseCBQ):
         print(user_base_filter.as_tuple(user_base_filter))
         print(user_ext_filter.as_tuple(user_ext_filter))
         print(user_services.as_tuple(user_services))
-        # res = user_ext_filter.__class__
-        # print(res)
-        #
-        # print(222, res.category.property.columns)
-        # print(333, res.__dict__['category'].property.columns)
 
-        # print(111, getattr(user_ext_filter, 'category').value)
+        print(111, getattr(user_ext_filter, 'category').value)
 
 
         # for el in user_ext_filter.as_tuple(user_ext_filter):

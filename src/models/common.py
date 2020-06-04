@@ -9,6 +9,7 @@ from sqlalchemy.dialects.postgresql.base import ENUM
 from sqlalchemy.dialects.postgresql.array import ARRAY
 
 from src import USERS_DB, GIRLS_DB
+from src.core.helpers.types import ColumnResultSet
 
 
 meta          = MetaData()
@@ -21,7 +22,7 @@ url_girl      = str(URL(**GIRLS_DB))
 engine_girl   = create_engine(url_girl)
 BaseGirl      = declarative_base()
 
-exclude_columns_names_ = (
+EXCLUDE_BY_DEFAULT = (
     'id',
     'user_id',
     'user_username',
@@ -42,9 +43,14 @@ class _CommonUtils:
                 return type(col_type)
 
     @staticmethod
-    def get_result_data(obj, column):
-        column_value = _CommonUtils.get_column_value(obj, column)
-        return (column.key, column_value) if column.name == column.key else (column.key, column.name, column_value)
+    def create_column_result_set(instance, column):
+        col_type, col_val = _CommonUtils.get_value_and_type(instance, column)
+        return ColumnResultSet(
+            key=column.key,
+            name=column.name,
+            value=col_val,
+            type=col_type,
+        )
 
     @staticmethod
     def bool_to_special_char(val: bool):
@@ -52,9 +58,14 @@ class _CommonUtils:
         return d.get(val)
 
     @staticmethod
-    def get_column_value(obj, column):
-        col_type = _CommonUtils.get_column_type_class(column, obj.__class__.__table__.name)
-        col_val = getattr(obj, column.key)
+    def get_value_and_type(instance, column):
+        """
+        :param instance:
+        :param column:
+        :return: value and type from specific column of instance.
+        """
+        col_type = _CommonUtils.get_column_type_class(column, instance.__class__.__table__.name)
+        col_val = getattr(instance, column.key)
 
         if col_val is None:
             val = 'не задано'
@@ -71,37 +82,26 @@ class _CommonUtils:
         else:
             raise Exception('Invalid column type.')
 
-        return val
+        return col_type, val
 
 
 class Common:
 
     @staticmethod
-    def as_dict(obj, exclude_columns_names=exclude_columns_names_):
-        d = {}
-        for column in obj.__table__.columns:
-            if column.name in exclude_columns_names:
-                continue
-
-            col_val = _CommonUtils.get_column_value(obj, column)
-            if column.name == column.key:
-                d.update({column.key: col_val})
-            else:
-                d.update({column.key: {column.name: col_val}})
-
-        return d
+    def as_dict(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT):
+        pass
 
     @staticmethod
-    def as_genexpr(obj, exclude_columns_names=exclude_columns_names_):
+    def as_genexpr(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT):
         return (
-            _CommonUtils.get_result_data(obj, column)
-            for column in obj.__table__.columns
+            _CommonUtils.create_column_result_set(instance, column)
+            for column in instance.__table__.columns
             if column.name not in exclude_columns_names
         )
 
     @staticmethod
-    def as_tuple(obj, exclude_columns_names=exclude_columns_names_):
-        return tuple(Common.as_genexpr(obj, exclude_columns_names))
+    def as_tuple(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT):
+        return tuple(Common.as_genexpr(instance, exclude_columns_names))
 
     @staticmethod
     def values_callable(obj):
