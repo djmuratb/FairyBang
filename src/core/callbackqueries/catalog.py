@@ -50,9 +50,9 @@ class CatalogBase:
 class CatPaymentDetail(CatalogBase):
     __slots__ = ('_girl_id', )
 
-    def __init__(self, **kwargs):
+    def __init__(self, girl_id, **kwargs):
         super().__init__(**kwargs)
-        self._girl_id = kwargs.get('girl_id')
+        self._girl_id = girl_id
 
     def send_payment_details(self):
         pass
@@ -61,9 +61,9 @@ class CatPaymentDetail(CatalogBase):
 class CatPayment(CatalogBase):
     __slots__ = ('_girl_id', )
 
-    def __init__(self, **kwargs):
+    def __init__(self, girl_id, **kwargs):
         super().__init__(**kwargs)
-        self._girl_id = kwargs.get('girl_id')
+        self._girl_id = girl_id
 
     def send_payment(self):
         pass
