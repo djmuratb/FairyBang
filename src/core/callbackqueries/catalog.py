@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy.sql.sqltypes import INTEGER, VARCHAR, BOOLEAN
+from sqlalchemy import or_
+from sqlalchemy.orm import subqueryload
+from sqlalchemy.sql.sqltypes import VARCHAR
 from sqlalchemy.dialects.postgresql.base import ENUM
 from sqlalchemy.dialects.postgresql.array import ARRAY
 
@@ -83,15 +85,66 @@ class CatProfileDetail(CatalogBase):
 class _GirlsSelectionMixin(CatalogBase):
     __slots__ = ('_profiles_limit', '_increment')
 
+    _default_enum_value = 'Не важно'
+    _exclude_columns_names = ('country', )
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._profiles_limit    = kwargs.get('profiles_limit')
         self._increment         = kwargs.get('increment', 0)
 
-    def get_user_filters(self):
+    def _get_user_filters_instances(self):
         return user_session.\
             query(UserGirlBaseFilter, UserGirlExtFilter, UserGirlServices).\
             filter_by(user_username=self._username).one()
+
+    @staticmethod
+    def _get_services_items(user_services_instance):
+        return dict(filter(
+            lambda elem: elem[1] is True, user_services_instance.items()
+        ))
+
+    def _get_sql_condition(self, table, key, val, type_, nullable):
+        if type_ == VARCHAR:
+            return table.c[key] == val
+
+        if type_ == ENUM and val.value != self._default_enum_value:
+            return table.c[key] == val.value
+
+        if type_ == ARRAY and val:
+            if nullable:
+                return or_(table.c[key].is_(None), table.c[key].in_(range(*val)))
+            else:
+                return table.c[key].in_(range(*val))
+
+    def _get_filter_items(self, girl_filter_class, user_filter_instance):
+        table = girl_filter_class.__table__
+        return (
+            self._get_sql_condition(table, key, val, type_, nullable)
+            for key, _, val, type_, nullable in user_filter_instance.as_tuple(user_filter_instance, format_value=False)
+            if key not in self._exclude_columns_names
+        )
+
+    @property
+    def girls(self):
+        user_base_filter, user_ext_filter, user_services = self._get_user_filters_instances()
+
+        user_base_filter_items = self._get_filter_items(GirlBaseFilter, user_base_filter)
+        user_ext_filter_items = self._get_filter_items(GirlExtFilter, user_ext_filter)
+        user_services_items = self._get_services_items(user_services.as_dict(user_services, only_key_val=True))
+
+        return girl_session.\
+            query(Girl).\
+            join(Girl.base_filter).options(subqueryload(Girl.base_filter)). \
+            filter(
+                GirlBaseFilter.country == user_base_filter.country.split(' ')[-1],
+                *user_base_filter_items
+            ). \
+            join(Girl.ext_filter).options(subqueryload(Girl.ext_filter)). \
+            filter(*user_ext_filter_items). \
+            join(Girl.services).options(subqueryload(Girl.services)).\
+            filter_by(**user_services_items).\
+            all()
 
 
 class CatProfiles(_GirlsSelectionMixin):
@@ -100,4 +153,6 @@ class CatProfiles(_GirlsSelectionMixin):
         super().__init__(**kwargs)
 
     def send_profiles(self):
-        pass
+        print(self.girls)
+        for girl in self.girls:
+            print(girl.name)

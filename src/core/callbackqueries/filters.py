@@ -74,7 +74,7 @@ class FiltersCBQ:
         prefix = f'{PX_FIL_OP}{self._filter_name}:'
         return (
             KeyboardOption(name=self.get_option_as_str(data), callback=prefix + key)
-            for key, *data, _ in self.part_from_chunk_girls_options
+            for key, *data, _, _ in self.part_from_chunk_girls_options
         )
 
     @property

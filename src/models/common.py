@@ -32,34 +32,40 @@ EXCLUDE_BY_DEFAULT = (
 class _CommonUtils:
 
     @staticmethod
-    def get_column_type_class(column, table_name):
+    def get_column_info(column, table_name):
         for table in meta.sorted_tables:
             if table.name == table_name:
-                return type(table.columns[column.name].type)
+                col = table.columns[column.name]
+                return type(col.type), col.nullable
 
     @staticmethod
-    def create_column_result_set(instance, column):
-        col_type, col_val = _CommonUtils.get_value_and_type(instance, column)
+    def create_column_result_set(instance, column, format_value):
+        col_type, col_val, nullable = _CommonUtils.get_value_and_type(instance, column, format_value)
         return ColumnResultSet(
             key=column.key,
             name=column.name,
             value=col_val,
             type=col_type,
+            nullable=nullable
         )
 
     @staticmethod
     def bool_to_special_char(val: bool):
-        return 'да' if val else 'нет'
+        return 'да' if val else 'не важно'
 
     @staticmethod
-    def get_value_and_type(instance, column):
+    def get_value_and_type(instance, column, format_value):
         """
         :param instance:
         :param column:
+        :param format_value:
         :return: value and type from specific column of instance.
         """
-        col_type = _CommonUtils.get_column_type_class(column, instance.__class__.__table__.name)
+        col_type, nullable = _CommonUtils.get_column_info(column, instance.__class__.__table__.name)
         col_val = getattr(instance, column.key)
+
+        if format_value is False:
+            return col_type, col_val, nullable
 
         if col_val is None:
             val = 'не задано'
@@ -76,28 +82,30 @@ class _CommonUtils:
         else:
             raise Exception('Invalid column type.')
 
-        return col_type, val
+        return col_type, val, nullable
 
 
 class Common:
-
     @staticmethod
-    def as_dict(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT, only_key_val=False):
-        # TODO: сделать только key:value в один словарь
+    def as_dict(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT, only_key_val=False, format_value=True):
         if only_key_val:
-            pass
+            return {
+                column.key: getattr(instance, column.key)
+                for column in instance.__table__.columns
+                if column.name not in exclude_columns_names
+            }
 
     @staticmethod
-    def as_genexpr(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT):
+    def as_genexpr(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT, format_value=True):
         return (
-            _CommonUtils.create_column_result_set(instance, column)
+            _CommonUtils.create_column_result_set(instance, column, format_value)
             for column in instance.__table__.columns
             if column.name not in exclude_columns_names
         )
 
     @staticmethod
-    def as_tuple(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT):
-        return tuple(Common.as_genexpr(instance, exclude_columns_names))
+    def as_tuple(instance, exclude_columns_names=EXCLUDE_BY_DEFAULT, format_value=True):
+        return tuple(Common.as_genexpr(instance, exclude_columns_names, format_value))
 
     @staticmethod
     def values_callable(obj):

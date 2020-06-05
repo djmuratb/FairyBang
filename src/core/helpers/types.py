@@ -11,4 +11,5 @@ ColumnResultSet = cs.namedtuple('ColumnResultSet', [
     'name',
     'value',
     'type',
+    'nullable',
 ])
