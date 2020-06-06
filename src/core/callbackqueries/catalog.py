@@ -130,7 +130,7 @@ class _GirlsSelectionMixin(CatalogBase):
             )
         )
 
-    def girls(self):
+    def get_girls(self):
         user_base_filter, user_ext_filter, user_services = self._get_user_filters_instances()
 
         user_base_filter_items = self._get_filter_items(GirlBaseFilter, user_base_filter)
@@ -145,13 +145,9 @@ class _GirlsSelectionMixin(CatalogBase):
                 *user_base_filter_items
             ). \
             join(Girl.ext_filter).options(subqueryload(Girl.ext_filter)). \
-            filter(
-                *user_ext_filter_items
-            ). \
+            filter(*user_ext_filter_items). \
             join(Girl.services).options(subqueryload(Girl.services)). \
-            filter_by(
-                **user_services_items
-            ). \
+            filter_by(**user_services_items). \
             values(Girl.id, Girl.name, GirlBaseFilter.age, GirlBaseFilter.price, Girl.preview_photo)
 
 
@@ -161,12 +157,4 @@ class CatProfiles(_GirlsSelectionMixin):
         super().__init__(**kwargs)
 
     def send_profiles(self):
-        from datetime import datetime
-        now = datetime.now()
-        girls = self.girls()
-        print((datetime.now() - now).microseconds)
-
-        print(girls)
-        for girl in girls:
-            print(girl)
-            # print(girl.phone)
+        girls = self.get_girls()
