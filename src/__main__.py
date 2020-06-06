@@ -91,6 +91,7 @@ def catalog_callback_query(call):
         set_catalog_profiles_limit(*default_args, new_val)
 
     elif re.match(PN_CAT, msg_text):
+        # TODO: начать просмотр девушек с N девушки (offset от юзверя)
         profiles_limit = msg_text.split(':')[1]
         CatProfiles(profiles_limit=profiles_limit, **default_kwargs).send_profiles()
 
