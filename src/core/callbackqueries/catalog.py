@@ -149,7 +149,7 @@ class _GirlsSelectionMixin(CatalogBase):
             filter_by(
                 **user_services_items
             ). \
-            values(Girl.__table__.c['id'], Girl.name, Girl.preview_photo)
+            values(Girl.id, Girl.name, Girl.preview_photo)
 
 
 class CatProfiles(_GirlsSelectionMixin):
