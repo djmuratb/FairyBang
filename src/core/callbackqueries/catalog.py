@@ -148,6 +148,7 @@ class _GirlsSelectionMixin(CatalogBase):
             filter(*user_ext_filter_items). \
             join(Girl.services).options(subqueryload(Girl.services)). \
             filter_by(**user_services_items). \
+            limit(self._profiles_limit). \
             values(Girl.id, Girl.name, GirlBaseFilter.age, GirlBaseFilter.price, Girl.preview_photo)
 
 
