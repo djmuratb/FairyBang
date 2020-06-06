@@ -105,17 +105,19 @@ class _GirlsSelectionMixin(CatalogBase):
         ))
 
     def _get_sql_condition(self, table, key, val, type_, nullable):
+        t_key = table.c[key]
+
         if type_ == VARCHAR:
-            return table.c[key] == val
+            return t_key == val
 
         if type_ == ENUM and val.value != self._default_enum_value:
-            return table.c[key] == val.value
+            return t_key == val.value
 
         if type_ == ARRAY and val:
             if nullable:
-                return or_(table.c[key].is_(None), table.c[key].in_(range(*val)))
+                return or_(t_key.is_(None), t_key.in_(range(*val)))
             else:
-                return table.c[key].in_(range(*val))
+                return t_key.in_(range(*val))
 
     def _get_filter_items(self, girl_filter_class, user_filter_instance):
         table = girl_filter_class.__table__
@@ -125,7 +127,6 @@ class _GirlsSelectionMixin(CatalogBase):
             if key not in self._exclude_columns_names
         )
 
-    @property
     def girls(self):
         user_base_filter, user_ext_filter, user_services = self._get_user_filters_instances()
 
@@ -133,18 +134,22 @@ class _GirlsSelectionMixin(CatalogBase):
         user_ext_filter_items = self._get_filter_items(GirlExtFilter, user_ext_filter)
         user_services_items = self._get_services_items(user_services.as_dict(user_services, only_key_val=True))
 
-        return girl_session.\
-            query(Girl).\
+        return girl_session. \
+            query(Girl). \
             join(Girl.base_filter).options(subqueryload(Girl.base_filter)). \
             filter(
                 GirlBaseFilter.country == user_base_filter.country.split(' ')[-1],
                 *user_base_filter_items
             ). \
             join(Girl.ext_filter).options(subqueryload(Girl.ext_filter)). \
-            filter(*user_ext_filter_items). \
-            join(Girl.services).options(subqueryload(Girl.services)).\
-            filter_by(**user_services_items).\
-            all()
+            filter(
+                *user_ext_filter_items
+            ). \
+            join(Girl.services).options(subqueryload(Girl.services)). \
+            filter_by(
+                **user_services_items
+            ). \
+            values(Girl.__table__.c['id'], Girl.name, Girl.preview_photo)
 
 
 class CatProfiles(_GirlsSelectionMixin):
@@ -153,6 +158,11 @@ class CatProfiles(_GirlsSelectionMixin):
         super().__init__(**kwargs)
 
     def send_profiles(self):
-        print(self.girls)
-        for girl in self.girls:
-            print(girl.name)
+        from datetime import datetime
+        now = datetime.now()
+        girls = self.girls()
+        print((datetime.now() - now).microseconds)
+        print(girls)
+        for girl in girls:
+            print(girl)
+            # print(girl.phone)
