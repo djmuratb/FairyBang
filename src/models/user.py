@@ -28,10 +28,10 @@ class UserGirlExtFilter(ExtFilterMixin, UserBase):
     __tablename__ = 'users_girl_ext_filter'
 
     #       --- prices ---
-    app_one_hour            = Column(ARRAY(Integer, as_tuple=True), name='Апартаменты 1 час', key='app_one_hour')
+    app_one_hour            = Column(ARRAY(Integer, as_tuple=True), default=(1_000, 20_000), name='Апартаменты 1 час', key='app_one_hour')
     app_two_hours           = Column(ARRAY(Integer, as_tuple=True), name='Апартаменты 2 часа', key='app_two_hours')
-    departure_to_you        = Column(ARRAY(Integer, as_tuple=True), name='Выезд к Вам', key='departure_to_you')
-    departure_to_you_night  = Column(ARRAY(Integer, as_tuple=True), name='Выезд к Вам на ночь', key='departure_to_you_night')
+    departure_to_you        = Column(ARRAY(Integer, as_tuple=True), default=(1_500, 35_000), name='Выезд к Вам', key='departure_to_you')
+    departure_to_you_night  = Column(ARRAY(Integer, as_tuple=True), default=(2_000, 80_000), name='Выезд к Вам на ночь', key='departure_to_you_night')
 
     #       --- relationship ---
     user_username   = Column(String(50), ForeignKey('users.username', ondelete='CASCADE'))

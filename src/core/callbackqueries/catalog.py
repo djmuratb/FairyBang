@@ -121,10 +121,13 @@ class _GirlsSelectionMixin(CatalogBase):
 
     def _get_filter_items(self, girl_filter_class, user_filter_instance):
         table = girl_filter_class.__table__
-        return (
-            self._get_sql_condition(table, key, val, type_, nullable)
-            for key, _, val, type_, nullable in user_filter_instance.as_tuple(user_filter_instance, format_value=False)
-            if key not in self._exclude_columns_names
+        return filter(
+            lambda x: x is not None,
+            (
+                self._get_sql_condition(table, key, val, type_, nullable)
+                for key, _, val, type_, nullable in user_filter_instance.as_tuple(user_filter_instance, format_value=False)
+                if key not in self._exclude_columns_names
+            )
         )
 
     def girls(self):
@@ -149,7 +152,7 @@ class _GirlsSelectionMixin(CatalogBase):
             filter_by(
                 **user_services_items
             ). \
-            values(Girl.id, Girl.name, Girl.preview_photo)
+            values(Girl.id, Girl.name, GirlBaseFilter.age, GirlBaseFilter.price, Girl.preview_photo)
 
 
 class CatProfiles(_GirlsSelectionMixin):
@@ -162,6 +165,7 @@ class CatProfiles(_GirlsSelectionMixin):
         now = datetime.now()
         girls = self.girls()
         print((datetime.now() - now).microseconds)
+
         print(girls)
         for girl in girls:
             print(girl)
