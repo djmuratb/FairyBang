@@ -192,6 +192,9 @@ class CatProfiles(_GirlsSelectionMixin):
         return short_desc_btn, more_detail_btn, more_girls_btn
 
     def send_profiles(self):
-        for *info, preview_photo, last in pyutils.lookahead(self.get_girls):
-            kb = Keyboards.create_inline_keyboard_ext(*self._get_keyboard_options(*info, last=last), row_width=1)
-            bot.send_photo(self._chat_id, preview_photo, reply_markup=kb)
+        try:
+            for *info, preview_photo, last in pyutils.lookahead(self.get_girls):
+                kb = Keyboards.create_inline_keyboard_ext(*self._get_keyboard_options(*info, last=last), row_width=1)
+                bot.send_photo(self._chat_id, preview_photo, reply_markup=kb)
+        except RuntimeError:
+            bot.send_message(self._chat_id, MSG_GIRLS_OVER_EXC, reply_markup=KB_MENU, parse_mode='Markdown')
