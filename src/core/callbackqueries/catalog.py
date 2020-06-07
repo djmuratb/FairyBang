@@ -86,7 +86,7 @@ class CatProfileDetail(CatalogBase):
 
 
 class _GirlsSelectionMixin(CatalogBase):
-    __slots__ = ('_profiles_limit', '_more_profiles')
+    __slots__ = ('_profiles_limit', '_more_profiles', '_order_by')
 
     _default_enum_value = 'Не важно'
     _exclude_columns_names = ('country', )
@@ -94,6 +94,7 @@ class _GirlsSelectionMixin(CatalogBase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._profiles_limit    = kwargs.get('profiles_limit')
+        self._order_by          = kwargs.get('order_by', GirlBaseFilter.price)
         self._more_profiles     = kwargs.get('increment', False)
 
     @property
@@ -165,6 +166,7 @@ class _GirlsSelectionMixin(CatalogBase):
             filter(*user_ext_filter_items). \
             join(Girl.services).options(subqueryload(Girl.services)). \
             filter_by(**user_services_items). \
+            order_by(self._order_by). \
             slice(*self.slice_range). \
             values(Girl.id, Girl.name, GirlBaseFilter.age, GirlBaseFilter.price, Girl.preview_photo)
 
