@@ -98,7 +98,7 @@ class _GirlsSelectionMixin(CatalogBase):
         self._more_profiles     = kwargs.get('increment', False)
 
     @property
-    def slice_range(self):
+    def _slice_range(self):
         if self._more_profiles:
             offset = OFFSET_STATE.get(self._chat_id, 0)
             end = offset + self._profiles_limit
@@ -167,7 +167,7 @@ class _GirlsSelectionMixin(CatalogBase):
             join(Girl.services).options(subqueryload(Girl.services)). \
             filter_by(**user_services_items). \
             order_by(self._order_by). \
-            slice(*self.slice_range). \
+            slice(*self._slice_range). \
             values(Girl.id, Girl.name, GirlBaseFilter.age, GirlBaseFilter.price, Girl.preview_photo)
 
 
