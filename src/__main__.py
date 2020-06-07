@@ -11,17 +11,16 @@ from src.core.helpers.botutils import BotUtils
 
 from src.core.callbackqueries.common import MainCBQ, FiltersCBQ, FiltersOptionsHandler, \
     create_main_catalog_keyboard, set_catalog_profiles_limit, CatProfiles, CatProfileDetail, CatPayment, \
-    CatPaymentDetail
+    CatPaymentDetail, get_total_profiles
 
 
 @bot.message_handler(regexp='Каталог')
 def catalog(message):
-    # TODO: выводить общее кол-во доступных анкет
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     catalog_profiles_num = BotUtils.get_obj(User, {'username': username}).catalog_profiles_num
 
     kb = create_main_catalog_keyboard(catalog_profiles_num)
-    bot.send_message(chat_id, MSG_CATALOG, parse_mode='Markdown', reply_markup=kb)
+    bot.send_message(chat_id, MSG_CATALOG.format(get_total_profiles()), parse_mode='Markdown', reply_markup=kb)
 
 
 @bot.message_handler(regexp='Фильтры')

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import or_
+import functools
+
+from sqlalchemy import or_, func
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.sqltypes import VARCHAR
 from sqlalchemy.dialects.postgresql.base import ENUM
@@ -16,6 +18,11 @@ from src.core.helpers.botutils import BotUtils
 
 
 OFFSET_STATE = {}
+
+
+@functools.lru_cache(None)
+def get_total_profiles():
+    return girl_session.query(func.count(Girl.id)).scalar()
 
 
 def create_main_catalog_keyboard(catalog_profiles_num):
