@@ -149,7 +149,7 @@ class _GirlsSelectionMixin(CatalogBase):
             filter_by(user_username=self._username).one()
 
     @property
-    def get_girls(self):
+    def girls(self):
         # NOTE: попробовать в query подгружать только определенные поля у relationships
         user_base_filter, user_ext_filter, user_services = self._get_user_filters_instances()
 
@@ -193,7 +193,7 @@ class CatProfiles(_GirlsSelectionMixin):
 
     def send_profiles(self):
         try:
-            for *info, preview_photo, last in pyutils.lookahead(self.get_girls):
+            for *info, preview_photo, last in pyutils.lookahead(self.girls):
                 kb = Keyboards.create_inline_keyboard_ext(*self._get_keyboard_options(*info, last=last), row_width=1)
                 bot.send_photo(self._chat_id, preview_photo, reply_markup=kb)
         except RuntimeError:
