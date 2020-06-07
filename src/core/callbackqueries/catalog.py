@@ -146,7 +146,6 @@ class _GirlsSelectionMixin(CatalogBase):
             filter_by(user_username=self._username).one()
 
     def get_girls(self):
-        # TODO: add group_by
         # NOTE: попробовать в query подгружать только определенные поля у relationships
         user_base_filter, user_ext_filter, user_services = self._get_user_filters_instances()
 
