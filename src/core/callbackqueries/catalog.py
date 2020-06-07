@@ -9,8 +9,9 @@ from src.messages import *
 from src.models import User, user_session, Girl, girl_session, UserGirlBaseFilter, UserGirlExtFilter, \
     UserGirlServices, GirlBaseFilter, GirlExtFilter
 
-from src.core.helpers.types import KeyboardOption
 from src.core.common import bot
+from src.core.helpers import pyutils
+from src.core.helpers.types import KeyboardOption
 from src.core.helpers.botutils import BotUtils
 
 
@@ -147,6 +148,7 @@ class _GirlsSelectionMixin(CatalogBase):
             query(UserGirlBaseFilter, UserGirlExtFilter, UserGirlServices).\
             filter_by(user_username=self._username).one()
 
+    @property
     def get_girls(self):
         # NOTE: попробовать в query подгружать только определенные поля у relationships
         user_base_filter, user_ext_filter, user_services = self._get_user_filters_instances()
@@ -172,12 +174,24 @@ class _GirlsSelectionMixin(CatalogBase):
 
 
 class CatProfiles(_GirlsSelectionMixin):
+    _short_description  = '{} | {} | {}р.'
+    _more_detail        = '❣️ ПОДРОБНЕЕ ❣️'
+    _more_girls         = '🔵 Показать еще 🔵'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def send_profiles(self):
-        girls = self.get_girls()
+    def _get_keyboard_options(self, id_, name, age, price, last):
+        short_desc_btn = KeyboardOption(name=self._short_description.format(name, age, price), callback=' ')
+        more_detail_btn = KeyboardOption(name=self._more_detail, callback=f'{PX_CAT_PROFILE}{id_}')
 
-        for g in girls:
-            print(g)
+        if not last:
+            return short_desc_btn, more_detail_btn
+
+        more_girls_btn = KeyboardOption(name=self._more_girls, callback=f'{PX_CAT_MORE}{self._profiles_limit}')
+        return short_desc_btn, more_detail_btn, more_girls_btn
+
+    def send_profiles(self):
+        for *info, preview_photo, last in pyutils.lookahead(self.get_girls):
+            kb = Keyboards.create_inline_keyboard_ext(*self._get_keyboard_options(*info, last=last), row_width=1)
+            bot.send_photo(self._chat_id, preview_photo, reply_markup=kb)

@@ -7,7 +7,7 @@ PX_MAIN_ENTER      = 'MAIN_ENTER:'
 
 #       --- CATALOG ---
 PX_CAT             = 'CAT:'
-PX_CAT_MORE        = 'CAT_MOVE:'
+PX_CAT_MORE        = 'CAT_MORE:'
 PX_CAT_PROFILE     = 'CAT_PROFILE:'
 PX_CAT_PAY         = 'CAT_PAY:'
 PX_CAT_SET         = 'CAT_SET:'

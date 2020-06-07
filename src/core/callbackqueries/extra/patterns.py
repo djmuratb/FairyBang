@@ -10,9 +10,9 @@ PN_ENTER            = re.compile(r'ENTER:(?P<value>.+)')
 # Updates value of specific catalog setting.
 PN_CAT_SET          = re.compile(r'SET:(?P<setting_name>.+)')
 # Displays girls profiles.
-PN_CAT              = re.compile(r'CAT:\d{1,2}')
+PN_CAT              = re.compile(r'CAT:(?P<profiles_limit>\d{1,2})')
 # Shows more girls profiles.
-PN_CAT_MORE         = re.compile(r'MORE')
+PN_CAT_MORE         = re.compile(r'MORE:(?P<profiles_limit>\d{1,2})')
 # Girl profile details.
 PN_CAT_PROFILE      = re.compile(r'PROFILE:(?P<profile_id>\d+)')
 # Returns back from detail girls profile to base girl info.

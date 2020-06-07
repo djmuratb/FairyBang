@@ -66,3 +66,17 @@ def remove_prefix(s: str, prefixes: tuple = ('MAIN_', 'CAT_', 'FIL_')):
         s = s.replace(prefix, '')
 
     return s
+
+
+def lookahead(iterable):
+    """Pass through all values from the given iterable, augmented by the
+    information if there are more values to come after the current one
+    (False), or if it is the last value (True).
+    """
+    it = iter(iterable)
+    data = next(it)
+    for val in it:
+        yield itertools.chain(data, (False, ))
+        data = val
+
+    yield itertools.chain(data, (True, ))
