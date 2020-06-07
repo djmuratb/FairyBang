@@ -96,7 +96,8 @@ def catalog_callback_query(call):
         CatProfiles(profiles_limit=profiles_limit, **default_kwargs).send_profiles()
 
     elif re.match(PN_CAT_MORE, msg_text):
-        pass
+        profiles_limit = int(msg_text.split(':')[1])
+        CatProfiles(profiles_limit=profiles_limit, more=True, **default_kwargs).send_profiles()
 
     elif re.match(PN_CAT_PROFILE, msg_text):
         pass

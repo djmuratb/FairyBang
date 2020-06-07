@@ -96,7 +96,7 @@ class _GirlsSelectionMixin(CatalogBase):
         super().__init__(**kwargs)
         self._profiles_limit    = kwargs.get('profiles_limit')
         self._order_by          = kwargs.get('order_by', GirlBaseFilter.price)
-        self._more_profiles     = kwargs.get('increment', False)
+        self._more_profiles     = kwargs.get('more', False)
 
     @property
     def _slice_range(self):
