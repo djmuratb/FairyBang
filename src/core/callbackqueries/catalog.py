@@ -131,11 +131,12 @@ class _GirlsSelectionMixin(CatalogBase):
 
     def _get_filter_items(self, girl_filter_class, user_filter_instance):
         table = girl_filter_class.__table__
+        ufi = user_filter_instance
         return filter(
             lambda x: x is not None,
             (
                 self._get_sql_condition(table, key, val, type_, nullable)
-                for key, _, val, type_, nullable in user_filter_instance.as_tuple(user_filter_instance, format_value=False)
+                for key, _, val, type_, nullable in ufi.as_tuple(ufi, format_value=False)
                 if key not in self._exclude_columns_names
             )
         )
