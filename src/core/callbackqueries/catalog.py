@@ -86,7 +86,7 @@ class CatProfileDetail(CatalogBase):
 
 
 class _GirlsSelectionMixin(CatalogBase):
-    __slots__ = ('_profiles_limit', '_increment')
+    __slots__ = ('_profiles_limit', '_more_profiles')
 
     _default_enum_value = 'Не важно'
     _exclude_columns_names = ('country', )
@@ -94,11 +94,11 @@ class _GirlsSelectionMixin(CatalogBase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._profiles_limit    = kwargs.get('profiles_limit')
-        self._increment         = kwargs.get('increment', False)
+        self._more_profiles     = kwargs.get('increment', False)
 
     @property
     def slice_range(self):
-        if self._increment:
+        if self._more_profiles:
             offset = OFFSET_STATE.get(self._chat_id, 0)
             end = offset + self._profiles_limit
         else:
