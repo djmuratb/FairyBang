@@ -14,6 +14,9 @@ from src.core.common import bot
 from src.core.helpers.botutils import BotUtils
 
 
+OFFSET_STATE = {}
+
+
 def create_main_catalog_keyboard(catalog_profiles_num):
     buttons = (
         (f'⚙️ ПОКАЗЫВАТЬ ПО   -   {catalog_profiles_num}', f'{PX_CAT_SET}profiles_num'),
@@ -91,12 +94,19 @@ class _GirlsSelectionMixin(CatalogBase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._profiles_limit    = kwargs.get('profiles_limit')
-        self._increment         = kwargs.get('increment', 0)
+        self._increment         = kwargs.get('increment', False)
 
-    def _get_user_filters_instances(self):
-        return user_session.\
-            query(UserGirlBaseFilter, UserGirlExtFilter, UserGirlServices).\
-            filter_by(user_username=self._username).one()
+    @property
+    def slice_range(self):
+        if self._increment:
+            offset = OFFSET_STATE.get(self._chat_id, 0)
+            end = offset + self._profiles_limit
+        else:
+            offset = 0
+            end = offset + self._profiles_limit
+
+        OFFSET_STATE[self._chat_id] = end
+        return offset, end
 
     @staticmethod
     def _get_services_items(user_services_instance):
@@ -130,7 +140,14 @@ class _GirlsSelectionMixin(CatalogBase):
             )
         )
 
+    def _get_user_filters_instances(self):
+        return user_session.\
+            query(UserGirlBaseFilter, UserGirlExtFilter, UserGirlServices).\
+            filter_by(user_username=self._username).one()
+
     def get_girls(self):
+        # TODO: add group_by
+        # NOTE: попробовать в query подгружать только определенные поля у relationships
         user_base_filter, user_ext_filter, user_services = self._get_user_filters_instances()
 
         user_base_filter_items = self._get_filter_items(GirlBaseFilter, user_base_filter)
@@ -148,7 +165,7 @@ class _GirlsSelectionMixin(CatalogBase):
             filter(*user_ext_filter_items). \
             join(Girl.services).options(subqueryload(Girl.services)). \
             filter_by(**user_services_items). \
-            limit(self._profiles_limit). \
+            slice(*self.slice_range). \
             values(Girl.id, Girl.name, GirlBaseFilter.age, GirlBaseFilter.price, Girl.preview_photo)
 
 
@@ -159,3 +176,6 @@ class CatProfiles(_GirlsSelectionMixin):
 
     def send_profiles(self):
         girls = self.get_girls()
+
+        for g in girls:
+            print(g)
