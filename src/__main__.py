@@ -49,7 +49,6 @@ def discounts(message):
 
 @bot.message_handler(regexp='Статистика')
 def statistic(message):
-    # TODO: вывести общее кол-во доступных в боте анкет.
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     user = BotUtils.create_user(username)
     msg = MSG_STATISTIC.format(
