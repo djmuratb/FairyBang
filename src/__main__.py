@@ -99,7 +99,8 @@ def catalog_callback_query(call):
         CatProfiles(profiles_limit=profiles_limit, more=True, **default_kwargs).send_profiles()
 
     elif re.match(PN_CAT_PROFILE, msg_text):
-        pass
+        profiles_limit, girl_id = msg_text.split(':')[1:]
+        CatProfileDetail(girl_id=girl_id, profiles_limit=profiles_limit, **default_kwargs).send_profile_detail()
 
     elif re.match(PN_CAT_BACK, msg_text):
         pass

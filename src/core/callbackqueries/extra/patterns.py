@@ -8,17 +8,20 @@ PN_SET              = re.compile(r'SET:(?P<value>.+)')
 PN_ENTER            = re.compile(r'ENTER:(?P<value>.+)')
 
 # Updates value of specific catalog setting.
+_profiles_limit     = '(?P<profiles_limit>\d{1,2})'
+_profile_id         = '(?P<profile_id>\d+)'
+
 PN_CAT_SET          = re.compile(r'SET:(?P<setting_name>.+)')
 # Displays girls profiles.
-PN_CAT              = re.compile(r'CAT:(?P<profiles_limit>\d{1,2})')
+PN_CAT              = re.compile(rf'CAT:{_profiles_limit}')
 # Shows more girls profiles.
-PN_CAT_MORE         = re.compile(r'MORE:(?P<profiles_limit>\d{1,2})')
+PN_CAT_MORE         = re.compile(rf'MORE:{_profiles_limit}')
 # Girl profile details.
-PN_CAT_PROFILE      = re.compile(r'PROFILE:(?P<profile_id>\d+)')
+PN_CAT_PROFILE      = re.compile(rf'PROFILE:{_profiles_limit}:{_profile_id}')
 # Returns back from detail girls profile to base girl info.
-PN_CAT_BACK         = re.compile(r'BACK:(?P<profile_id>\d+)')
+PN_CAT_BACK         = re.compile(rf'BACK:{_profiles_limit}:{_profile_id}')
 # Girl profile payment.
-PN_CAT_PAY          = re.compile(r'PAY:(?P<profile_id>\d+)')
+PN_CAT_PAY          = re.compile(rf'PAY:{_profiles_limit}:{_profile_id}')
 
 # Displays available options of specific filters.
 PN_FIL              = re.compile(r'^FIL:(?P<filter_name>.+)$')

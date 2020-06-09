@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import itertools
 import functools
 
 from sqlalchemy import or_, func
@@ -9,7 +10,7 @@ from sqlalchemy.dialects.postgresql.array import ARRAY
 
 from src.messages import *
 from src.models import User, user_session, Girl, girl_session, UserGirlBaseFilter, UserGirlExtFilter, \
-    UserGirlServices, GirlBaseFilter, GirlExtFilter
+    UserGirlServices, GirlBaseFilter, GirlExtFilter, GirlServices
 
 from src.core.common import bot
 from src.core.helpers import pyutils
@@ -42,22 +43,40 @@ def set_catalog_profiles_limit(username, chat_id, message_id, new_val):
         user = user_session.query(User).filter_by(username=username).one()
         BotUtils.write_changes(user, 'catalog_profiles_num', new_val)
 
+        msg = MSG_CATALOG.format(get_total_profiles())
         kb = create_main_catalog_keyboard(user.catalog_profiles_num)
-        bot.edit_message_text(MSG_CATALOG, chat_id, message_id, parse_mode='Markdown', reply_markup=kb)
+        bot.edit_message_text(msg, chat_id, message_id, parse_mode='Markdown', reply_markup=kb)
         bot.send_message(chat_id, MSG_SUCCESS_CHANGE_OPTION, parse_mode='Markdown')
     else:
-        options = (KeyboardOption(name=f'{x}', callback=f'{PX_CAT_SET}profiles_num:{x}') for x in range(11) if is_valid(x))
-        kb = Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=1)
-        bot.edit_message_text(MSG_CATALOG_NUM_PROFILES, chat_id, message_id, parse_mode='Markdown', reply_markup=kb)
+        bot.edit_message_text(
+            MSG_CATALOG_NUM_PROFILES,
+            chat_id,
+            message_id,
+            parse_mode='Markdown',
+            reply_markup=Keyboards.create_inline_keyboard_ext(
+                *(
+                    KeyboardOption(name=f'{x}', callback=f'{PX_CAT_SET}profiles_num:{x}')
+                    for x in range(11)
+                    if is_valid(x)
+                ), prefix='', row_width=1
+            )
+        )
 
 
 class CatalogBase:
-    __slots__ = ('_username', '_chat_id', '_message_id')
+    __slots__ = ('_username', '_chat_id', '_message_id', '_profiles_limit')
+
+    _more_girls_text = '🔵 Показать еще 🔵'
 
     def __init__(self, **kwargs):
-        self._username      = kwargs['username']
-        self._chat_id       = kwargs['chat_id']
-        self._message_id    = kwargs.get('message_id', None)
+        self._username          = kwargs['username']
+        self._chat_id           = kwargs['chat_id']
+        self._message_id        = kwargs.get('message_id', None)
+        self._profiles_limit    = kwargs.get('profiles_limit')
+
+    def _get_kb_with_more_btn(self, *buttons):
+        more_girls_btn = KeyboardOption(name=self._more_girls_text, callback=f'{PX_CAT_MORE}{self._profiles_limit}')
+        return Keyboards.create_inline_keyboard_ext(*buttons, more_girls_btn, row_width=1)
 
 
 class CatPaymentDetail(CatalogBase):
@@ -85,12 +104,64 @@ class CatPayment(CatalogBase):
 class CatProfileDetail(CatalogBase):
     __slots__ = ('_girl_id', )
 
+    _default_item_emoji     = '📁'
+    _exist_service_emoji    = '☑️'
+    _pay_btn_name           = '💳 Заказать'
+    _include_col_names      = (
+        #   --- GIRL ---
+
+        #   --- BASE FILTER ---
+        'Возраст', 'Рост', 'Грудь',
+        #   --- EXT FILTER ---
+        'Национальность', 'Цвет волос', 'Апартаменты 1 час', 'Выезд к Вам', 'Выезд к Вам на ночь'
+    )
+
     def __init__(self, girl_id, **kwargs):
         super().__init__(**kwargs)
         self._girl_id = girl_id
 
+    @property
+    def _keyboard(self):
+        btn = KeyboardOption(name=self._pay_btn_name, callback=f'{PX_CAT_PAY}{self._profiles_limit}:{self._girl_id}')
+        return self._get_kb_with_more_btn(btn)
+
+    def _get_personal_info(self, girl):
+        return itertools.chain(
+            girl.as_tuple(girl, include_col_names=self._include_col_names, meta='girl'),
+            girl.base_filter.as_tuple(girl.base_filter, include_col_names=self._include_col_names, meta='girl'),
+            girl.ext_filter.as_tuple(girl.ext_filter, include_col_names=self._include_col_names, meta='girl')
+        )
+
+    @staticmethod
+    def _add_about(msg, about_text):
+        if about_text:
+            msg += f'{about_text}\n'
+
+        return msg
+
+    def _get_personal_info_msg(self, girl):
+        msg_detail_info = MSG_GIRL_DETAIL_INFO.format(name=girl.name)
+        msg_detail_info = self._add_about(msg_detail_info, girl.about)
+
+        msg_personal_info = MSG_GIRL_PERSONAL_INFO
+
+        for el in self._get_personal_info(girl):
+            msg_personal_info += f'{self._default_item_emoji} {el.name}: *{el.value}*\n'
+
+        return msg_detail_info + msg_personal_info
+
+    def _get_services_msg(self, girl):
+        services_msg = MSG_GIRL_DETAIL_SERVICES
+        for el in girl.services.as_tuple(girl.services, meta='girl'):
+            if el.value == 'да':
+                services_msg += f'{self._exist_service_emoji} *{el.name}*\n'
+
+        return services_msg
+
     def send_profile_detail(self):
-        pass
+        girl = girl_session.query(Girl).get(self._girl_id)
+        msg = self._get_personal_info_msg(girl) + self._get_services_msg(girl)
+        bot.edit_message_text(msg, self._chat_id, self._message_id, reply_markup=self._keyboard, parse_mode='Markdown')
 
 
 class _GirlsSelectionMixin(CatalogBase):
@@ -101,7 +172,6 @@ class _GirlsSelectionMixin(CatalogBase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._profiles_limit    = kwargs.get('profiles_limit')
         self._order_by          = kwargs.get('order_by', GirlBaseFilter.price)
         self._more_profiles     = kwargs.get('more', False)
 
@@ -182,26 +252,27 @@ class _GirlsSelectionMixin(CatalogBase):
 
 class CatProfiles(_GirlsSelectionMixin):
     _short_description  = '{} | {} | {}р.'
-    _more_detail        = '❣️ ПОДРОБНЕЕ ❣️'
-    _more_girls         = '🔵 Показать еще 🔵'
+    _more_detail_text   = '❣️ ПОДРОБНЕЕ ❣️'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _get_keyboard_options(self, id_, name, age, price, last):
-        short_desc_btn = KeyboardOption(name=self._short_description.format(name, age, price), callback=' ')
-        more_detail_btn = KeyboardOption(name=self._more_detail, callback=f'{PX_CAT_PROFILE}{id_}')
-
+    def _get_keyboard(self, id_, last):
+        callback = f'{PX_CAT_PROFILE}{self._profiles_limit}:{id_}'
+        more_detail_btn = KeyboardOption(name=self._more_detail_text, callback=callback)
         if not last:
-            return short_desc_btn, more_detail_btn
+            return Keyboards.create_inline_keyboard_ext(more_detail_btn, row_width=1)
 
-        more_girls_btn = KeyboardOption(name=self._more_girls, callback=f'{PX_CAT_MORE}{self._profiles_limit}')
-        return short_desc_btn, more_detail_btn, more_girls_btn
+        return self._get_kb_with_more_btn(more_detail_btn)
+
+    def _send_profile_msg(self, id_, info, last):
+        msg = MSG_GIRL_SHORT_INFO.format(*info)
+        bot.send_message(self._chat_id, msg, reply_markup=self._get_keyboard(id_, last), parse_mode='Markdown')
 
     def send_profiles(self):
         try:
-            for *info, preview_photo, last in pyutils.lookahead(self.girls):
-                kb = Keyboards.create_inline_keyboard_ext(*self._get_keyboard_options(*info, last=last), row_width=1)
-                bot.send_photo(self._chat_id, preview_photo, reply_markup=kb)
+            for id_, *info, preview_photo, last in pyutils.lookahead(self.girls):
+                bot.send_photo(self._chat_id, preview_photo)
+                self._send_profile_msg(id_, info, last)
         except RuntimeError:
             bot.send_message(self._chat_id, MSG_GIRLS_OVER_EXC, reply_markup=KB_MENU, parse_mode='Markdown')
