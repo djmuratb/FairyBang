@@ -61,6 +61,7 @@ def statistic(message):
         user.total_txs,
         int(user.total_qiwi_sum),
         user.total_girls,
+        get_total_profiles(),
     )
     bot.send_message(chat_id, msg, parse_mode='Markdown')
 

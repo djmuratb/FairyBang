@@ -27,7 +27,8 @@ def process_change_city_step(message):
     city = msg_text.capitalize()
 
     # TODO: validate city.
-    if city in ('Дмитров', 'Москва'):
+    # if city in ('Дмитров', 'Москва'):
+    if city:
         BotUtils.write_changes(BotUtils.create_user(username).base_filter, 'city', city)
 
         if city == 'Москва':
@@ -50,7 +51,8 @@ def process_change_subway_step(message):
     subway = msg_text.capitalize()
 
     # TODO: validate subway
-    if subway in ('Лефортово', 'Бассманная'):
+    # if subway in ('Лефортово', 'Бассманная'):
+    if subway:
         BotUtils.write_changes(BotUtils.create_user(username).base_filter, 'subway', subway)
         bot.send_message(chat_id, MSG_MENU_ATTENTION.format(SUPPORT_MAIL), parse_mode='Markdown', reply_markup=KB_MENU)
 

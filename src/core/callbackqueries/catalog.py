@@ -168,7 +168,9 @@ class _GirlsSelectionMixin(CatalogBase):
     __slots__ = ('_profiles_limit', '_more_profiles', '_order_by')
 
     _default_enum_value = 'Не важно'
-    _exclude_columns_names = ('country', )
+
+    # NOTE: remove later city and subway
+    _exclude_columns_names = ('country', 'city', 'subway')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
