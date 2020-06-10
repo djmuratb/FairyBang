@@ -10,6 +10,7 @@ PX_CAT             = 'CAT:'
 PX_CAT_MORE        = 'CAT_MORE:'
 PX_CAT_PROFILE     = 'CAT_PROFILE:'
 PX_CAT_PAY         = 'CAT_PAY:'
+PX_CAT_PAY_BACK    = 'CAT_PAY_BACK:'
 PX_CAT_SET         = 'CAT_SET:'
 
 #       --- FILTERS ---

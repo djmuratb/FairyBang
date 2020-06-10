@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine, MetaData, Column
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine.url import URL
 from sqlalchemy.ext.declarative import declarative_base
@@ -41,7 +41,7 @@ def _bool_to_word(val: bool):
     return 'да' if val else 'не важно'
 
 
-def _get_column_info(column, table_name, meta):
+def _get_column_info(column: Column, table_name: str, meta: str):
     meta = META.get(meta)
     for table in meta.sorted_tables:
         if table.name == table_name:
@@ -49,7 +49,7 @@ def _get_column_info(column, table_name, meta):
             return type(col.type), col.nullable
 
 
-def _get_value_and_type(instance, column, format_value, meta):
+def _get_value_and_type(instance, column: Column, format_value: bool, meta: str):
     """
     :param instance:
     :param column:
@@ -81,7 +81,7 @@ def _get_value_and_type(instance, column, format_value, meta):
     return col_type, val, nullable
 
 
-def _create_column_result_set(instance, column, format_value, meta):
+def _create_column_result_set(instance, column: Column, format_value: bool, meta: str):
     col_type, col_val, nullable = _get_value_and_type(instance, column, format_value, meta)
     return ColumnResultSet(
         key=column.key,
@@ -92,7 +92,7 @@ def _create_column_result_set(instance, column, format_value, meta):
     )
 
 
-def _filter_include_exclude(iter_, inc, excl):
+def _filter_include_exclude(iter_, inc: tuple, excl: tuple):
     return filter(
         lambda col: col.name in inc if inc else col.name and col.name not in excl,
         iter_
@@ -102,10 +102,10 @@ def _filter_include_exclude(iter_, inc, excl):
 class Common:
     @staticmethod
     def as_dict(instance,
-                include_col_names=None,
-                excl_columns_names=EXCLUDE_BY_DEFAULT,
-                only_key_val=False,
-                format_value=True):
+                include_col_names: tuple = None,
+                excl_columns_names: tuple = EXCLUDE_BY_DEFAULT,
+                only_key_val: bool = False,
+                format_value: bool = True):
         if only_key_val:
             return {
                 column.key: getattr(instance, column.key)
@@ -116,10 +116,10 @@ class Common:
 
     @staticmethod
     def as_genexpr(instance,
-                   include_col_names=None,
-                   exclude_col_names=EXCLUDE_BY_DEFAULT,
-                   format_value=True,
-                   meta='user'):
+                   include_col_names: tuple = None,
+                   exclude_col_names: tuple = EXCLUDE_BY_DEFAULT,
+                   format_value: bool = True,
+                   meta: str = 'user'):
         return (
             _create_column_result_set(instance, column, format_value, meta)
             for column in _filter_include_exclude(
@@ -129,10 +129,10 @@ class Common:
 
     @staticmethod
     def as_tuple(instance,
-                 include_col_names=None,
-                 exclude_col_names=EXCLUDE_BY_DEFAULT,
-                 format_value=True,
-                 meta='user'):
+                 include_col_names: tuple = None,
+                 exclude_col_names: tuple = EXCLUDE_BY_DEFAULT,
+                 format_value: bool = True,
+                 meta: str = 'user'):
         return tuple(Common.as_genexpr(**locals()))
 
     @staticmethod

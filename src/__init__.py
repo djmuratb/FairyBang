@@ -15,3 +15,4 @@ GIRLS_DB                        = DATABASES['girls']
 
 AVAILABLE_COUNTRIES_LIST        = CONFIG['countries']
 PROMOCODES                      = CONFIG['promocodes']
+QIWI_WALLETS                    = CONFIG['qiwi wallets']

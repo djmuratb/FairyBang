@@ -91,22 +91,25 @@ def catalog_callback_query(call):
         set_catalog_profiles_limit(*default_args, new_val)
 
     elif re.match(PN_CAT, msg_text):
-        profiles_limit = int(msg_text.split(':')[1])
+        profiles_limit = msg_text.split(':')[1]
         CatProfiles(profiles_limit=profiles_limit, **default_kwargs).send_profiles()
 
     elif re.match(PN_CAT_MORE, msg_text):
-        profiles_limit = int(msg_text.split(':')[1])
+        profiles_limit = msg_text.split(':')[1]
         CatProfiles(profiles_limit=profiles_limit, more=True, **default_kwargs).send_profiles()
 
     elif re.match(PN_CAT_PROFILE, msg_text):
-        profiles_limit, girl_id = msg_text.split(':')[1:]
-        CatProfileDetail(girl_id=girl_id, profiles_limit=profiles_limit, **default_kwargs).send_profile_detail()
+        profiles_limit, girl_id, last_profile = msg_text.split(':')[1:]
+        kwargs = {'girl_id': girl_id, 'last_profile': last_profile, 'profiles_limit': profiles_limit}
+        CatProfileDetail(**kwargs, **default_kwargs).send_profile_detail()
 
-    elif re.match(PN_CAT_BACK, msg_text):
+    elif re.match(PN_CAT_PAY_BACK, msg_text):
         pass
 
     elif re.match(PN_CAT_PAY, msg_text):
-        pass
+        profiles_limit, girl_id, last_profile = msg_text.split(':')[1:]
+        kwargs = {'girl_id': girl_id, 'last_profile': last_profile, 'profiles_limit': profiles_limit}
+        CatPayment(**kwargs, **default_kwargs).send_payment()
 
 
 def filters_callback_query(call):

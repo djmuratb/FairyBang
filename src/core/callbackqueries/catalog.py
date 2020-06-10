@@ -8,9 +8,10 @@ from sqlalchemy.sql.sqltypes import VARCHAR
 from sqlalchemy.dialects.postgresql.base import ENUM
 from sqlalchemy.dialects.postgresql.array import ARRAY
 
+from src import QIWI_WALLETS, SUPPORT_MAIL
 from src.messages import *
 from src.models import User, user_session, Girl, girl_session, UserGirlBaseFilter, UserGirlExtFilter, \
-    UserGirlServices, GirlBaseFilter, GirlExtFilter, GirlServices
+    UserGirlServices, GirlBaseFilter, GirlExtFilter
 
 from src.core.common import bot
 from src.core.helpers import pyutils
@@ -72,7 +73,7 @@ class CatalogBase:
         self._username          = kwargs['username']
         self._chat_id           = kwargs['chat_id']
         self._message_id        = kwargs.get('message_id', None)
-        self._profiles_limit    = kwargs.get('profiles_limit')
+        self._profiles_limit    = int(kwargs.get('profiles_limit'))
 
     def _get_kb_with_more_btn(self, *buttons):
         more_girls_btn = KeyboardOption(name=self._more_girls_text, callback=f'{PX_CAT_MORE}{self._profiles_limit}')
@@ -91,18 +92,43 @@ class CatPaymentDetail(CatalogBase):
 
 
 class CatPayment(CatalogBase):
-    __slots__ = ('_girl_id', )
+    __slots__ = ('_girl_id', '_last_profile', '_last_profile_bool')
 
-    def __init__(self, girl_id, **kwargs):
+    _profile_btn_name = '👗 Профиль'
+
+    def __init__(self, girl_id, last_profile, **kwargs):
         super().__init__(**kwargs)
         self._girl_id = girl_id
+        self._last_profile = last_profile
+        self._last_profile_bool = bool(int(last_profile))
+
+    @property
+    def _keyboard(self):
+        callback = f'{PX_CAT_PROFILE}{self._profiles_limit}:{self._girl_id}:{self._last_profile}'
+        btn = KeyboardOption(name=self._profile_btn_name, callback=callback)
+        if self._last_profile_bool:
+            return self._get_kb_with_more_btn(btn)
+        else:
+            return Keyboards.create_inline_keyboard_ext(btn, row_width=1)
+
+    @property
+    def _pay_msg(self):
+        girl = girl_session.query(Girl).get(self._girl_id)
+        return MSG_CAT_PAY.format(
+            id_=girl.id,
+            app_one_hour=girl.ext_filter.app_one_hour,
+            departure_to_you=girl.ext_filter.departure_to_you,
+            departure_to_you_night=girl.ext_filter.departure_to_you_night,
+            qiwi_wallets='\n'.join(QIWI_WALLETS),
+            support_mail=SUPPORT_MAIL
+        )
 
     def send_payment(self):
-        pass
+        bot.edit_message_text(self._pay_msg, self._chat_id, self._message_id, reply_markup=self._keyboard, parse_mode='Markdown')
 
 
 class CatProfileDetail(CatalogBase):
-    __slots__ = ('_girl_id', )
+    __slots__ = ('_girl_id', '_last_profile', '_last_profile_bool')
 
     _default_item_emoji     = '📁'
     _exist_service_emoji    = '☑️'
@@ -116,14 +142,20 @@ class CatProfileDetail(CatalogBase):
         'Национальность', 'Цвет волос', 'Апартаменты 1 час', 'Выезд к Вам', 'Выезд к Вам на ночь'
     )
 
-    def __init__(self, girl_id, **kwargs):
+    def __init__(self, girl_id, last_profile, **kwargs):
         super().__init__(**kwargs)
         self._girl_id = girl_id
+        self._last_profile = last_profile
+        self._last_profile_bool = bool(int(last_profile))
 
     @property
     def _keyboard(self):
-        btn = KeyboardOption(name=self._pay_btn_name, callback=f'{PX_CAT_PAY}{self._profiles_limit}:{self._girl_id}')
-        return self._get_kb_with_more_btn(btn)
+        callback = f'{PX_CAT_PAY}{self._profiles_limit}:{self._girl_id}:{self._last_profile}'
+        btn = KeyboardOption(name=self._pay_btn_name, callback=callback)
+        if self._last_profile_bool:
+            return self._get_kb_with_more_btn(btn)
+        else:
+            return Keyboards.create_inline_keyboard_ext(btn, row_width=1)
 
     def _get_personal_info(self, girl):
         return itertools.chain(
@@ -260,7 +292,7 @@ class CatProfiles(_GirlsSelectionMixin):
         super().__init__(**kwargs)
 
     def _get_keyboard(self, id_, last):
-        callback = f'{PX_CAT_PROFILE}{self._profiles_limit}:{id_}'
+        callback = f'{PX_CAT_PROFILE}{self._profiles_limit}:{id_}:{int(last)}'
         more_detail_btn = KeyboardOption(name=self._more_detail_text, callback=callback)
         if not last:
             return Keyboards.create_inline_keyboard_ext(more_detail_btn, row_width=1)
