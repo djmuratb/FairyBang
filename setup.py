@@ -14,6 +14,7 @@ setup(
         'PyYaml==5.3.1',
         'SQLAlchemy==1.3.16',
         'psycopg2==2.8.5',
+        'aiohttp==3.6.2',
     ],
     packages=find_packages(),
     entry_points={

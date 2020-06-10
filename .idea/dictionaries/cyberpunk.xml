@@ -1,6 +1,8 @@
 <component name="ProjectDictionaryState">
   <dictionary name="cyberpunk">
     <words>
+      <w>addr</w>
+      <w>aiohttp</w>
       <w>blonde</w>
       <w>brunnete</w>
       <w>emoji</w>
@@ -8,12 +10,14 @@
       <w>fairybang</w>
       <w>genexpr</w>
       <w>noppp</w>
+      <w>priv</w>
       <w>promocode</w>
       <w>promocodes</w>
       <w>qiwi</w>
       <w>sunburnt</w>
       <w>tablename</w>
       <w>viber</w>
+      <w>webhook</w>
       <w>webhooks</w>
       <w>whatsapp</w>
     </words>

@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from src import SUPPORT_MAIL
+import ssl
+
+from aiohttp import web
+
+from src import SUPPORT_MAIL, DEBUG, WEBHOOK_PORT, WEBHOOK_LISTEN, WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV, \
+    WEBHOOK_URL_BASE, WEBHOOK_URL_PATH
 from src.models import User
 from src.messages import *
 
-from src.core.common import bot
+from src.core.common import bot, app
 from src.core.stepsprocesses import process_change_country_step
 from src.core.helpers import pyutils
 from src.core.helpers.botutils import BotUtils
@@ -162,7 +167,23 @@ def callback_query(call):
 def main_loop():
     bot.enable_save_next_step_handlers(delay=2)
     bot.load_next_step_handlers()
-    bot.polling()
+
+    if DEBUG:
+        bot.polling()
+    else:
+        bot.remove_webhook()
+        bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
+                        certificate=open(WEBHOOK_SSL_CERT, 'r'))
+
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        context.load_cert_chain(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV)
+
+        web.run_app(
+            app,
+            host=WEBHOOK_LISTEN,
+            port=WEBHOOK_PORT,
+            ssl_context=context,
+        )
 
 
 if __name__ == '__main__':

@@ -19,6 +19,19 @@ databases:
     port: 5432
     database: girls
 
+# --- WEBHOOKS ---
+# ip/host where the bot is running
+webhook host: ~
+# 443, 80, 88 or 8443 (port need to be 'open')
+webhook port: ~
+# In some VPS you may need to put here the IP addr
+webhook listen: '0.0.0.0'
+
+# Path to the ssl certificate
+webhook ssl cert: ~
+# Path to the ssl private key
+webhook ssl priv: ~
+
 # --- OTHER OPTIONS ---
 enable tor: True
 
