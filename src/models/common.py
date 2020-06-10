@@ -41,9 +41,17 @@ def _bool_to_word(val: bool):
     return 'да' if val else 'не важно'
 
 
-def _get_column_info(column: Column, table_name: str, meta: str):
+def _get_meta_tables(meta:str):
     meta = META.get(meta)
-    for table in meta.sorted_tables:
+    if not meta.sorted_tables:
+        meta_user.reflect(bind=engine_user)
+        meta_girl.reflect(bind=engine_girl)
+
+    return meta.sorted_tables
+
+
+def _get_column_info(column: Column, table_name: str, meta: str):
+    for table in _get_meta_tables(meta):
         if table.name == table_name:
             col = table.columns[column.name]
             return type(col.type), col.nullable
