@@ -2,8 +2,6 @@
 from src.core.helpers import pyutils
 
 
-__version__ = '0.1'
-
 CONFIG = pyutils.load_config('config.yaml')
 
 ADMIN_USERNAME                  = CONFIG['admin username']

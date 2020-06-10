@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-from src import __version__
-
 
 setup(
     name='FairyBang',
-    version=__version__,
+    version='0.1',
     platform='linux',
     author='L',
     author_email='llawlietorigin@gmail.com',
