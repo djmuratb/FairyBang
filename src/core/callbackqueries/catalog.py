@@ -255,9 +255,8 @@ class _GirlsSelectionMixin(CatalogBase):
         )
 
     def _get_user_filters_instances(self):
-        return user_session.\
-            query(UserGirlBaseFilter, UserGirlExtFilter, UserGirlServices).\
-            filter_by(user_username=self._username).one()
+        user = user_session.query(User).filter_by(username=self._username).one()
+        return user.base_filter, user.ext_filter, user.services
 
     @property
     def girls(self):
