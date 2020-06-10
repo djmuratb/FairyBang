@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+import sys
+
 from src.core.helpers import pyutils
 
+
+print(111, sys.argv)
 
 CONFIG = pyutils.load_config('config.yaml')
 
