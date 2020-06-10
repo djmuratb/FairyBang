@@ -4,9 +4,15 @@ import sys
 from src.core.helpers import pyutils
 
 
-print(111, sys.argv)
+try:
+    cfg_path = sys.argv[1]
+except IndexError:
+    cfg_path = 'config.yaml'
 
-CONFIG = pyutils.load_config('config.yaml')
+try:
+    CONFIG = pyutils.load_config(cfg_path)
+except FileNotFoundError:
+    raise Exception('Incorrect configuration file path entered.')
 
 ADMIN_USERNAME                  = CONFIG['admin username']
 API_TOKEN                       = CONFIG['api token']
