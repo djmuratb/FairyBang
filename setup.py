@@ -18,7 +18,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'fairybang = src.__main__.main_loop'
+            'fairybang = src.__main__:main_loop'
         ]
     }
 )
