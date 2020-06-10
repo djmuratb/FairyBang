@@ -27,6 +27,9 @@ from src.core.callbackqueries.common import MainCBQ, FiltersCBQ, FiltersOptionsH
     CatPaymentDetail, get_total_profiles
 
 
+# TODO: fix bug "description":"Forbidden: bot was blocked by the user"
+
+
 @bot.message_handler(regexp='Каталог')
 def catalog(message):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
