@@ -57,15 +57,15 @@ def statistic(message):
     username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     user = BotUtils.create_user(username)
     msg = MSG_STATISTIC.format(
-        0,
-        0,
-        0,
+        bot_active_days=0,
+        total_ordered_girls=0,
+        bot_total_money=0,
 
-        user.days_since_register,
-        user.total_txs,
-        int(user.total_qiwi_sum),
-        user.total_girls,
-        get_total_profiles(),
+        days_since_register=user.days_since_register,
+        total_txs=user.total_txs,
+        total_qiwi_sum=int(user.total_qiwi_sum),
+        total_girls=user.total_girls,
+        total_girls_profiles=get_total_profiles(),
     )
     bot.send_message(chat_id, msg, parse_mode='Markdown')
 
