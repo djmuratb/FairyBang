@@ -6,7 +6,7 @@ from src.models.admin import Admin
 
 
 FILTERS = {
-    'Базовый'       : UserGirlBaseFilter,
-    'Расширенный'   : UserGirlExtFilter,
-    'Услуги'        : UserGirlServices,
+    'base_filter'   : UserGirlBaseFilter,
+    'ext_filter'    : UserGirlExtFilter,
+    'services'      : UserGirlServices,
 }

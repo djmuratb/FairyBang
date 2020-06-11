@@ -36,12 +36,12 @@ def create_main_catalog_keyboard(catalog_profiles_num):
     return Keyboards.create_inline_keyboard_ext(*options, prefix='', row_width=1)
 
 
-def set_catalog_profiles_limit(username, chat_id, message_id, new_val):
+def set_catalog_profiles_limit(user_id, username, chat_id, message_id, new_val):
     def is_valid(val):
         return (val == 1 or val % 5 == 0) and val != 0
 
     if new_val:
-        user = user_session.query(User).filter_by(username=username).one()
+        user = BotUtils.get_user(user_id, username)
         BotUtils.write_changes(user, 'catalog_profiles_num', new_val)
 
         msg = MSG_CATALOG.format(get_total_profiles())
@@ -65,11 +65,12 @@ def set_catalog_profiles_limit(username, chat_id, message_id, new_val):
 
 
 class CatalogBase:
-    __slots__ = ('_username', '_chat_id', '_message_id', '_profiles_limit')
+    __slots__ = ('_user_id', '_username', '_chat_id', '_message_id', '_profiles_limit')
 
     _more_girls_text = '🔵 Показать еще 🔵'
 
     def __init__(self, **kwargs):
+        self._user_id           = kwargs['user_id']
         self._username          = kwargs['username']
         self._chat_id           = kwargs['chat_id']
         self._message_id        = kwargs.get('message_id', None)
@@ -255,7 +256,7 @@ class _GirlsSelectionMixin(CatalogBase):
         )
 
     def _get_user_filters_instances(self):
-        user = user_session.query(User).filter_by(username=self._username).one()
+        user = BotUtils.get_user(self._user_id, self._username)
         return user.base_filter, user.ext_filter, user.services
 
     @property

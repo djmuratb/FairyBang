@@ -46,7 +46,12 @@ class BotUtils:
         return class_or_instance
 
     @staticmethod
-    def write_changes(class_or_instance: object or type, attr=None, value=None, only_commit=True, filter_by: dict = None):
+    def write_changes(
+            class_or_instance: object or type,
+            attr=None,
+            value=None,
+            only_commit=True,
+            filter_by: dict = None):
         # TODO: check update method
         obj = BotUtils.get_obj(class_or_instance, filter_by)
         if attr and value is not None:
@@ -58,14 +63,24 @@ class BotUtils:
         user_session.commit()
 
     @staticmethod
-    def create_user(username):
-        user = user_session.query(User).filter_by(username=username).first()
+    def _is_username_modified(current_username, received_username):
+        return False if current_username == received_username else True
+
+    @staticmethod
+    def get_user(user_id, username, attr_name=None):
+        user = user_session.query(User).get(user_id)
+        if BotUtils._is_username_modified(user.username, username):
+            BotUtils.write_changes(user, 'username', username)
+
         if not user:
-            user = User(username)
+            user = User(user_id, username)
             user.base_filter = UserGirlBaseFilter()
             user.ext_filter = UserGirlExtFilter()
             user.services = UserGirlServices()
             BotUtils.write_changes(user, only_commit=False)
+
+        if attr_name:
+            return getattr(user, attr_name)
 
         return user
 
@@ -74,11 +89,12 @@ class BotUtils:
         """
         :param obj: message or call object
         :param callback: if param is callback query data
-        :return: username, chat_id, message_id, text.
+        :return: user_id, username, chat_id, message_id, text.
         """
         if callback:
-            data = (obj.message.chat.username, obj.message.chat.id, obj.message.message_id, obj.data)
+            data = (obj.from_user.id, obj.from_user.username,
+                    obj.message.chat.id, obj.message.message_id, obj.data)
         else:
-            data = (obj.chat.username, obj.chat.id, obj.message_id, obj.text)
+            data = (obj.from_user.id, obj.chat.username, obj.chat.id, obj.message_id, obj.text)
 
         return data

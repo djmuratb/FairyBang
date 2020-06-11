@@ -17,7 +17,7 @@ class UserGirlServices(ServicesMixin, UserBase):
     __tablename__ = 'users_girl_services'
 
     #           --- relationship ---
-    user_username   = Column(String(50), ForeignKey('users.username', ondelete='CASCADE'))
+    user_id         = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     user            = relationship('User', back_populates='services')
 
     def __init__(self):
@@ -34,7 +34,7 @@ class UserGirlExtFilter(ExtFilterMixin, UserBase):
     departure_to_you_night  = Column(ARRAY(Integer, as_tuple=True), default=(2_000, 80_000), name='Выезд к Вам на ночь', key='departure_to_you_night')
 
     #       --- relationship ---
-    user_username   = Column(String(50), ForeignKey('users.username', ondelete='CASCADE'))
+    user_id         = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     user            = relationship('User', back_populates='ext_filter')
 
     def __init__(self):
@@ -53,7 +53,7 @@ class UserGirlBaseFilter(BaseFilterMixin, UserBase):
     price           = Column(ARRAY(Integer, as_tuple=True), name='Цена', default=(1_000, 20_000), key='price')
 
     #       --- relationship ---
-    user_username   = Column(String(50), ForeignKey('users.username', ondelete='CASCADE'))
+    user_id         = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     user            = relationship('User', back_populates='base_filter')
 
     def __init__(self):
@@ -93,7 +93,8 @@ class User(UserBase):
     def discount_expires_days(self):
         return (self.promo_valid_to - self.promo_valid_from).days
 
-    def __init__(self, username):
+    def __init__(self, user_id, username):
+        self.id = user_id
         self.username = username
 
 

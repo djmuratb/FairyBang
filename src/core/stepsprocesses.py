@@ -13,8 +13,8 @@ from src.core.helpers.validators import VALIDATORS
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
-    BotUtils.create_user(username)
+    user_id, username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
+    BotUtils.get_user(user_id, username)
 
     welcome = MSG_WELCOME.format(username)
 
@@ -23,13 +23,13 @@ def start(message):
 
 
 def process_change_city_step(message):
-    username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
+    user_id, username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     city = msg_text.capitalize()
 
     # TODO: validate city.
     # if city in ('Дмитров', 'Москва'):
     if city:
-        BotUtils.write_changes(BotUtils.create_user(username).base_filter, 'city', city)
+        BotUtils.write_changes(BotUtils.get_user(user_id, username).base_filter, 'city', city)
 
         if city == 'Москва':
             msg = bot.send_message(chat_id, MSG_ENTER_SUBWAY, parse_mode='Markdown')
@@ -47,13 +47,13 @@ def process_change_city_step(message):
 
 
 def process_change_subway_step(message):
-    username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
+    user_id, username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
     subway = msg_text.capitalize()
 
     # TODO: validate subway
     # if subway in ('Лефортово', 'Бассманная'):
     if subway:
-        BotUtils.write_changes(BotUtils.create_user(username).base_filter, 'subway', subway)
+        BotUtils.write_changes(BotUtils.get_user(user_id, username).base_filter, 'subway', subway)
         bot.send_message(chat_id, MSG_MENU_ATTENTION.format(SUPPORT_MAIL), parse_mode='Markdown', reply_markup=KB_MENU)
 
     elif msg_text == '/reset':
@@ -65,7 +65,7 @@ def process_change_subway_step(message):
 
 
 def process_promocode_step(message):
-    username, chat_id, message_id, promocode = BotUtils.get_message_data(message)
+    user_id, username, chat_id, message_id, promocode = BotUtils.get_message_data(message)
     promocode_data = PROMOCODES.get(promocode, None)
 
     if promocode.endswith('Отмена'):
@@ -73,7 +73,7 @@ def process_promocode_step(message):
         return
 
     if promocode_data:
-        user = BotUtils.create_user(username)
+        user = BotUtils.get_user(user_id, username)
         user.promocode = promocode
         pyutils.set_attrs_values_from_dict(promocode_data, user, date_specific=True)
 
@@ -85,7 +85,7 @@ def process_promocode_step(message):
 
 
 def process_change_range_option_val_step(message, **kwargs):
-    username, chat_id, message_id, val = BotUtils.get_message_data(message)
+    user_id, username, chat_id, message_id, val = BotUtils.get_message_data(message)
 
     if val.endswith('Отмена'):
         bot.send_message(chat_id, MSG_CANCELED, reply_markup=KB_MENU)
@@ -95,15 +95,15 @@ def process_change_range_option_val_step(message, **kwargs):
     valid_values = VALIDATORS.get('range').validate(value=val, default_values=default_values)
 
     if valid_values:
-        BotUtils.write_changes(filter_class, key, valid_values, filter_by={'user_username': username})
+        BotUtils.write_changes(filter_class, key, valid_values, filter_by={'user_id': user_id})
         bot.send_message(chat_id, MSG_SUCCESS_CHANGE_OPTION, parse_mode='Markdown', reply_markup=KB_MENU)
     else:
         msg = bot.send_message(chat_id, MSG_INCORRECT_VALUE, parse_mode='Markdown')
         bot.register_next_step_handler(msg, process_change_range_option_val_step, **kwargs)
 
 
-def process_change_country_step(country_name, username, chat_id):
-    user = BotUtils.create_user(username)
+def process_change_country_step(country_name, user_id, username, chat_id):
+    user = BotUtils.get_user(user_id, username)
     BotUtils.write_changes(user.base_filter, 'country', country_name)
 
     msg = bot.send_message(chat_id, MSG_ENTER_CITY, parse_mode='Markdown')
@@ -116,7 +116,7 @@ def process_change_location_step(message, **kwargs):
     # TODO: register next step if city is moscow
     # TODO: if location is subway and city is not Moscow - revert
 
-    username, chat_id, message_id, location = BotUtils.get_message_data(message)
+    user_id, username, chat_id, message_id, location = BotUtils.get_message_data(message)
 
     if location.endswith('Отмена'):
         bot.send_message(chat_id, MSG_CANCELED, reply_markup=KB_MENU)

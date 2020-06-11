@@ -11,6 +11,7 @@
 import ssl
 
 from aiohttp import web
+from loguru import logger
 
 from src import SUPPORT_MAIL, DEBUG, WEBHOOK_PORT, WEBHOOK_LISTEN, WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV, \
     WEBHOOK_URL_BASE, WEBHOOK_URL_PATH
@@ -27,15 +28,10 @@ from src.core.callbackqueries.common import MainCBQ, FiltersCBQ, FiltersOptionsH
     CatPaymentDetail, get_total_profiles
 
 
-# TODO: fix bug: после смены ника , если юзверь пытается получить данные , то бот крашится
-# TODO: везде использовать id пользователя телеграмм
-# TODO: переписать User модели и привязываться не к username , а к id
-
-
 @bot.message_handler(regexp='Каталог')
 def catalog(message):
-    username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
-    catalog_profiles_num = BotUtils.get_obj(User, {'username': username}).catalog_profiles_num
+    user_id, username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
+    catalog_profiles_num = BotUtils.get_obj(User, {'id': user_id}).catalog_profiles_num
 
     kb = create_main_catalog_keyboard(catalog_profiles_num)
     bot.send_message(chat_id, MSG_CATALOG.format(get_total_profiles()), parse_mode='Markdown', reply_markup=kb)
@@ -55,8 +51,8 @@ def about(message):
 
 @bot.message_handler(regexp='Скидки')
 def discounts(message):
-    username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
-    user = BotUtils.create_user(username=username)
+    user_id, username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
+    user = BotUtils.get_user(user_id, username)
     if user.promocode:
         text = MSG_DISCOUNTS.format(user.promocode, str(user.promo_discount) + ' %', user.discount_expires_days)
     else:
@@ -67,8 +63,8 @@ def discounts(message):
 
 @bot.message_handler(regexp='Статистика')
 def statistic(message):
-    username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
-    user = BotUtils.create_user(username)
+    user_id, username, chat_id, message_id, msg_text = BotUtils.get_message_data(message)
+    user = BotUtils.get_user(user_id, username)
     msg = MSG_STATISTIC.format(
         bot_active_days=0,
         total_ordered_girls=0,
@@ -84,11 +80,11 @@ def statistic(message):
 
 
 def main_callback_query(call):
-    username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
+    user_id, username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
 
     if re.search(PN_SET, msg_text):
         country = msg_text.split(':')[-1]
-        process_change_country_step(country, username, chat_id)
+        process_change_country_step(country, user_id, username, chat_id)
 
     elif re.search(PN_ENTER, msg_text):
         MainCBQ.enter_promocode(chat_id)
@@ -96,9 +92,9 @@ def main_callback_query(call):
 
 def catalog_callback_query(call):
     # TODO: начать просмотр девушек с N девушки (offset от юзверя)
-    username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
-    default_args = (username, chat_id, message_id)
-    default_kwargs = {'username': username, 'chat_id': chat_id, 'message_id': message_id}
+    user_id, username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
+    default_args = (user_id, username, chat_id, message_id)
+    default_kwargs = {'user_id': user_id, 'username': username, 'chat_id': chat_id, 'message_id': message_id}
 
     if re.search(PN_CAT_SET, msg_text):
         try:
@@ -131,8 +127,8 @@ def catalog_callback_query(call):
 
 
 def filters_callback_query(call):
-    username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
-    default_kwargs = {'username': username, 'chat_id': chat_id, 'message_id': message_id}
+    user_id, username, chat_id, message_id, msg_text = BotUtils.get_message_data(call, callback=True)
+    default_kwargs = {'user_id': user_id, 'username': username, 'chat_id': chat_id, 'message_id': message_id}
 
     if re.match(PN_FIL, msg_text) or re.match(PN_CH_BACK, msg_text):
         filter_name = msg_text.split(':')[1]
@@ -153,7 +149,7 @@ def filters_callback_query(call):
 
     elif re.match(PN_FIL_ENTER, msg_text):
         country = msg_text.split(':')[-1]
-        FiltersOptionsHandler.change_country_option_value(country, username, chat_id)
+        FiltersOptionsHandler.change_country_option_value(country, user_id, chat_id)
 
     elif re.match(PN_CH_SET, msg_text):
         filter_name, option_key, option_value = msg_text.split(':')[1:]
@@ -176,9 +172,9 @@ def callback_query(call):
 
         if msg_text.startswith('FIL') or msg_text.startswith('CH'):
             filters_callback_query(call)
-    except Exception as e:
+    except:
         # todo: if exception is blocked bot by user - add user to block too and unblock when he restart the bot.
-        print(e)
+        logger.exception('CALLBACK QUERY ERRORS')
 
 
 def main_loop():

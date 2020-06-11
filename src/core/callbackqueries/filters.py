@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 import itertools
 
-from src.models import user_session, FILTERS
-
 from src.core.common import bot
 from src.core.helpers.types import KeyboardOption
 from src.core.helpers import pyutils
-from src.core.helpers.botutils import Keyboards
+from src.core.helpers.botutils import BotUtils, Keyboards
 
 from src.core.callbackqueries.extra import *
 
 
+# fixme: записывать в filters_state состояние отдельно под каждый фильтр (в виде словаря)
 filters_state = {}
 
 
 class FiltersCBQ:
-    __slots__ = ('_filter_name', '_username', '_chat_id', '_message_id',
+    __slots__ = ('_filter_name', '_user_id', '_username', '_chat_id', '_message_id',
                  '_increment', '_state', '_add_move', '_move_options_data')
 
     _chunk_size = 7
 
-    def __init__(self, filter_name, username, chat_id, message_id, increment=0):
+    def __init__(self, filter_name, user_id, username, chat_id, message_id, increment=0):
+        self._user_id        = user_id
         self._filter_name    = filter_name
         self._username       = username
         self._chat_id        = chat_id
@@ -49,10 +49,8 @@ class FiltersCBQ:
 
     @property
     def girls_options(self):
-        filter_ = FILTERS.get(self._filter_name)
-        return filter_.as_tuple(
-            user_session.query(filter_).filter(filter_.user_username == self._username).one()
-        )
+        filter_ = BotUtils.get_user(self._user_id, self._username, attr_name=self._filter_name)
+        return filter_.as_tuple(filter_)
 
     def get_chunk_girls_options(self):
         return pyutils.chunk_list(self.girls_options, self._chunk_size)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from src import AVAILABLE_COUNTRIES_LIST
 from src.core.helpers.botutils import Keyboards
+from src.core.helpers.types import KeyboardOption
 from src.core.callbackqueries.extra import *
 
 
@@ -226,5 +227,9 @@ KB_CANCEL = Keyboards.create_reply_keyboard('❌ Отмена', row_width=1)
 # - INLINE -
 KB_COUNTRIES = Keyboards.create_inline_keyboard(*AVAILABLE_COUNTRIES_LIST, prefix=PX_MAIN_SET, row_width=1)
 KB_PROMOCODE = Keyboards.create_inline_keyboard('🔊 Ввести PROMOCODE', prefix=PX_MAIN_ENTER)
-FILTERS_ITEMS = ('Базовый', 'Расширенный', 'Услуги')
-KB_FILTERS_MENU = Keyboards.create_inline_keyboard(*FILTERS_ITEMS, prefix=PX_FIL, row_width=1)
+FILTERS_ITEMS = (
+    KeyboardOption(name='Базовый', callback='base_filter'),
+    KeyboardOption(name='Расширенный', callback='ext_filter'),
+    KeyboardOption(name='Услуги', callback='services')
+)
+KB_FILTERS_MENU = Keyboards.create_inline_keyboard_ext(*FILTERS_ITEMS, prefix=PX_FIL, row_width=1)

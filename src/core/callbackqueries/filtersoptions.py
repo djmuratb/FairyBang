@@ -15,7 +15,8 @@ from src.core.callbackqueries.filters import FiltersCBQ
 
 
 class BaseMixin:
-    __slots__ = ('_filter_name', '_option_name_key', '_username', '_chat_id', '_message_id', '_filter_class')
+    __slots__ = ('_filter_name', '_option_name_key', '_user_id', '_username',
+                 '_chat_id', '_message_id', '_filter_class')
 
     _msg0 = 'Введите диапазон значений.'
     _msg1 = 'Введите значения от *{}* до *{}* через дефис.'
@@ -25,6 +26,7 @@ class BaseMixin:
     def __init__(self, **kwargs):
         self._filter_name       = kwargs['filter_name']
         self._option_name_key   = kwargs['option_name_key']
+        self._user_id           = kwargs['user_id']
         self._username          = kwargs['username']
         self._chat_id           = kwargs['chat_id']
         self._message_id        = kwargs['message_id']
@@ -105,15 +107,17 @@ class EnumMixin(BaseMixin):
 
 class ServicesMixin(BaseMixin):
     def _get_new_option_val(self):
-        o = user_session.query(UserGirlServices).filter_by(user_username=self._username).one()
+        services = BotUtils.get_user(self._user_id, self._username, attr_name='services')
         column = self._get_selected_column()
-        current_option_val = o.__getattribute__(column.key)
-        return (o, column.key, False) if current_option_val else (o, column.key, True)
+        current_option_val = services.__getattribute__(column.key)
+        return (services, column.key, False) if current_option_val else (services, column.key, True)
 
     def send_service_msg(self):
         o, key, new_option_val = self._get_new_option_val()
         BotUtils.write_changes(o, key, new_option_val)
-        FiltersCBQ(self._filter_name, self._username, self._chat_id, self._message_id).send_options()
+        FiltersCBQ(
+            self._filter_name, self._user_id, self._username, self._chat_id, self._message_id
+        ).send_options()
 
 
 class LocationMixin(BaseMixin):
@@ -177,19 +181,19 @@ class FiltersOptionsHandler(RangeMixin, EnumMixin, ServicesMixin, LocationMixin,
         self._send_msg_funcs[value_type](key, default_values, msg)
 
     @staticmethod
-    def change_enum_option_value(filter_name, option_key, value, username, chat_id, message_id):
+    def change_enum_option_value(filter_name, option_key, value, user_id, username, chat_id, message_id):
         filter_class = FILTERS.get(filter_name)
         is_valid = VALIDATORS.get('enum').validate(enum_key=option_key, value=value)
 
         if is_valid:
-            obj = user_session.query(filter_class).filter_by(user_username=username).one()
+            obj = user_session.query(filter_class).filter_by(user_id=user_id).one()
             BotUtils.write_changes(obj, option_key, value)
 
-        FiltersCBQ(filter_name, username, chat_id, message_id).send_options()
+        FiltersCBQ(filter_name, user_id, username, chat_id, message_id).send_options()
 
     @staticmethod
-    def change_country_option_value(country, username, chat_id):
-        BotUtils.write_changes(UserGirlBaseFilter, 'country', country, filter_by={'user_username': username})
+    def change_country_option_value(country, user_id, chat_id):
+        BotUtils.write_changes(UserGirlBaseFilter, 'country', country, filter_by={'user_id': user_id})
 
         msg = bot.send_message(chat_id, MSGS_LOCATIONS['city'], parse_mode='Markdown', reply_markup=KB_CANCEL)
         bot.register_next_step_handler(msg, process_change_location_step, location='city')
