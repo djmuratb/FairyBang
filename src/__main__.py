@@ -177,6 +177,7 @@ def callback_query(call):
         if msg_text.startswith('FIL') or msg_text.startswith('CH'):
             filters_callback_query(call)
     except Exception as e:
+        # todo: if exception is blocked bot by user - add user to block too and unblock when he restart the bot.
         print(e)
 
 
