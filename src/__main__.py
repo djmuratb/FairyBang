@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #       CREATED BY:  "L"
-#       MY MAIL:  llawlietorigin@gmail.com
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#       MY MAIL:     llawlietorigin@gmail.com
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 import ssl
@@ -27,7 +27,9 @@ from src.core.callbackqueries.common import MainCBQ, FiltersCBQ, FiltersOptionsH
     CatPaymentDetail, get_total_profiles
 
 
-# TODO: fix bug "description":"Forbidden: bot was blocked by the user"
+# TODO: fix bug: после смены ника , если юзверь пытается получить данные , то бот крашится
+# TODO: везде использовать id пользователя телеграмм
+# TODO: переписать User модели и привязываться не к username , а к id
 
 
 @bot.message_handler(regexp='Каталог')
@@ -165,14 +167,17 @@ def callback_query(call):
 
     print('--- CALLBACK DATA --- ', msg_text)
 
-    if msg_text.startswith('MAIN'):
-        main_callback_query(call)
+    try:
+        if msg_text.startswith('MAIN'):
+            main_callback_query(call)
 
-    if msg_text.startswith('CAT'):
-        catalog_callback_query(call)
+        if msg_text.startswith('CAT'):
+            catalog_callback_query(call)
 
-    if msg_text.startswith('FIL') or msg_text.startswith('CH'):
-        filters_callback_query(call)
+        if msg_text.startswith('FIL') or msg_text.startswith('CH'):
+            filters_callback_query(call)
+    except Exception as e:
+        print(e)
 
 
 def main_loop():
