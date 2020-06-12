@@ -9,7 +9,6 @@ from src.core.helpers.botutils import BotUtils, Keyboards
 from src.core.callbackqueries.extra import *
 
 
-# fixme: записывать в filters_state состояние отдельно под каждый фильтр (в виде словаря)
 filters_state = {}
 
 
