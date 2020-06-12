@@ -69,15 +69,15 @@ class BotUtils:
     @staticmethod
     def get_user(user_id, username, attr_name=None):
         user = user_session.query(User).get(user_id)
-        if BotUtils._is_username_modified(user.username, username):
-            BotUtils.write_changes(user, 'username', username)
-
         if not user:
             user = User(user_id, username)
             user.base_filter = UserGirlBaseFilter()
             user.ext_filter = UserGirlExtFilter()
             user.services = UserGirlServices()
             BotUtils.write_changes(user, only_commit=False)
+
+        if BotUtils._is_username_modified(user.username, username):
+            BotUtils.write_changes(user, 'username', username)
 
         if attr_name:
             return getattr(user, attr_name)
