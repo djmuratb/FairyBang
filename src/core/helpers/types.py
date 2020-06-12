@@ -1,5 +1,10 @@
 import collections as cs
 
+from dataclasses import dataclass
+
+
+# note: как вариант переписать на датаклассы
+
 
 KeyboardOption = cs.namedtuple('KeyboardOption', [
     'name',
@@ -13,3 +18,10 @@ ColumnResultSet = cs.namedtuple('ColumnResultSet', [
     'type',
     'nullable',
 ])
+
+
+@dataclass(repr=False, eq=False)
+class FiltersState:
+    base_filter: int    = 0
+    ext_filter: int     = 0
+    services: int       = 0

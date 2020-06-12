@@ -2,7 +2,7 @@
 import itertools
 
 from src.core.common import bot
-from src.core.helpers.types import KeyboardOption
+from src.core.helpers.types import KeyboardOption, FiltersState
 from src.core.helpers import pyutils
 from src.core.helpers.botutils import BotUtils, Keyboards
 
@@ -55,17 +55,28 @@ class FiltersCBQ:
     def get_chunk_girls_options(self):
         return pyutils.chunk_list(self.girls_options, self._chunk_size)
 
+    def _set_state(self, states, state):
+        states.__setattr__(self._filter_name, state)
+        self._state = state
+        filters_state[self._chat_id] = states
+
+    def _get_state(self, len_options):
+        states = filters_state.get(self._chat_id, FiltersState())
+        state = states.__getattribute__(self._filter_name) + self._increment
+        if state == len_options:
+            state = 0
+
+        return states, state
+
     @property
     def part_from_chunk_girls_options(self):
         chunk_girls_options = self.get_chunk_girls_options()
-        state = filters_state.get(self._chat_id, 0) + self._increment
-        if state == len(chunk_girls_options):
-            state = 0
+        states, state = self._get_state(len(chunk_girls_options))
 
         if len(chunk_girls_options) == 1:
             self._add_move = False
 
-        filters_state[self._chat_id] = self._state = state
+        self._set_state(states, state)
         return chunk_girls_options[state]
 
     def get_options_objects(self):
