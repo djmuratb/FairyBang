@@ -1,10 +1,21 @@
 # Fairy Bang
 
+![Platform](https://img.shields.io/badge/platfrom-linux-red)
+![Python](https://img.shields.io/badge/Python-3.7-blue)
+
 Telegram bot.
 
 ## **Getting started**
 **The following actions were performed on ubuntu 20.04 with python 3.7**
 
+* [Installation](#installation)
+    * [Build dependencies](#build-dependencies)
+    * [Configuring PostrgreSQL](#configuring-postrgresql)
+    * [Transfer girls database (Optional)](#transfer-girls-database-optional)
+    * [Python installation](#python-installation)
+    * [Bot Installation](#bot-installation)
+    * [Configuring Supervisor](#configuring-supervisor)
+* [Docker](#docker)
 
 ### Installation
 
@@ -142,3 +153,7 @@ numprocs=1
 ```
 
 Now the bot has been successfully installed and launched.
+
+
+### Docker
+[TO DO]
