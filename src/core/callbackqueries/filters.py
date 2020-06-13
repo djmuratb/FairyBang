@@ -17,6 +17,11 @@ class FiltersCBQ:
                  '_increment', '_state', '_add_move', '_move_options_data')
 
     _chunk_size = 7
+    _formatted_filter_names = {
+        'base_filter':  'Базовый',
+        'ext_filter':   'Расширенный',
+        'services':     'Услуги',
+    }
 
     def __init__(self, filter_name, user_id, username, chat_id, message_id, increment=0):
         self._user_id        = user_id
@@ -103,7 +108,7 @@ class FiltersCBQ:
     def send_options(self):
         keyboard = Keyboards.create_inline_keyboard_ext(*self.keyboard_options, prefix='', row_width=1)
         bot.edit_message_text(
-            f'🅰️ *{self._filter_name}*',
+            f'🅰️ *{self._formatted_filter_names.get(self._filter_name)}*',
             self._chat_id,
             self._message_id,
             parse_mode='Markdown',
