@@ -161,7 +161,8 @@ def callback_query(call):
     msg_text = BotUtils.get_message_data(call, callback=True)[-1]
     call.data = pyutils.remove_prefix(call.data)
 
-    print('--- CALLBACK DATA --- ', msg_text)
+    if DEBUG:
+        logger.info(f'--- CALLBACK DATA --- {msg_text}')
 
     try:
         if msg_text.startswith('MAIN'):
