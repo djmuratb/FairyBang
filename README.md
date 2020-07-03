@@ -5,6 +5,8 @@
 
 Telegram bot.
 
+[in developing]
+
 ## **Getting started**
 **The following actions were performed on ubuntu 20.04 with python 3.7**
 

@@ -1,7 +1,7 @@
 
 # --- MAIN OPTIONS ---
-admin username: LL4wliet    # Set it without @ symbol.
-api token: 1150335152:AAF3nnQQ_XobhtWGYo1GsYeG8TZtC7oiz0s
+admin username: <telegram_username>    # Set it without @ symbol.
+api token: <telegram_api_token>
 
 databases:
   user:
