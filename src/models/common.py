@@ -12,16 +12,18 @@ from src import USERS_DB, GIRLS_DB
 from src.core.helpers.types import ColumnResultSet
 
 
-meta_user     = MetaData()
-url_user      = str(URL(**USERS_DB))
-engine_user   = create_engine(url_user)
-meta_user.reflect(bind=engine_user)
+def _get_db_base_data(db):
+    meta = MetaData()
+    db_url = str(URL(**db))
+    engine = create_engine(db_url)
+    meta.reflect(bind=engine)
+    return meta, engine
+
+
+meta_user, engine_user = _get_db_base_data(USERS_DB)
 BaseUser      = declarative_base()
 
-meta_girl     = MetaData()
-url_girl      = str(URL(**GIRLS_DB))
-engine_girl   = create_engine(url_girl)
-meta_girl.reflect(bind=engine_girl)
+meta_girl, engine_girl = _get_db_base_data(GIRLS_DB)
 BaseGirl      = declarative_base()
 
 
