@@ -11,7 +11,7 @@ setup(
     install_requires=[
         'pyTelegramBotAPI==3.6.7',
         'PySocks==1.7.1',
-        'PyYaml==5.3.1',
+        'PyYaml==5.4',
         'SQLAlchemy==1.3.16',
         'psycopg2==2.8.5',
         'aiohttp==3.6.2',
